@@ -19,8 +19,9 @@ pipe' =
 pipe : Readable -> Writable -> Task x ()
 pipe r w = pipe' (.readable r) (.writable w)
 
-logBuffer : Encoding -> Chunk -> Task x ()
-logBuffer = Native.Node.Streams.logBuffer
+logBuffer' : String -> Chunk -> Task x ()
+logBuffer' =
+  Native.Node.Streams.logBuffer
 
-utf8 : Encoding
-utf8 = "utf8"
+logBuffer : Encoding -> Chunk -> Task x ()
+logBuffer = logBuffer' << toNameE

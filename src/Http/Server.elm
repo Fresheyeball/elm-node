@@ -45,9 +45,9 @@ run p s = let
 
   reply : Signal (Task x ())
   reply = Signal.map2
-    (runResponse << snd)
-    (s (Signal.map marshallRequest (Signal.map fst server.signal)))
-    (Signal.map snd server.signal)
+    (snd >> runResponse)
+    (Signal.map (fst >> marshallRequest) server.signal |> s)
+    (Signal.map  snd                     server.signal     )
 
   create : Signal (Task x ())
   create = constant <|

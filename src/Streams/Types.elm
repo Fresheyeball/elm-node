@@ -15,7 +15,21 @@ type WritableEvent
   | WriteError
 
 type Chunk = ChunkRaw
-type alias Encoding = String
+
+type Encoding
+  = Ascii
+  | Utf8
+  | Hex
+  | Base64
+  | Binary
+
+toNameE : Encoding -> String
+toNameE e = case e of
+  Ascii -> "ascii"
+  Utf8 -> "utf8"
+  Hex -> "hex"
+  Base64 -> "base64"
+  Binary -> "null"
 
 toNameR : ReadableEvent -> String
 toNameR e = case e of

@@ -11171,8 +11171,10 @@ Elm.Http.Server.make = function (_elm) {
          return runResponse($Basics.snd(_p1));
       },
       s(A2($Signal.map,
-      marshallRequest,
-      A2($Signal.map,$Basics.fst,server.signal))),
+      function (_p2) {
+         return marshallRequest($Basics.fst(_p2));
+      },
+      server.signal)),
       A2($Signal.map,$Basics.snd,server.signal));
       var create = $Signal.constant(A2($Task.andThen,
       A3($Http$Server$Raw.createServer$,

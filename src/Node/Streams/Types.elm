@@ -1,28 +1,33 @@
 module Node.Streams.Types where
 
+import Native.Node.Streams
+
 type ReadableEvent
-  = Close
-  | Data
-  | ReadError
-  | End
+  = Data
   | Read
+  | Close
+  | End
+  | ReadError
 
 type WritableEvent
   = Drain
-  | WriteError
-  | Finish
   | Pipe
   | Unpipe
+  | Finish
+  | WriteError
 
-type ReadableRaw = ReadableRaw
-type WritableRaw = WritableRaw
+type Read  = ReadRaw
+type Write = WriteRaw
 
 type alias Readable =
-  { readable : ReadableRaw }
+  { readable : Read }
 
 type alias Writable =
-  { writable : WritableRaw }
+  { writable : Write }
 
 type alias Duplex =
-  { readable : ReadableRaw
-  , writable : WritableRaw }
+  { readable : Read
+  , writable : Write }
+
+foo : String
+foo = Native.Node.Streams.foo

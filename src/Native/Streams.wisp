@@ -6,8 +6,7 @@
 
 (defn- pipe
   [Task Tuple0] (fn
-  [readable writable]
-  (do
+  [readable writable] (do
     (.pipe readable writable)
     (.succeed Task Tuple0))))
 

@@ -20,7 +20,8 @@ pipe : Readable -> Writable -> Task x ()
 pipe r w = pipe' (.readable r) (.writable w)
 
 logBuffer' : String -> Chunk -> Task x ()
-logBuffer' = Native.Node.Streams.logBuffer
+logBuffer' =
+  Native.Node.Streams.logBuffer
 
 logBuffer : Encoding -> Chunk -> Task x ()
 logBuffer = logBuffer' << toNameE

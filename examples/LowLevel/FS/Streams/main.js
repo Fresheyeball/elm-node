@@ -6319,3 +6319,6 @@ Elm.Main.make = function (_elm) {
 };
 Elm.worker(Elm.Main);
 Elm.worker(Elm.Main);
+Elm.worker(Elm.Main);
+Elm.worker(Elm.Main);
+Elm.worker(Elm.Main);

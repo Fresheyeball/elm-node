@@ -11,11 +11,15 @@
     (.pipe readable writable)
     (.succeed Task Tuple0))))
 
+(defn- copeWithNull
+  [encoding]
+  (if (== encoding "null") null encoding))
+
 (defn- logBuffer
   [Task Tuple0] (fn
-  [encoding chunk]
-  (do
-    (.log console (if chunk (.toString chunk encoding) chunk))
+  [encoding chunk] (do
+    (.log console
+      (if chunk (.toString chunk (codeWithNull encoding)) chunk))
     (.succeed Task Tuple0))))
 
 (defn- on

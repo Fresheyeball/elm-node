@@ -7,7 +7,26 @@
 (defn- createReadStream
   [fs Task] (fn
   [path]
-    (Task.succeed (.createReadStream fs path))))
+  (Task.succeed (.createReadStream fs path))))
+
+(defn- createWriteStream
+  [fs Task] (fn
+  [path]
+  (Task.succeed (.createWriteStream fs path))))
+
+(defn- pipe
+  [fs Task Tuple0] (fn
+  [readable writable]
+  (do
+    (.pipe readable writable)
+    (.succeed Task Tuple0))))
+
+(defn- logBuffer
+  [Task Tuple0] (fn
+  [encoding chunk]
+  (do
+    (.log console (if chunk (.toString chunk encoding) chunk))
+    (.succeed Task Tuple0))))
 
 (defn- on
   [Task] (fn
@@ -16,22 +35,24 @@
     [callback]
     (.on stream eventName (fn
       [chunk]
-      (do
-        (.log console (.toString chunk :utf8))
-        (callback (aToTask chunk)))))))))
+      (callback (aToTask chunk))))))))
 
 (defn- make
   [localRuntime] (let
-  [fs   (require "fs")
-   Task (Elm.Native.Task.make localRuntime)]
+  [fs     (require "fs")
+   Task   (Elm.Native.Task.make  localRuntime)
+   Utils  (Elm.Native.Utils.make localRuntime)
+   Tuple0 (:Tuple0 Utils) ]
   (do
     (sanitize localRuntime :Native :Node :Streams :FS)
     (if localRuntime.Native.Node.Streams.FS.values
         localRuntime.Native.Node.Streams.FS.values
         (set! localRuntime.Native.Node.Streams.FS.values {
-          :foo "foo"
           :on (F3 (on Task))
-          :createReadStream (createReadStream fs Task) })))))
+          :pipe (F2 (pipe fs Task Tuple0))
+          :logBuffer (F2 (logBuffer Task Tuple0))
+          :createReadStream  (createReadStream  fs Task)
+          :createWriteStream (createWriteStream fs Task) })))))
 
 (sanitize Elm :Native :Node :Streams :FS)
 (set! Elm.Native.Node.Streams.FS.make make)

@@ -1,7 +1,5 @@
 module Node.Streams.Types where
 
-import Native.Node.Streams
-
 type ReadableEvent
   = Data
   | Read
@@ -15,6 +13,12 @@ type WritableEvent
   | Unpipe
   | Finish
   | WriteError
+
+type Chunk = ChunkRaw
+type alias Encoding = String
+
+utf8 : Encoding
+utf8 = "utf8"
 
 toNameR : ReadableEvent -> String
 toNameR e = case e of
@@ -44,6 +48,3 @@ type alias Writable =
 type alias Duplex =
   { readable : Read
   , writable : Write }
-
-foo : String
-foo = Native.Node.Streams.foo

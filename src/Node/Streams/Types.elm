@@ -17,9 +17,6 @@ type WritableEvent
 type Chunk = ChunkRaw
 type alias Encoding = String
 
-utf8 : Encoding
-utf8 = "utf8"
-
 toNameR : ReadableEvent -> String
 toNameR e = case e of
   Data -> "data"

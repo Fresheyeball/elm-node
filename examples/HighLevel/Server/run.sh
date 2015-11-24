@@ -1,3 +1,3 @@
-elm make example/simple/Server.elm --output=example/simple/server.js
-echo "Elm.worker(Elm.Server);" >> example/simple/server.js
-node example/simple/server.js
+elm make examples/HighLevel/Server/Server.elm --output=examples/HighLevel/Server/server.js
+echo "Elm.worker(Elm.Server);" >> examples/HighLevel/Server/server.js
+node examples/HighLevel/Server/server.js

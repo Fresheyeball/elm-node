@@ -44,10 +44,10 @@ run p s = let
   server = mailbox (Raw.emptyReq, Raw.emptyRes)
 
   reply : Signal (Task x ())
-  reply = 
+  reply = Signal.map2
     (runResponse << snd)
-    <~ s (marshallRequest <~ (fst <~ server.signal))
-     ~ (snd <~ server.signal)
+    (s (Signal.map marshallRequest (Signal.map fst server.signal)))
+    (Signal.map snd server.signal)
 
   create : Signal (Task x ())
   create = constant <|

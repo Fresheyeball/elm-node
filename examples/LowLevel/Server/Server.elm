@@ -24,7 +24,7 @@ route (req, res) =
       |> writeJson res
 
 port reply : Signal (Task x ())
-port reply = route <~ dropRepeats server.signal
+port reply = Signal.map route <| dropRepeats server.signal
 
 port serve : Task x Server
 port serve = createServer'

@@ -1,8 +1,7 @@
 module Server where
 
-import Http.Server.Simple exposing (..)
+import Http.Server exposing (..)
 import Html exposing (h1,text,Html)
-import Effects exposing (Never)
 import Task exposing (Task)
 import Signal exposing (..)
 
@@ -23,5 +22,5 @@ route {url} (count, _) =
 server : Server RequestCount
 server sigreq = foldp route (0, EmptyRes) sigreq
 
-port serve : Signal (Task Never ())
+port serve : Signal (Task x ())
 port serve = run 8080 server

@@ -1,4 +1,4 @@
-module Node.Streams.Types where
+module Streams.Types where
 
 type ReadableEvent
   = Data

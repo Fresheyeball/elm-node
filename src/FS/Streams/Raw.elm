@@ -1,14 +1,14 @@
-module Node.FS.Streams where
+module FS.Streams.Raw where
 
 import Task exposing (Task)
 
-import Node.Streams.Types exposing (..)
-import Node.FS.Types exposing (FilePath)
-import Native.Node.FS.Streams
+import Streams.Types exposing (..)
+import FS.Types exposing (FilePath)
+import Native.FS.Streams
 
 createReadStream' : FilePath -> Task x Read
 createReadStream' =
-  Native.Node.FS.Streams.createReadStream
+  Native.FS.Streams.createReadStream
 
 createReadStream : FilePath -> Task x Readable
 createReadStream =
@@ -16,7 +16,7 @@ createReadStream =
 
 createWriteStream' : FilePath -> Task x Write
 createWriteStream' =
-  Native.Node.FS.Streams.createWriteStream
+  Native.FS.Streams.createWriteStream
 
 createWriteStream : FilePath -> Task x Writable
 createWriteStream =

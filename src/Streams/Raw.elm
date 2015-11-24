@@ -1,4 +1,4 @@
-module Node.Streams where
+module Streams where
 
 import Task exposing (Task)
 

@@ -1,3 +1,6 @@
-cat src/Native/Node/Streams.wisp | wisp > src/Native/Node/Streams.js
-cat src/Native/Node/FS.wisp | wisp > src/Native/Node/FS.js
-cat src/Native/Node/FS/Streams.wisp | wisp > src/Native/Node/FS/Streams.js
+
+cat src/Native/Streams.wisp | wisp > src/Native/Streams.js
+cat src/Native/FS.wisp | wisp > src/Native/FS.js
+cat src/Native/FS/Streams.wisp | wisp > src/Native/FS/Streams.js
+cat src/Native/Http.wisp | wisp > src/Native/Http.js
+cat src/Native/VDOMtoHTML.wisp | wisp > src/Native/VDOMtoHTML.js

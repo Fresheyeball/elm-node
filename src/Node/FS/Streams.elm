@@ -3,9 +3,8 @@ module Node.FS.Streams where
 import Task exposing (Task)
 
 import Node.Streams.Types exposing (..)
+import Node.FS.Types exposing (FilePath)
 import Native.Node.FS.Streams
-
-type alias FilePath = String
 
 createReadStream' : FilePath -> Task x Read
 createReadStream' =

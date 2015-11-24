@@ -1,12 +1,13 @@
 module Main where
 
-import Node.Streams.Types exposing (foo)
+import Node.Streams.Types exposing (..)
+import Node.Streams.FS exposing (..)
 
-import Task
-import Debug
+import Task exposing (Task)
 
-port run : Task.Task x ()
-port run =
-  Debug.log "foo" foo
-  |> Task.succeed
-  |> Task.map (always ())
+itsCool : a -> Task x ()
+itsCool = always (Task.succeed ())
+
+port run : Task x ()
+port run = createReadStream "README.md"
+  `Task.andThen` on itsCool Data

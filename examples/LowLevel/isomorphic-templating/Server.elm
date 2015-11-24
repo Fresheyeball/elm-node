@@ -1,9 +1,9 @@
 module Server where
 
-import Http.Server exposing (..)
-import Http.Server.Isomorphic exposing (..)
+import Http.Server.Raw exposing (..)
+import Http.Server.Isomorphic.Raw exposing (..)
 import Main
-import FS exposing (ReadError)
+import FS.Raw exposing (ReadError)
 import Task exposing (..)
 import Signal exposing (..)
 import Json.Encode as Json
@@ -25,7 +25,7 @@ route (req, res) = case method req of
     Json.string "fail" |> writeJson res
 
 port reply : Signal (Task ReadError ())
-port reply = route <~ dropRepeats server.signal
+port reply = Signal.map route <| dropRepeats server.signal
 
 port serve : Task x Server
 port serve = createServer'

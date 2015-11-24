@@ -3,7 +3,7 @@ module Http.Server.Isomorphic.Raw where
 import Http.Server.Raw exposing (Response, writeHtml)
 import String exposing (join)
 import Html exposing (Html)
-import FS exposing (readFile, ReadError)
+import FS.Raw exposing (readFile, ReadError)
 import Task exposing (andThen, succeed, Task)
 import VDOMtoHTML exposing (toHTML)
 

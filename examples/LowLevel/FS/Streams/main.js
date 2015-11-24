@@ -6318,3 +6318,4 @@ Elm.Main.make = function (_elm) {
    return _elm.Main.values = {_op: _op};
 };
 Elm.worker(Elm.Main);
+Elm.worker(Elm.Main);

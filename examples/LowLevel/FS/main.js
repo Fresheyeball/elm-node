@@ -2108,729 +2108,6 @@ Elm.List.make = function (_elm) {
                              ,sortBy: sortBy
                              ,sortWith: sortWith};
 };
-Elm.Native.Color = {};
-Elm.Native.Color.make = function(localRuntime) {
-	localRuntime.Native = localRuntime.Native || {};
-	localRuntime.Native.Color = localRuntime.Native.Color || {};
-	if (localRuntime.Native.Color.values)
-	{
-		return localRuntime.Native.Color.values;
-	}
-
-	function toCss(c)
-	{
-		var format = '';
-		var colors = '';
-		if (c.ctor === 'RGBA')
-		{
-			format = 'rgb';
-			colors = c._0 + ', ' + c._1 + ', ' + c._2;
-		}
-		else
-		{
-			format = 'hsl';
-			colors = (c._0 * 180 / Math.PI) + ', ' +
-					 (c._1 * 100) + '%, ' +
-					 (c._2 * 100) + '%';
-		}
-		if (c._3 === 1)
-		{
-			return format + '(' + colors + ')';
-		}
-		else
-		{
-			return format + 'a(' + colors + ', ' + c._3 + ')';
-		}
-	}
-
-	return localRuntime.Native.Color.values = {
-		toCss: toCss
-	};
-};
-
-Elm.Color = Elm.Color || {};
-Elm.Color.make = function (_elm) {
-   "use strict";
-   _elm.Color = _elm.Color || {};
-   if (_elm.Color.values) return _elm.Color.values;
-   var _U = Elm.Native.Utils.make(_elm),
-   $Basics = Elm.Basics.make(_elm);
-   var _op = {};
-   var Radial = F5(function (a,b,c,d,e) {
-      return {ctor: "Radial",_0: a,_1: b,_2: c,_3: d,_4: e};
-   });
-   var radial = Radial;
-   var Linear = F3(function (a,b,c) {
-      return {ctor: "Linear",_0: a,_1: b,_2: c};
-   });
-   var linear = Linear;
-   var fmod = F2(function (f,n) {
-      var integer = $Basics.floor(f);
-      return $Basics.toFloat(A2($Basics._op["%"],
-      integer,
-      n)) + f - $Basics.toFloat(integer);
-   });
-   var rgbToHsl = F3(function (red,green,blue) {
-      var b = $Basics.toFloat(blue) / 255;
-      var g = $Basics.toFloat(green) / 255;
-      var r = $Basics.toFloat(red) / 255;
-      var cMax = A2($Basics.max,A2($Basics.max,r,g),b);
-      var cMin = A2($Basics.min,A2($Basics.min,r,g),b);
-      var c = cMax - cMin;
-      var lightness = (cMax + cMin) / 2;
-      var saturation = _U.eq(lightness,
-      0) ? 0 : c / (1 - $Basics.abs(2 * lightness - 1));
-      var hue = $Basics.degrees(60) * (_U.eq(cMax,r) ? A2(fmod,
-      (g - b) / c,
-      6) : _U.eq(cMax,g) ? (b - r) / c + 2 : (r - g) / c + 4);
-      return {ctor: "_Tuple3",_0: hue,_1: saturation,_2: lightness};
-   });
-   var hslToRgb = F3(function (hue,saturation,lightness) {
-      var hue$ = hue / $Basics.degrees(60);
-      var chroma = (1 - $Basics.abs(2 * lightness - 1)) * saturation;
-      var x = chroma * (1 - $Basics.abs(A2(fmod,hue$,2) - 1));
-      var _p0 = _U.cmp(hue$,0) < 0 ? {ctor: "_Tuple3"
-                                     ,_0: 0
-                                     ,_1: 0
-                                     ,_2: 0} : _U.cmp(hue$,1) < 0 ? {ctor: "_Tuple3"
-                                                                    ,_0: chroma
-                                                                    ,_1: x
-                                                                    ,_2: 0} : _U.cmp(hue$,2) < 0 ? {ctor: "_Tuple3"
-                                                                                                   ,_0: x
-                                                                                                   ,_1: chroma
-                                                                                                   ,_2: 0} : _U.cmp(hue$,3) < 0 ? {ctor: "_Tuple3"
-                                                                                                                                  ,_0: 0
-                                                                                                                                  ,_1: chroma
-                                                                                                                                  ,_2: x} : _U.cmp(hue$,
-      4) < 0 ? {ctor: "_Tuple3",_0: 0,_1: x,_2: chroma} : _U.cmp(hue$,
-      5) < 0 ? {ctor: "_Tuple3",_0: x,_1: 0,_2: chroma} : _U.cmp(hue$,
-      6) < 0 ? {ctor: "_Tuple3"
-               ,_0: chroma
-               ,_1: 0
-               ,_2: x} : {ctor: "_Tuple3",_0: 0,_1: 0,_2: 0};
-      var r = _p0._0;
-      var g = _p0._1;
-      var b = _p0._2;
-      var m = lightness - chroma / 2;
-      return {ctor: "_Tuple3",_0: r + m,_1: g + m,_2: b + m};
-   });
-   var toRgb = function (color) {
-      var _p1 = color;
-      if (_p1.ctor === "RGBA") {
-            return {red: _p1._0
-                   ,green: _p1._1
-                   ,blue: _p1._2
-                   ,alpha: _p1._3};
-         } else {
-            var _p2 = A3(hslToRgb,_p1._0,_p1._1,_p1._2);
-            var r = _p2._0;
-            var g = _p2._1;
-            var b = _p2._2;
-            return {red: $Basics.round(255 * r)
-                   ,green: $Basics.round(255 * g)
-                   ,blue: $Basics.round(255 * b)
-                   ,alpha: _p1._3};
-         }
-   };
-   var toHsl = function (color) {
-      var _p3 = color;
-      if (_p3.ctor === "HSLA") {
-            return {hue: _p3._0
-                   ,saturation: _p3._1
-                   ,lightness: _p3._2
-                   ,alpha: _p3._3};
-         } else {
-            var _p4 = A3(rgbToHsl,_p3._0,_p3._1,_p3._2);
-            var h = _p4._0;
-            var s = _p4._1;
-            var l = _p4._2;
-            return {hue: h,saturation: s,lightness: l,alpha: _p3._3};
-         }
-   };
-   var HSLA = F4(function (a,b,c,d) {
-      return {ctor: "HSLA",_0: a,_1: b,_2: c,_3: d};
-   });
-   var hsla = F4(function (hue,saturation,lightness,alpha) {
-      return A4(HSLA,
-      hue - $Basics.turns($Basics.toFloat($Basics.floor(hue / (2 * $Basics.pi)))),
-      saturation,
-      lightness,
-      alpha);
-   });
-   var hsl = F3(function (hue,saturation,lightness) {
-      return A4(hsla,hue,saturation,lightness,1);
-   });
-   var complement = function (color) {
-      var _p5 = color;
-      if (_p5.ctor === "HSLA") {
-            return A4(hsla,
-            _p5._0 + $Basics.degrees(180),
-            _p5._1,
-            _p5._2,
-            _p5._3);
-         } else {
-            var _p6 = A3(rgbToHsl,_p5._0,_p5._1,_p5._2);
-            var h = _p6._0;
-            var s = _p6._1;
-            var l = _p6._2;
-            return A4(hsla,h + $Basics.degrees(180),s,l,_p5._3);
-         }
-   };
-   var grayscale = function (p) {    return A4(HSLA,0,0,1 - p,1);};
-   var greyscale = function (p) {    return A4(HSLA,0,0,1 - p,1);};
-   var RGBA = F4(function (a,b,c,d) {
-      return {ctor: "RGBA",_0: a,_1: b,_2: c,_3: d};
-   });
-   var rgba = RGBA;
-   var rgb = F3(function (r,g,b) {    return A4(RGBA,r,g,b,1);});
-   var lightRed = A4(RGBA,239,41,41,1);
-   var red = A4(RGBA,204,0,0,1);
-   var darkRed = A4(RGBA,164,0,0,1);
-   var lightOrange = A4(RGBA,252,175,62,1);
-   var orange = A4(RGBA,245,121,0,1);
-   var darkOrange = A4(RGBA,206,92,0,1);
-   var lightYellow = A4(RGBA,255,233,79,1);
-   var yellow = A4(RGBA,237,212,0,1);
-   var darkYellow = A4(RGBA,196,160,0,1);
-   var lightGreen = A4(RGBA,138,226,52,1);
-   var green = A4(RGBA,115,210,22,1);
-   var darkGreen = A4(RGBA,78,154,6,1);
-   var lightBlue = A4(RGBA,114,159,207,1);
-   var blue = A4(RGBA,52,101,164,1);
-   var darkBlue = A4(RGBA,32,74,135,1);
-   var lightPurple = A4(RGBA,173,127,168,1);
-   var purple = A4(RGBA,117,80,123,1);
-   var darkPurple = A4(RGBA,92,53,102,1);
-   var lightBrown = A4(RGBA,233,185,110,1);
-   var brown = A4(RGBA,193,125,17,1);
-   var darkBrown = A4(RGBA,143,89,2,1);
-   var black = A4(RGBA,0,0,0,1);
-   var white = A4(RGBA,255,255,255,1);
-   var lightGrey = A4(RGBA,238,238,236,1);
-   var grey = A4(RGBA,211,215,207,1);
-   var darkGrey = A4(RGBA,186,189,182,1);
-   var lightGray = A4(RGBA,238,238,236,1);
-   var gray = A4(RGBA,211,215,207,1);
-   var darkGray = A4(RGBA,186,189,182,1);
-   var lightCharcoal = A4(RGBA,136,138,133,1);
-   var charcoal = A4(RGBA,85,87,83,1);
-   var darkCharcoal = A4(RGBA,46,52,54,1);
-   return _elm.Color.values = {_op: _op
-                              ,rgb: rgb
-                              ,rgba: rgba
-                              ,hsl: hsl
-                              ,hsla: hsla
-                              ,greyscale: greyscale
-                              ,grayscale: grayscale
-                              ,complement: complement
-                              ,linear: linear
-                              ,radial: radial
-                              ,toRgb: toRgb
-                              ,toHsl: toHsl
-                              ,red: red
-                              ,orange: orange
-                              ,yellow: yellow
-                              ,green: green
-                              ,blue: blue
-                              ,purple: purple
-                              ,brown: brown
-                              ,lightRed: lightRed
-                              ,lightOrange: lightOrange
-                              ,lightYellow: lightYellow
-                              ,lightGreen: lightGreen
-                              ,lightBlue: lightBlue
-                              ,lightPurple: lightPurple
-                              ,lightBrown: lightBrown
-                              ,darkRed: darkRed
-                              ,darkOrange: darkOrange
-                              ,darkYellow: darkYellow
-                              ,darkGreen: darkGreen
-                              ,darkBlue: darkBlue
-                              ,darkPurple: darkPurple
-                              ,darkBrown: darkBrown
-                              ,white: white
-                              ,lightGrey: lightGrey
-                              ,grey: grey
-                              ,darkGrey: darkGrey
-                              ,lightCharcoal: lightCharcoal
-                              ,charcoal: charcoal
-                              ,darkCharcoal: darkCharcoal
-                              ,black: black
-                              ,lightGray: lightGray
-                              ,gray: gray
-                              ,darkGray: darkGray};
-};
-Elm.Native.Signal = {};
-
-Elm.Native.Signal.make = function(localRuntime) {
-	localRuntime.Native = localRuntime.Native || {};
-	localRuntime.Native.Signal = localRuntime.Native.Signal || {};
-	if (localRuntime.Native.Signal.values)
-	{
-		return localRuntime.Native.Signal.values;
-	}
-
-
-	var Task = Elm.Native.Task.make(localRuntime);
-	var Utils = Elm.Native.Utils.make(localRuntime);
-
-
-	function broadcastToKids(node, timestamp, update)
-	{
-		var kids = node.kids;
-		for (var i = kids.length; i--; )
-		{
-			kids[i].notify(timestamp, update, node.id);
-		}
-	}
-
-
-	// INPUT
-
-	function input(name, base)
-	{
-		var node = {
-			id: Utils.guid(),
-			name: 'input-' + name,
-			value: base,
-			parents: [],
-			kids: []
-		};
-
-		node.notify = function(timestamp, targetId, value) {
-			var update = targetId === node.id;
-			if (update)
-			{
-				node.value = value;
-			}
-			broadcastToKids(node, timestamp, update);
-			return update;
-		};
-
-		localRuntime.inputs.push(node);
-
-		return node;
-	}
-
-	function constant(value)
-	{
-		return input('constant', value);
-	}
-
-
-	// MAILBOX
-
-	function mailbox(base)
-	{
-		var signal = input('mailbox', base);
-
-		function send(value) {
-			return Task.asyncFunction(function(callback) {
-				localRuntime.setTimeout(function() {
-					localRuntime.notify(signal.id, value);
-				}, 0);
-				callback(Task.succeed(Utils.Tuple0));
-			});
-		}
-
-		return {
-			signal: signal,
-			address: {
-				ctor: 'Address',
-				_0: send
-			}
-		};
-	}
-
-	function sendMessage(message)
-	{
-		Task.perform(message._0);
-	}
-
-
-	// OUTPUT
-
-	function output(name, handler, parent)
-	{
-		var node = {
-			id: Utils.guid(),
-			name: 'output-' + name,
-			parents: [parent],
-			isOutput: true
-		};
-
-		node.notify = function(timestamp, parentUpdate, parentID)
-		{
-			if (parentUpdate)
-			{
-				handler(parent.value);
-			}
-		};
-
-		parent.kids.push(node);
-
-		return node;
-	}
-
-
-	// MAP
-
-	function mapMany(refreshValue, args)
-	{
-		var node = {
-			id: Utils.guid(),
-			name: 'map' + args.length,
-			value: refreshValue(),
-			parents: args,
-			kids: []
-		};
-
-		var numberOfParents = args.length;
-		var count = 0;
-		var update = false;
-
-		node.notify = function(timestamp, parentUpdate, parentID)
-		{
-			++count;
-
-			update = update || parentUpdate;
-
-			if (count === numberOfParents)
-			{
-				if (update)
-				{
-					node.value = refreshValue();
-				}
-				broadcastToKids(node, timestamp, update);
-				update = false;
-				count = 0;
-			}
-		};
-
-		for (var i = numberOfParents; i--; )
-		{
-			args[i].kids.push(node);
-		}
-
-		return node;
-	}
-
-
-	function map(func, a)
-	{
-		function refreshValue()
-		{
-			return func(a.value);
-		}
-		return mapMany(refreshValue, [a]);
-	}
-
-
-	function map2(func, a, b)
-	{
-		function refreshValue()
-		{
-			return A2( func, a.value, b.value );
-		}
-		return mapMany(refreshValue, [a, b]);
-	}
-
-
-	function map3(func, a, b, c)
-	{
-		function refreshValue()
-		{
-			return A3( func, a.value, b.value, c.value );
-		}
-		return mapMany(refreshValue, [a, b, c]);
-	}
-
-
-	function map4(func, a, b, c, d)
-	{
-		function refreshValue()
-		{
-			return A4( func, a.value, b.value, c.value, d.value );
-		}
-		return mapMany(refreshValue, [a, b, c, d]);
-	}
-
-
-	function map5(func, a, b, c, d, e)
-	{
-		function refreshValue()
-		{
-			return A5( func, a.value, b.value, c.value, d.value, e.value );
-		}
-		return mapMany(refreshValue, [a, b, c, d, e]);
-	}
-
-
-	// FOLD
-
-	function foldp(update, state, signal)
-	{
-		var node = {
-			id: Utils.guid(),
-			name: 'foldp',
-			parents: [signal],
-			kids: [],
-			value: state
-		};
-
-		node.notify = function(timestamp, parentUpdate, parentID)
-		{
-			if (parentUpdate)
-			{
-				node.value = A2( update, signal.value, node.value );
-			}
-			broadcastToKids(node, timestamp, parentUpdate);
-		};
-
-		signal.kids.push(node);
-
-		return node;
-	}
-
-
-	// TIME
-
-	function timestamp(signal)
-	{
-		var node = {
-			id: Utils.guid(),
-			name: 'timestamp',
-			value: Utils.Tuple2(localRuntime.timer.programStart, signal.value),
-			parents: [signal],
-			kids: []
-		};
-
-		node.notify = function(timestamp, parentUpdate, parentID)
-		{
-			if (parentUpdate)
-			{
-				node.value = Utils.Tuple2(timestamp, signal.value);
-			}
-			broadcastToKids(node, timestamp, parentUpdate);
-		};
-
-		signal.kids.push(node);
-
-		return node;
-	}
-
-
-	function delay(time, signal)
-	{
-		var delayed = input('delay-input-' + time, signal.value);
-
-		function handler(value)
-		{
-			setTimeout(function() {
-				localRuntime.notify(delayed.id, value);
-			}, time);
-		}
-
-		output('delay-output-' + time, handler, signal);
-
-		return delayed;
-	}
-
-
-	// MERGING
-
-	function genericMerge(tieBreaker, leftStream, rightStream)
-	{
-		var node = {
-			id: Utils.guid(),
-			name: 'merge',
-			value: A2(tieBreaker, leftStream.value, rightStream.value),
-			parents: [leftStream, rightStream],
-			kids: []
-		};
-
-		var left = { touched: false, update: false, value: null };
-		var right = { touched: false, update: false, value: null };
-
-		node.notify = function(timestamp, parentUpdate, parentID)
-		{
-			if (parentID === leftStream.id)
-			{
-				left.touched = true;
-				left.update = parentUpdate;
-				left.value = leftStream.value;
-			}
-			if (parentID === rightStream.id)
-			{
-				right.touched = true;
-				right.update = parentUpdate;
-				right.value = rightStream.value;
-			}
-
-			if (left.touched && right.touched)
-			{
-				var update = false;
-				if (left.update && right.update)
-				{
-					node.value = A2(tieBreaker, left.value, right.value);
-					update = true;
-				}
-				else if (left.update)
-				{
-					node.value = left.value;
-					update = true;
-				}
-				else if (right.update)
-				{
-					node.value = right.value;
-					update = true;
-				}
-				left.touched = false;
-				right.touched = false;
-
-				broadcastToKids(node, timestamp, update);
-			}
-		};
-
-		leftStream.kids.push(node);
-		rightStream.kids.push(node);
-
-		return node;
-	}
-
-
-	// FILTERING
-
-	function filterMap(toMaybe, base, signal)
-	{
-		var maybe = toMaybe(signal.value);
-		var node = {
-			id: Utils.guid(),
-			name: 'filterMap',
-			value: maybe.ctor === 'Nothing' ? base : maybe._0,
-			parents: [signal],
-			kids: []
-		};
-
-		node.notify = function(timestamp, parentUpdate, parentID)
-		{
-			var update = false;
-			if (parentUpdate)
-			{
-				var maybe = toMaybe(signal.value);
-				if (maybe.ctor === 'Just')
-				{
-					update = true;
-					node.value = maybe._0;
-				}
-			}
-			broadcastToKids(node, timestamp, update);
-		};
-
-		signal.kids.push(node);
-
-		return node;
-	}
-
-
-	// SAMPLING
-
-	function sampleOn(ticker, signal)
-	{
-		var node = {
-			id: Utils.guid(),
-			name: 'sampleOn',
-			value: signal.value,
-			parents: [ticker, signal],
-			kids: []
-		};
-
-		var signalTouch = false;
-		var tickerTouch = false;
-		var tickerUpdate = false;
-
-		node.notify = function(timestamp, parentUpdate, parentID)
-		{
-			if (parentID === ticker.id)
-			{
-				tickerTouch = true;
-				tickerUpdate = parentUpdate;
-			}
-			if (parentID === signal.id)
-			{
-				signalTouch = true;
-			}
-
-			if (tickerTouch && signalTouch)
-			{
-				if (tickerUpdate)
-				{
-					node.value = signal.value;
-				}
-				tickerTouch = false;
-				signalTouch = false;
-
-				broadcastToKids(node, timestamp, tickerUpdate);
-			}
-		};
-
-		ticker.kids.push(node);
-		signal.kids.push(node);
-
-		return node;
-	}
-
-
-	// DROP REPEATS
-
-	function dropRepeats(signal)
-	{
-		var node = {
-			id: Utils.guid(),
-			name: 'dropRepeats',
-			value: signal.value,
-			parents: [signal],
-			kids: []
-		};
-
-		node.notify = function(timestamp, parentUpdate, parentID)
-		{
-			var update = false;
-			if (parentUpdate && !Utils.eq(node.value, signal.value))
-			{
-				node.value = signal.value;
-				update = true;
-			}
-			broadcastToKids(node, timestamp, update);
-		};
-
-		signal.kids.push(node);
-
-		return node;
-	}
-
-
-	return localRuntime.Native.Signal.values = {
-		input: input,
-		constant: constant,
-		mailbox: mailbox,
-		sendMessage: sendMessage,
-		output: output,
-		map: F2(map),
-		map2: F3(map2),
-		map3: F4(map3),
-		map4: F5(map4),
-		map5: F6(map5),
-		foldp: F3(foldp),
-		genericMerge: F3(genericMerge),
-		filterMap: F3(filterMap),
-		sampleOn: F2(sampleOn),
-		dropRepeats: dropRepeats,
-		timestamp: timestamp,
-		delay: F2(delay)
-	};
-};
-
 Elm.Native.Transform2D = {};
 Elm.Native.Transform2D.make = function(localRuntime) {
 	localRuntime.Native = localRuntime.Native || {};
@@ -3636,6 +2913,258 @@ Elm.Native.Graphics.Collage.make = function(localRuntime) {
 	};
 };
 
+Elm.Native.Color = {};
+Elm.Native.Color.make = function(localRuntime) {
+	localRuntime.Native = localRuntime.Native || {};
+	localRuntime.Native.Color = localRuntime.Native.Color || {};
+	if (localRuntime.Native.Color.values)
+	{
+		return localRuntime.Native.Color.values;
+	}
+
+	function toCss(c)
+	{
+		var format = '';
+		var colors = '';
+		if (c.ctor === 'RGBA')
+		{
+			format = 'rgb';
+			colors = c._0 + ', ' + c._1 + ', ' + c._2;
+		}
+		else
+		{
+			format = 'hsl';
+			colors = (c._0 * 180 / Math.PI) + ', ' +
+					 (c._1 * 100) + '%, ' +
+					 (c._2 * 100) + '%';
+		}
+		if (c._3 === 1)
+		{
+			return format + '(' + colors + ')';
+		}
+		else
+		{
+			return format + 'a(' + colors + ', ' + c._3 + ')';
+		}
+	}
+
+	return localRuntime.Native.Color.values = {
+		toCss: toCss
+	};
+};
+
+Elm.Color = Elm.Color || {};
+Elm.Color.make = function (_elm) {
+   "use strict";
+   _elm.Color = _elm.Color || {};
+   if (_elm.Color.values) return _elm.Color.values;
+   var _U = Elm.Native.Utils.make(_elm),
+   $Basics = Elm.Basics.make(_elm);
+   var _op = {};
+   var Radial = F5(function (a,b,c,d,e) {
+      return {ctor: "Radial",_0: a,_1: b,_2: c,_3: d,_4: e};
+   });
+   var radial = Radial;
+   var Linear = F3(function (a,b,c) {
+      return {ctor: "Linear",_0: a,_1: b,_2: c};
+   });
+   var linear = Linear;
+   var fmod = F2(function (f,n) {
+      var integer = $Basics.floor(f);
+      return $Basics.toFloat(A2($Basics._op["%"],
+      integer,
+      n)) + f - $Basics.toFloat(integer);
+   });
+   var rgbToHsl = F3(function (red,green,blue) {
+      var b = $Basics.toFloat(blue) / 255;
+      var g = $Basics.toFloat(green) / 255;
+      var r = $Basics.toFloat(red) / 255;
+      var cMax = A2($Basics.max,A2($Basics.max,r,g),b);
+      var cMin = A2($Basics.min,A2($Basics.min,r,g),b);
+      var c = cMax - cMin;
+      var lightness = (cMax + cMin) / 2;
+      var saturation = _U.eq(lightness,
+      0) ? 0 : c / (1 - $Basics.abs(2 * lightness - 1));
+      var hue = $Basics.degrees(60) * (_U.eq(cMax,r) ? A2(fmod,
+      (g - b) / c,
+      6) : _U.eq(cMax,g) ? (b - r) / c + 2 : (r - g) / c + 4);
+      return {ctor: "_Tuple3",_0: hue,_1: saturation,_2: lightness};
+   });
+   var hslToRgb = F3(function (hue,saturation,lightness) {
+      var hue$ = hue / $Basics.degrees(60);
+      var chroma = (1 - $Basics.abs(2 * lightness - 1)) * saturation;
+      var x = chroma * (1 - $Basics.abs(A2(fmod,hue$,2) - 1));
+      var _p0 = _U.cmp(hue$,0) < 0 ? {ctor: "_Tuple3"
+                                     ,_0: 0
+                                     ,_1: 0
+                                     ,_2: 0} : _U.cmp(hue$,1) < 0 ? {ctor: "_Tuple3"
+                                                                    ,_0: chroma
+                                                                    ,_1: x
+                                                                    ,_2: 0} : _U.cmp(hue$,2) < 0 ? {ctor: "_Tuple3"
+                                                                                                   ,_0: x
+                                                                                                   ,_1: chroma
+                                                                                                   ,_2: 0} : _U.cmp(hue$,3) < 0 ? {ctor: "_Tuple3"
+                                                                                                                                  ,_0: 0
+                                                                                                                                  ,_1: chroma
+                                                                                                                                  ,_2: x} : _U.cmp(hue$,
+      4) < 0 ? {ctor: "_Tuple3",_0: 0,_1: x,_2: chroma} : _U.cmp(hue$,
+      5) < 0 ? {ctor: "_Tuple3",_0: x,_1: 0,_2: chroma} : _U.cmp(hue$,
+      6) < 0 ? {ctor: "_Tuple3"
+               ,_0: chroma
+               ,_1: 0
+               ,_2: x} : {ctor: "_Tuple3",_0: 0,_1: 0,_2: 0};
+      var r = _p0._0;
+      var g = _p0._1;
+      var b = _p0._2;
+      var m = lightness - chroma / 2;
+      return {ctor: "_Tuple3",_0: r + m,_1: g + m,_2: b + m};
+   });
+   var toRgb = function (color) {
+      var _p1 = color;
+      if (_p1.ctor === "RGBA") {
+            return {red: _p1._0
+                   ,green: _p1._1
+                   ,blue: _p1._2
+                   ,alpha: _p1._3};
+         } else {
+            var _p2 = A3(hslToRgb,_p1._0,_p1._1,_p1._2);
+            var r = _p2._0;
+            var g = _p2._1;
+            var b = _p2._2;
+            return {red: $Basics.round(255 * r)
+                   ,green: $Basics.round(255 * g)
+                   ,blue: $Basics.round(255 * b)
+                   ,alpha: _p1._3};
+         }
+   };
+   var toHsl = function (color) {
+      var _p3 = color;
+      if (_p3.ctor === "HSLA") {
+            return {hue: _p3._0
+                   ,saturation: _p3._1
+                   ,lightness: _p3._2
+                   ,alpha: _p3._3};
+         } else {
+            var _p4 = A3(rgbToHsl,_p3._0,_p3._1,_p3._2);
+            var h = _p4._0;
+            var s = _p4._1;
+            var l = _p4._2;
+            return {hue: h,saturation: s,lightness: l,alpha: _p3._3};
+         }
+   };
+   var HSLA = F4(function (a,b,c,d) {
+      return {ctor: "HSLA",_0: a,_1: b,_2: c,_3: d};
+   });
+   var hsla = F4(function (hue,saturation,lightness,alpha) {
+      return A4(HSLA,
+      hue - $Basics.turns($Basics.toFloat($Basics.floor(hue / (2 * $Basics.pi)))),
+      saturation,
+      lightness,
+      alpha);
+   });
+   var hsl = F3(function (hue,saturation,lightness) {
+      return A4(hsla,hue,saturation,lightness,1);
+   });
+   var complement = function (color) {
+      var _p5 = color;
+      if (_p5.ctor === "HSLA") {
+            return A4(hsla,
+            _p5._0 + $Basics.degrees(180),
+            _p5._1,
+            _p5._2,
+            _p5._3);
+         } else {
+            var _p6 = A3(rgbToHsl,_p5._0,_p5._1,_p5._2);
+            var h = _p6._0;
+            var s = _p6._1;
+            var l = _p6._2;
+            return A4(hsla,h + $Basics.degrees(180),s,l,_p5._3);
+         }
+   };
+   var grayscale = function (p) {    return A4(HSLA,0,0,1 - p,1);};
+   var greyscale = function (p) {    return A4(HSLA,0,0,1 - p,1);};
+   var RGBA = F4(function (a,b,c,d) {
+      return {ctor: "RGBA",_0: a,_1: b,_2: c,_3: d};
+   });
+   var rgba = RGBA;
+   var rgb = F3(function (r,g,b) {    return A4(RGBA,r,g,b,1);});
+   var lightRed = A4(RGBA,239,41,41,1);
+   var red = A4(RGBA,204,0,0,1);
+   var darkRed = A4(RGBA,164,0,0,1);
+   var lightOrange = A4(RGBA,252,175,62,1);
+   var orange = A4(RGBA,245,121,0,1);
+   var darkOrange = A4(RGBA,206,92,0,1);
+   var lightYellow = A4(RGBA,255,233,79,1);
+   var yellow = A4(RGBA,237,212,0,1);
+   var darkYellow = A4(RGBA,196,160,0,1);
+   var lightGreen = A4(RGBA,138,226,52,1);
+   var green = A4(RGBA,115,210,22,1);
+   var darkGreen = A4(RGBA,78,154,6,1);
+   var lightBlue = A4(RGBA,114,159,207,1);
+   var blue = A4(RGBA,52,101,164,1);
+   var darkBlue = A4(RGBA,32,74,135,1);
+   var lightPurple = A4(RGBA,173,127,168,1);
+   var purple = A4(RGBA,117,80,123,1);
+   var darkPurple = A4(RGBA,92,53,102,1);
+   var lightBrown = A4(RGBA,233,185,110,1);
+   var brown = A4(RGBA,193,125,17,1);
+   var darkBrown = A4(RGBA,143,89,2,1);
+   var black = A4(RGBA,0,0,0,1);
+   var white = A4(RGBA,255,255,255,1);
+   var lightGrey = A4(RGBA,238,238,236,1);
+   var grey = A4(RGBA,211,215,207,1);
+   var darkGrey = A4(RGBA,186,189,182,1);
+   var lightGray = A4(RGBA,238,238,236,1);
+   var gray = A4(RGBA,211,215,207,1);
+   var darkGray = A4(RGBA,186,189,182,1);
+   var lightCharcoal = A4(RGBA,136,138,133,1);
+   var charcoal = A4(RGBA,85,87,83,1);
+   var darkCharcoal = A4(RGBA,46,52,54,1);
+   return _elm.Color.values = {_op: _op
+                              ,rgb: rgb
+                              ,rgba: rgba
+                              ,hsl: hsl
+                              ,hsla: hsla
+                              ,greyscale: greyscale
+                              ,grayscale: grayscale
+                              ,complement: complement
+                              ,linear: linear
+                              ,radial: radial
+                              ,toRgb: toRgb
+                              ,toHsl: toHsl
+                              ,red: red
+                              ,orange: orange
+                              ,yellow: yellow
+                              ,green: green
+                              ,blue: blue
+                              ,purple: purple
+                              ,brown: brown
+                              ,lightRed: lightRed
+                              ,lightOrange: lightOrange
+                              ,lightYellow: lightYellow
+                              ,lightGreen: lightGreen
+                              ,lightBlue: lightBlue
+                              ,lightPurple: lightPurple
+                              ,lightBrown: lightBrown
+                              ,darkRed: darkRed
+                              ,darkOrange: darkOrange
+                              ,darkYellow: darkYellow
+                              ,darkGreen: darkGreen
+                              ,darkBlue: darkBlue
+                              ,darkPurple: darkPurple
+                              ,darkBrown: darkBrown
+                              ,white: white
+                              ,lightGrey: lightGrey
+                              ,grey: grey
+                              ,darkGrey: darkGrey
+                              ,lightCharcoal: lightCharcoal
+                              ,charcoal: charcoal
+                              ,darkCharcoal: darkCharcoal
+                              ,black: black
+                              ,lightGray: lightGray
+                              ,gray: gray
+                              ,darkGray: darkGray};
+};
 
 // setup
 Elm.Native = Elm.Native || {};
@@ -5378,6 +4907,631 @@ Elm.Debug.make = function (_elm) {
                               ,watchSummary: watchSummary
                               ,trace: trace};
 };
+Elm.Result = Elm.Result || {};
+Elm.Result.make = function (_elm) {
+   "use strict";
+   _elm.Result = _elm.Result || {};
+   if (_elm.Result.values) return _elm.Result.values;
+   var _U = Elm.Native.Utils.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm);
+   var _op = {};
+   var toMaybe = function (result) {
+      var _p0 = result;
+      if (_p0.ctor === "Ok") {
+            return $Maybe.Just(_p0._0);
+         } else {
+            return $Maybe.Nothing;
+         }
+   };
+   var withDefault = F2(function (def,result) {
+      var _p1 = result;
+      if (_p1.ctor === "Ok") {
+            return _p1._0;
+         } else {
+            return def;
+         }
+   });
+   var Err = function (a) {    return {ctor: "Err",_0: a};};
+   var andThen = F2(function (result,callback) {
+      var _p2 = result;
+      if (_p2.ctor === "Ok") {
+            return callback(_p2._0);
+         } else {
+            return Err(_p2._0);
+         }
+   });
+   var Ok = function (a) {    return {ctor: "Ok",_0: a};};
+   var map = F2(function (func,ra) {
+      var _p3 = ra;
+      if (_p3.ctor === "Ok") {
+            return Ok(func(_p3._0));
+         } else {
+            return Err(_p3._0);
+         }
+   });
+   var map2 = F3(function (func,ra,rb) {
+      var _p4 = {ctor: "_Tuple2",_0: ra,_1: rb};
+      if (_p4._0.ctor === "Ok") {
+            if (_p4._1.ctor === "Ok") {
+                  return Ok(A2(func,_p4._0._0,_p4._1._0));
+               } else {
+                  return Err(_p4._1._0);
+               }
+         } else {
+            return Err(_p4._0._0);
+         }
+   });
+   var map3 = F4(function (func,ra,rb,rc) {
+      var _p5 = {ctor: "_Tuple3",_0: ra,_1: rb,_2: rc};
+      if (_p5._0.ctor === "Ok") {
+            if (_p5._1.ctor === "Ok") {
+                  if (_p5._2.ctor === "Ok") {
+                        return Ok(A3(func,_p5._0._0,_p5._1._0,_p5._2._0));
+                     } else {
+                        return Err(_p5._2._0);
+                     }
+               } else {
+                  return Err(_p5._1._0);
+               }
+         } else {
+            return Err(_p5._0._0);
+         }
+   });
+   var map4 = F5(function (func,ra,rb,rc,rd) {
+      var _p6 = {ctor: "_Tuple4",_0: ra,_1: rb,_2: rc,_3: rd};
+      if (_p6._0.ctor === "Ok") {
+            if (_p6._1.ctor === "Ok") {
+                  if (_p6._2.ctor === "Ok") {
+                        if (_p6._3.ctor === "Ok") {
+                              return Ok(A4(func,_p6._0._0,_p6._1._0,_p6._2._0,_p6._3._0));
+                           } else {
+                              return Err(_p6._3._0);
+                           }
+                     } else {
+                        return Err(_p6._2._0);
+                     }
+               } else {
+                  return Err(_p6._1._0);
+               }
+         } else {
+            return Err(_p6._0._0);
+         }
+   });
+   var map5 = F6(function (func,ra,rb,rc,rd,re) {
+      var _p7 = {ctor: "_Tuple5"
+                ,_0: ra
+                ,_1: rb
+                ,_2: rc
+                ,_3: rd
+                ,_4: re};
+      if (_p7._0.ctor === "Ok") {
+            if (_p7._1.ctor === "Ok") {
+                  if (_p7._2.ctor === "Ok") {
+                        if (_p7._3.ctor === "Ok") {
+                              if (_p7._4.ctor === "Ok") {
+                                    return Ok(A5(func,
+                                    _p7._0._0,
+                                    _p7._1._0,
+                                    _p7._2._0,
+                                    _p7._3._0,
+                                    _p7._4._0));
+                                 } else {
+                                    return Err(_p7._4._0);
+                                 }
+                           } else {
+                              return Err(_p7._3._0);
+                           }
+                     } else {
+                        return Err(_p7._2._0);
+                     }
+               } else {
+                  return Err(_p7._1._0);
+               }
+         } else {
+            return Err(_p7._0._0);
+         }
+   });
+   var formatError = F2(function (f,result) {
+      var _p8 = result;
+      if (_p8.ctor === "Ok") {
+            return Ok(_p8._0);
+         } else {
+            return Err(f(_p8._0));
+         }
+   });
+   var fromMaybe = F2(function (err,maybe) {
+      var _p9 = maybe;
+      if (_p9.ctor === "Just") {
+            return Ok(_p9._0);
+         } else {
+            return Err(err);
+         }
+   });
+   return _elm.Result.values = {_op: _op
+                               ,withDefault: withDefault
+                               ,map: map
+                               ,map2: map2
+                               ,map3: map3
+                               ,map4: map4
+                               ,map5: map5
+                               ,andThen: andThen
+                               ,toMaybe: toMaybe
+                               ,fromMaybe: fromMaybe
+                               ,formatError: formatError
+                               ,Ok: Ok
+                               ,Err: Err};
+};
+Elm.Native.Signal = {};
+
+Elm.Native.Signal.make = function(localRuntime) {
+	localRuntime.Native = localRuntime.Native || {};
+	localRuntime.Native.Signal = localRuntime.Native.Signal || {};
+	if (localRuntime.Native.Signal.values)
+	{
+		return localRuntime.Native.Signal.values;
+	}
+
+
+	var Task = Elm.Native.Task.make(localRuntime);
+	var Utils = Elm.Native.Utils.make(localRuntime);
+
+
+	function broadcastToKids(node, timestamp, update)
+	{
+		var kids = node.kids;
+		for (var i = kids.length; i--; )
+		{
+			kids[i].notify(timestamp, update, node.id);
+		}
+	}
+
+
+	// INPUT
+
+	function input(name, base)
+	{
+		var node = {
+			id: Utils.guid(),
+			name: 'input-' + name,
+			value: base,
+			parents: [],
+			kids: []
+		};
+
+		node.notify = function(timestamp, targetId, value) {
+			var update = targetId === node.id;
+			if (update)
+			{
+				node.value = value;
+			}
+			broadcastToKids(node, timestamp, update);
+			return update;
+		};
+
+		localRuntime.inputs.push(node);
+
+		return node;
+	}
+
+	function constant(value)
+	{
+		return input('constant', value);
+	}
+
+
+	// MAILBOX
+
+	function mailbox(base)
+	{
+		var signal = input('mailbox', base);
+
+		function send(value) {
+			return Task.asyncFunction(function(callback) {
+				localRuntime.setTimeout(function() {
+					localRuntime.notify(signal.id, value);
+				}, 0);
+				callback(Task.succeed(Utils.Tuple0));
+			});
+		}
+
+		return {
+			signal: signal,
+			address: {
+				ctor: 'Address',
+				_0: send
+			}
+		};
+	}
+
+	function sendMessage(message)
+	{
+		Task.perform(message._0);
+	}
+
+
+	// OUTPUT
+
+	function output(name, handler, parent)
+	{
+		var node = {
+			id: Utils.guid(),
+			name: 'output-' + name,
+			parents: [parent],
+			isOutput: true
+		};
+
+		node.notify = function(timestamp, parentUpdate, parentID)
+		{
+			if (parentUpdate)
+			{
+				handler(parent.value);
+			}
+		};
+
+		parent.kids.push(node);
+
+		return node;
+	}
+
+
+	// MAP
+
+	function mapMany(refreshValue, args)
+	{
+		var node = {
+			id: Utils.guid(),
+			name: 'map' + args.length,
+			value: refreshValue(),
+			parents: args,
+			kids: []
+		};
+
+		var numberOfParents = args.length;
+		var count = 0;
+		var update = false;
+
+		node.notify = function(timestamp, parentUpdate, parentID)
+		{
+			++count;
+
+			update = update || parentUpdate;
+
+			if (count === numberOfParents)
+			{
+				if (update)
+				{
+					node.value = refreshValue();
+				}
+				broadcastToKids(node, timestamp, update);
+				update = false;
+				count = 0;
+			}
+		};
+
+		for (var i = numberOfParents; i--; )
+		{
+			args[i].kids.push(node);
+		}
+
+		return node;
+	}
+
+
+	function map(func, a)
+	{
+		function refreshValue()
+		{
+			return func(a.value);
+		}
+		return mapMany(refreshValue, [a]);
+	}
+
+
+	function map2(func, a, b)
+	{
+		function refreshValue()
+		{
+			return A2( func, a.value, b.value );
+		}
+		return mapMany(refreshValue, [a, b]);
+	}
+
+
+	function map3(func, a, b, c)
+	{
+		function refreshValue()
+		{
+			return A3( func, a.value, b.value, c.value );
+		}
+		return mapMany(refreshValue, [a, b, c]);
+	}
+
+
+	function map4(func, a, b, c, d)
+	{
+		function refreshValue()
+		{
+			return A4( func, a.value, b.value, c.value, d.value );
+		}
+		return mapMany(refreshValue, [a, b, c, d]);
+	}
+
+
+	function map5(func, a, b, c, d, e)
+	{
+		function refreshValue()
+		{
+			return A5( func, a.value, b.value, c.value, d.value, e.value );
+		}
+		return mapMany(refreshValue, [a, b, c, d, e]);
+	}
+
+
+	// FOLD
+
+	function foldp(update, state, signal)
+	{
+		var node = {
+			id: Utils.guid(),
+			name: 'foldp',
+			parents: [signal],
+			kids: [],
+			value: state
+		};
+
+		node.notify = function(timestamp, parentUpdate, parentID)
+		{
+			if (parentUpdate)
+			{
+				node.value = A2( update, signal.value, node.value );
+			}
+			broadcastToKids(node, timestamp, parentUpdate);
+		};
+
+		signal.kids.push(node);
+
+		return node;
+	}
+
+
+	// TIME
+
+	function timestamp(signal)
+	{
+		var node = {
+			id: Utils.guid(),
+			name: 'timestamp',
+			value: Utils.Tuple2(localRuntime.timer.programStart, signal.value),
+			parents: [signal],
+			kids: []
+		};
+
+		node.notify = function(timestamp, parentUpdate, parentID)
+		{
+			if (parentUpdate)
+			{
+				node.value = Utils.Tuple2(timestamp, signal.value);
+			}
+			broadcastToKids(node, timestamp, parentUpdate);
+		};
+
+		signal.kids.push(node);
+
+		return node;
+	}
+
+
+	function delay(time, signal)
+	{
+		var delayed = input('delay-input-' + time, signal.value);
+
+		function handler(value)
+		{
+			setTimeout(function() {
+				localRuntime.notify(delayed.id, value);
+			}, time);
+		}
+
+		output('delay-output-' + time, handler, signal);
+
+		return delayed;
+	}
+
+
+	// MERGING
+
+	function genericMerge(tieBreaker, leftStream, rightStream)
+	{
+		var node = {
+			id: Utils.guid(),
+			name: 'merge',
+			value: A2(tieBreaker, leftStream.value, rightStream.value),
+			parents: [leftStream, rightStream],
+			kids: []
+		};
+
+		var left = { touched: false, update: false, value: null };
+		var right = { touched: false, update: false, value: null };
+
+		node.notify = function(timestamp, parentUpdate, parentID)
+		{
+			if (parentID === leftStream.id)
+			{
+				left.touched = true;
+				left.update = parentUpdate;
+				left.value = leftStream.value;
+			}
+			if (parentID === rightStream.id)
+			{
+				right.touched = true;
+				right.update = parentUpdate;
+				right.value = rightStream.value;
+			}
+
+			if (left.touched && right.touched)
+			{
+				var update = false;
+				if (left.update && right.update)
+				{
+					node.value = A2(tieBreaker, left.value, right.value);
+					update = true;
+				}
+				else if (left.update)
+				{
+					node.value = left.value;
+					update = true;
+				}
+				else if (right.update)
+				{
+					node.value = right.value;
+					update = true;
+				}
+				left.touched = false;
+				right.touched = false;
+
+				broadcastToKids(node, timestamp, update);
+			}
+		};
+
+		leftStream.kids.push(node);
+		rightStream.kids.push(node);
+
+		return node;
+	}
+
+
+	// FILTERING
+
+	function filterMap(toMaybe, base, signal)
+	{
+		var maybe = toMaybe(signal.value);
+		var node = {
+			id: Utils.guid(),
+			name: 'filterMap',
+			value: maybe.ctor === 'Nothing' ? base : maybe._0,
+			parents: [signal],
+			kids: []
+		};
+
+		node.notify = function(timestamp, parentUpdate, parentID)
+		{
+			var update = false;
+			if (parentUpdate)
+			{
+				var maybe = toMaybe(signal.value);
+				if (maybe.ctor === 'Just')
+				{
+					update = true;
+					node.value = maybe._0;
+				}
+			}
+			broadcastToKids(node, timestamp, update);
+		};
+
+		signal.kids.push(node);
+
+		return node;
+	}
+
+
+	// SAMPLING
+
+	function sampleOn(ticker, signal)
+	{
+		var node = {
+			id: Utils.guid(),
+			name: 'sampleOn',
+			value: signal.value,
+			parents: [ticker, signal],
+			kids: []
+		};
+
+		var signalTouch = false;
+		var tickerTouch = false;
+		var tickerUpdate = false;
+
+		node.notify = function(timestamp, parentUpdate, parentID)
+		{
+			if (parentID === ticker.id)
+			{
+				tickerTouch = true;
+				tickerUpdate = parentUpdate;
+			}
+			if (parentID === signal.id)
+			{
+				signalTouch = true;
+			}
+
+			if (tickerTouch && signalTouch)
+			{
+				if (tickerUpdate)
+				{
+					node.value = signal.value;
+				}
+				tickerTouch = false;
+				signalTouch = false;
+
+				broadcastToKids(node, timestamp, tickerUpdate);
+			}
+		};
+
+		ticker.kids.push(node);
+		signal.kids.push(node);
+
+		return node;
+	}
+
+
+	// DROP REPEATS
+
+	function dropRepeats(signal)
+	{
+		var node = {
+			id: Utils.guid(),
+			name: 'dropRepeats',
+			value: signal.value,
+			parents: [signal],
+			kids: []
+		};
+
+		node.notify = function(timestamp, parentUpdate, parentID)
+		{
+			var update = false;
+			if (parentUpdate && !Utils.eq(node.value, signal.value))
+			{
+				node.value = signal.value;
+				update = true;
+			}
+			broadcastToKids(node, timestamp, update);
+		};
+
+		signal.kids.push(node);
+
+		return node;
+	}
+
+
+	return localRuntime.Native.Signal.values = {
+		input: input,
+		constant: constant,
+		mailbox: mailbox,
+		sendMessage: sendMessage,
+		output: output,
+		map: F2(map),
+		map2: F3(map2),
+		map3: F4(map3),
+		map4: F5(map4),
+		map5: F6(map5),
+		foldp: F3(foldp),
+		genericMerge: F3(genericMerge),
+		filterMap: F3(filterMap),
+		sampleOn: F2(sampleOn),
+		dropRepeats: dropRepeats,
+		timestamp: timestamp,
+		delay: F2(delay)
+	};
+};
+
 Elm.Native.Task = {};
 
 Elm.Native.Task.make = function(localRuntime) {
@@ -5604,160 +5758,6 @@ Elm.Native.Task.make = function(localRuntime) {
 	};
 };
 
-Elm.Result = Elm.Result || {};
-Elm.Result.make = function (_elm) {
-   "use strict";
-   _elm.Result = _elm.Result || {};
-   if (_elm.Result.values) return _elm.Result.values;
-   var _U = Elm.Native.Utils.make(_elm),
-   $Maybe = Elm.Maybe.make(_elm);
-   var _op = {};
-   var toMaybe = function (result) {
-      var _p0 = result;
-      if (_p0.ctor === "Ok") {
-            return $Maybe.Just(_p0._0);
-         } else {
-            return $Maybe.Nothing;
-         }
-   };
-   var withDefault = F2(function (def,result) {
-      var _p1 = result;
-      if (_p1.ctor === "Ok") {
-            return _p1._0;
-         } else {
-            return def;
-         }
-   });
-   var Err = function (a) {    return {ctor: "Err",_0: a};};
-   var andThen = F2(function (result,callback) {
-      var _p2 = result;
-      if (_p2.ctor === "Ok") {
-            return callback(_p2._0);
-         } else {
-            return Err(_p2._0);
-         }
-   });
-   var Ok = function (a) {    return {ctor: "Ok",_0: a};};
-   var map = F2(function (func,ra) {
-      var _p3 = ra;
-      if (_p3.ctor === "Ok") {
-            return Ok(func(_p3._0));
-         } else {
-            return Err(_p3._0);
-         }
-   });
-   var map2 = F3(function (func,ra,rb) {
-      var _p4 = {ctor: "_Tuple2",_0: ra,_1: rb};
-      if (_p4._0.ctor === "Ok") {
-            if (_p4._1.ctor === "Ok") {
-                  return Ok(A2(func,_p4._0._0,_p4._1._0));
-               } else {
-                  return Err(_p4._1._0);
-               }
-         } else {
-            return Err(_p4._0._0);
-         }
-   });
-   var map3 = F4(function (func,ra,rb,rc) {
-      var _p5 = {ctor: "_Tuple3",_0: ra,_1: rb,_2: rc};
-      if (_p5._0.ctor === "Ok") {
-            if (_p5._1.ctor === "Ok") {
-                  if (_p5._2.ctor === "Ok") {
-                        return Ok(A3(func,_p5._0._0,_p5._1._0,_p5._2._0));
-                     } else {
-                        return Err(_p5._2._0);
-                     }
-               } else {
-                  return Err(_p5._1._0);
-               }
-         } else {
-            return Err(_p5._0._0);
-         }
-   });
-   var map4 = F5(function (func,ra,rb,rc,rd) {
-      var _p6 = {ctor: "_Tuple4",_0: ra,_1: rb,_2: rc,_3: rd};
-      if (_p6._0.ctor === "Ok") {
-            if (_p6._1.ctor === "Ok") {
-                  if (_p6._2.ctor === "Ok") {
-                        if (_p6._3.ctor === "Ok") {
-                              return Ok(A4(func,_p6._0._0,_p6._1._0,_p6._2._0,_p6._3._0));
-                           } else {
-                              return Err(_p6._3._0);
-                           }
-                     } else {
-                        return Err(_p6._2._0);
-                     }
-               } else {
-                  return Err(_p6._1._0);
-               }
-         } else {
-            return Err(_p6._0._0);
-         }
-   });
-   var map5 = F6(function (func,ra,rb,rc,rd,re) {
-      var _p7 = {ctor: "_Tuple5"
-                ,_0: ra
-                ,_1: rb
-                ,_2: rc
-                ,_3: rd
-                ,_4: re};
-      if (_p7._0.ctor === "Ok") {
-            if (_p7._1.ctor === "Ok") {
-                  if (_p7._2.ctor === "Ok") {
-                        if (_p7._3.ctor === "Ok") {
-                              if (_p7._4.ctor === "Ok") {
-                                    return Ok(A5(func,
-                                    _p7._0._0,
-                                    _p7._1._0,
-                                    _p7._2._0,
-                                    _p7._3._0,
-                                    _p7._4._0));
-                                 } else {
-                                    return Err(_p7._4._0);
-                                 }
-                           } else {
-                              return Err(_p7._3._0);
-                           }
-                     } else {
-                        return Err(_p7._2._0);
-                     }
-               } else {
-                  return Err(_p7._1._0);
-               }
-         } else {
-            return Err(_p7._0._0);
-         }
-   });
-   var formatError = F2(function (f,result) {
-      var _p8 = result;
-      if (_p8.ctor === "Ok") {
-            return Ok(_p8._0);
-         } else {
-            return Err(f(_p8._0));
-         }
-   });
-   var fromMaybe = F2(function (err,maybe) {
-      var _p9 = maybe;
-      if (_p9.ctor === "Just") {
-            return Ok(_p9._0);
-         } else {
-            return Err(err);
-         }
-   });
-   return _elm.Result.values = {_op: _op
-                               ,withDefault: withDefault
-                               ,map: map
-                               ,map2: map2
-                               ,map3: map3
-                               ,map4: map4
-                               ,map5: map5
-                               ,andThen: andThen
-                               ,toMaybe: toMaybe
-                               ,fromMaybe: fromMaybe
-                               ,formatError: formatError
-                               ,Ok: Ok
-                               ,Err: Err};
-};
 Elm.Task = Elm.Task || {};
 Elm.Task.make = function (_elm) {
    "use strict";
@@ -6027,15 +6027,13 @@ Elm.Signal.make = function (_elm) {
                                ,forwardTo: forwardTo
                                ,Mailbox: Mailbox};
 };
-Elm.Node = Elm.Node || {};
-Elm.Node.FS = Elm.Node.FS || {};
-Elm.Node.FS.Types = Elm.Node.FS.Types || {};
-Elm.Node.FS.Types.make = function (_elm) {
+Elm.FS = Elm.FS || {};
+Elm.FS.Types = Elm.FS.Types || {};
+Elm.FS.Types.make = function (_elm) {
    "use strict";
-   _elm.Node = _elm.Node || {};
-   _elm.Node.FS = _elm.Node.FS || {};
-   _elm.Node.FS.Types = _elm.Node.FS.Types || {};
-   if (_elm.Node.FS.Types.values) return _elm.Node.FS.Types.values;
+   _elm.FS = _elm.FS || {};
+   _elm.FS.Types = _elm.FS.Types || {};
+   if (_elm.FS.Types.values) return _elm.FS.Types.values;
    var _U = Elm.Native.Utils.make(_elm),
    $Basics = Elm.Basics.make(_elm),
    $Debug = Elm.Debug.make(_elm),
@@ -6044,7 +6042,7 @@ Elm.Node.FS.Types.make = function (_elm) {
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm);
    var _op = {};
-   return _elm.Node.FS.Types.values = {_op: _op};
+   return _elm.FS.Types.values = {_op: _op};
 };
 var taskCB = function taskCB(Task, Tuple0, f) {
     return Task.asyncFunction(function (callback) {
@@ -6083,6 +6081,15 @@ var chown = function chown(fs, Task, Tuple0) {
         });
     };
 };
+var readFile = function readFile(fs, Task) {
+    return function (path) {
+        return Task.asyncFunction(function (callback) {
+            return fs.readFile(path, 'utf8', function (err, data) {
+                return callback(err ? Task.fail(err) : Task.succeed(data));
+            });
+        });
+    };
+};
 var sanitize = function sanitize(record) {
     var spaces = Array.prototype.slice.call(arguments, 1);
     return spaces.reduce(function (r, space) {
@@ -6099,8 +6106,8 @@ var make = function make(localRuntime) {
         var Utilsø1 = Elm.Native.Utils.make(localRuntime);
         var Tuple0ø1 = (Utilsø1 || 0)['Tuple0'];
         return (function () {
-            sanitize(localRuntime, 'Native', 'Node', 'FS');
-            return localRuntime.Native.Node.FS.values ? localRuntime.Native.Node.FS.values : localRuntime.Native.Node.FS.values = {
+            sanitize(localRuntime, 'Native', 'FS');
+            return localRuntime.Native.FS.values ? localRuntime.Native.FS.values : localRuntime.Native.FS.values = {
                 'access': access(fsø1, Taskø1),
                 'appendFile': F2(appendFile(fsø1, Taskø1, Tuple0ø1)),
                 'chmod': chmod(fsø1, Taskø1, Tuple0ø1),
@@ -6109,30 +6116,35 @@ var make = function make(localRuntime) {
         })();
     }.call(this);
 };
-sanitize(Elm, 'Native', 'Node', 'FS');
-Elm.Native.Node.FS.make = make;
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImFub255bW91cy53aXNwIl0sIm5hbWVzIjpbInRhc2tDQiIsIlRhc2siLCJUdXBsZTAiLCJmIiwiYXN5bmNGdW5jdGlvbiIsImNhbGxiYWNrIiwiZXJyIiwiZXJyb3IiLCJzdWNjZXNzIiwiYWNjZXNzIiwiZnMiLCJwYXRoIiwic3VjY2VlZCIsImFwcGVuZEZpbGUiLCJkYXRhIiwiY2IiLCJjaG1vZCIsImNob3duIiwidWlkIiwiZ2lkIiwic2FuaXRpemUiLCJyZWNvcmQiLCJzcGFjZXMiLCJyZWR1Y2UiLCJyIiwic3BhY2UiLCJtYWtlIiwibG9jYWxSdW50aW1lIiwiZnPDuDEiLCJyZXF1aXJlIiwiVGFza8O4MSIsIkVsbSIsIk5hdGl2ZS5UYXNrLm1ha2UiLCJVdGlsc8O4MSIsIk5hdGl2ZS5VdGlscy5tYWtlIiwiVHVwbGUww7gxIiwiTmF0aXZlLk5vZGUuRlMudmFsdWVzIiwiRjIiLCJOYXRpdmUuTm9kZS5GUy5tYWtlIl0sIm1hcHBpbmdzIjoiQUFpQ0EsSUFBT0EsTUFBQSxHQUFQLFNBQU9BLE1BQVAsQ0FDR0MsSUFESCxFQUNRQyxNQURSLEVBQ2VDLENBRGYsRUFFRTtBQUFBLFdBQWdCRixJQUFmLENBQUNHLGFBQUYsQ0FBcUIsVUFDbEJDLFFBRGtCLEVBRW5CO0FBQUEsZUFBQ0YsQ0FBRCxDQUFHLFVBQ0FHLEdBREEsRUFFRDtBQUFBLG1CQUFDRCxRQUFELENBQWNDLEdBQUosR0FDUEwsSUFBQSxDQUFLTSxLQUFOLENBQVlELEdBQVosQ0FEUSxHQUVQTCxJQUFBLENBQUtPLE9BQU4sQ0FBY04sTUFBZCxDQUZGO0FBQUEsU0FGRjtBQUFBLEtBRkY7QUFBQSxDQUZGO0FBV0EsSUFBT08sTUFBQSxHQUFQLFNBQU9BLE1BQVAsQ0FDR0MsRUFESCxFQUNNVCxJQUROLEVBQ1k7QUFBQSxxQkFDVFUsSUFEUyxFQUVWO0FBQUEsZUFBZ0JWLElBQWYsQ0FBQ0csYUFBRixDQUFxQixVQUNsQkMsUUFEa0IsRUFFbkI7QUFBQSxtQkFBU0ssRUFBUixDQUFDRCxN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LElBQVosRUFBZUUsTUFBZixFQUFvQkssUUFBcEIsQ0FBSixDQUYyQjtBQUFBLGdCLFNBRy9CbkIsS0FBRCxDQUFPWSxJQUFQLEVBQVVFLE1BQVYsRUFBZUssUUFBZixDQUhnQztBQUFBLGdCLFNBSS9CbEIsS0FBRCxDQUFPVyxJQUFQLEVBQVVFLE1BQVYsRUFBZUssUUFBZixDQUpnQztBQUFBLGFBRjdDLENBREE7QUFBQSxTLENBQUEsRUFERixDQUpDO0FBQUEsSyxLQURjLEMsSUFBQTtBQUFBLENBRGpCLENBbERBO0FBa0VDZixRQUFELENBQVVXLEdBQVYsRSxRQUFBLEUsTUFBQSxFLElBQUEsRUFsRUE7QUFtRU1BLEdBQUEsQ0FBSU8sbUJBQVYsR0FBOEJaLElBQTlCIiwic291cmNlc0NvbnRlbnQiOlsiOyBmcy5jbG9zZShmZCwgY2FsbGJhY2spXG47IGZzLmV4aXN0cyhwYXRoLCBjYWxsYmFjaylcbjsgZnMuZmNobW9kKGZkLCBtb2RlLCBjYWxsYmFjaylcbjsgZnMuZmNob3duKGZkLCB1aWQsIGdpZCwgY2FsbGJhY2spXG47IGZzLmZzdGF0KGZkLCBjYWxsYmFjaylcbjsgZnMuZnN5bmMoZmQsIGNhbGxiYWNrKVxuOyBmcy5mdHJ1bmNhdGUoZmQsIGxlbiwgY2FsbGJhY2spXG47IGZzLmZ1dGltZXMoZmQsIGF0aW1lLCBtdGltZSwgY2FsbGJhY2spXG47IGZzLmxjaG1vZChwYXRoLCBtb2RlLCBjYWxsYmFjaylcbjsgZnMubGNob3duKHBhdGgsIHVpZCwgZ2lkLCBjYWxsYmFjaylcbjsgZnMubGluayhzcmNwYXRoLCBkc3RwYXRoLCBjYWxsYmFjaylcbjsgZnMubHN0YXQocGF0aCwgY2FsbGJhY2spXG47IGZzLm1rZGlyKHBhdGhbLCBtb2RlXSwgY2FsbGJhY2spXG47IGZzLm9wZW4ocGF0aCwgZmxhZ3NbLCBtb2RlXSwgY2FsbGJhY2spXG47IGZzLnJlYWQoZmQsIGJ1ZmZlciwgb2Zmc2V0LCBsZW5ndGgsIHBvc2l0aW9uLCBjYWxsYmFjaylcbjsgZnMucmVhZGRpcihwYXRoLCBjYWxsYmFjaylcbjsgZnMucmVhZEZpbGUoZmlsZVssIG9wdGlvbnNdLCBjYWxsYmFjaylcbjsgZnMucmVhZGxpbmsocGF0aCwgY2FsbGJhY2spXG47IGZzLnJlYWxwYXRoKHBhdGhbLCBjYWNoZV0sIGNhbGxiYWNrKVxuOyBmcy5yZW5hbWUob2xkUGF0aCwgbmV3UGF0aCwgY2FsbGJhY2spXG47IGZzLnJtZGlyKHBhdGgsIGNhbGxiYWNrKVxuOyBmcy5zdGF0KHBhdGgsIGNhbGxiYWNrKVxuOyBmcy5zeW1saW5rKGRlc3RpbmF0aW9uLCBwYXRoWywgdHlwZV0sIGNhbGxiYWNrKVxuOyBmcy50cnVuY2F0ZShwYXRoLCBsZW4sIGNhbGxiYWNrKVxuOyBmcy51bmxpbmsocGF0aCwgY2FsbGJhY2spXG47IGZzLnVud2F0Y2hGaWxlKGZpbGVuYW1lWywgbGlzdGVuZXJdKVxuOyBmcy51dGltZXMocGF0aCwgYXRpbWUsIG10aW1lLCBjYWxsYmFjaylcbjsgZnMud2F0Y2goZmlsZW5hbWVbLCBvcHRpb25zXVssIGxpc3RlbmVyXSlcbjsgZnMud2F0Y2hGaWxlKGZpbGVuYW1lWywgb3B0aW9uc10sIGxpc3RlbmVyKVxuOyBmcy53cml0ZShmZCwgYnVmZmVyLCBvZmZzZXQsIGxlbmd0aFssIHBvc2l0aW9uXSwgY2FsbGJhY2spXG47IGZzLndyaXRlKGZkLCBkYXRhWywgcG9zaXRpb25bLCBlbmNvZGluZ11dLCBjYWxsYmFjaylcbjsgZnMud3JpdGVGaWxlKGZpbGUsIGRhdGFbLCBvcHRpb25zXSwgY2FsbGJhY2spXG5cbihkZWZuLSB0YXNrQ0JcbiAgW1Rhc2sgVHVwbGUwIGZdXG4gICguYXN5bmNGdW5jdGlvbiBUYXNrIChmblxuICAgIFtjYWxsYmFja11cbiAgICAoZiAoZm5cbiAgICAgIFtlcnJdXG4gICAgICAoY2FsbGJhY2sgKGlmIGVyclxuICAgICAgICAoVGFzay5lcnJvciBlcnIpXG4gICAgICAgIChUYXNrLnN1Y2Nlc3MgVHVwbGUwKSkpKSkpKSlcblxuOyBmcy5hY2Nlc3MocGF0aFssIG1vZGVdLCBjYWxsYmFjaylcbihkZWZuLSBhY2Nlc3NcbiAgW2ZzIFRhc2tdIChmblxuICBbcGF0aF1cbiAgKC5hc3luY0Z1bmN0aW9uIFRhc2sgKGZuXG4gICAgW2NhbGxiYWNrXVxuICAgICguYWNjZXNzIGZzIHBhdGggKGZuXG4gICAgICBbZXJyXVxuICAgICAgKGNhbGxiYWNrICguc3VjY2VlZCBUYXNrIChpZiBlcnIgZmFsc2UgdHJ1ZSkpKSkpKSkpKVxuXG47IGZzLmFwcGVuZEZpbGUoZmlsZSwgZGF0YVssIG9wdGlvbnNdLCBjYWxsYmFjaylcbihkZWZuLSBhcHBlbmRGaWxlXG4gIFtmcyBUYXNrIFR1cGxlMF0gKGZuXG4gIFtwYXRoIGRhdGFdXG4gICh0YXNrQ0IgVGFzayBUdXBsZTAgKGZuXG4gICAgW2NiXVxuICAgICguYXBwZW5kRmlsZSBmcyBwYXRoIGRhdGEgY2IpKSkpKVxuXG47IGZzLmNobW9kKHBhdGgsIG1vZGUsIGNhbGxiYWNrKVxuKGRlZm4tIGNobW9kXG4gIFtmcyBUYXNrIFR1cGxlMF0gKGZuXG4gIFtwYXRoXVxuICAodGFza0NCIFRhc2sgVHVwbGUwIChmblxuICAgIFtjYl1cbiAgICAoLmNobW9kIGZzIHBhdGggY2IpKSkpKVxuXG47IGZzLmNob3duKHBhdGgsIHVpZCwgZ2lkLCBjYWxsYmFjaylcbihkZWZuLSBjaG93blxuICBbZnMgVGFzayBUdXBsZTBdIChmblxuICBbcGF0aCB1aWQgZ2lkXVxuICAodGFza0NCIFRhc2sgVHVwbGUwIChmblxuICAgIFtjYl1cbiAgICAoLmNob3duIGZzIHBhdGggdWlkIGdpZCBjYikpKSkpXG5cbihkZWZuLSBzYW5pdGl6ZSBbcmVjb3JkICYgc3BhY2VzXVxuICAoc3BhY2VzLnJlZHVjZSAoZm4gW3Igc3BhY2VdIChkb1xuICAgIChpZiAoYWdldCByIHNwYWNlKSBuaWwgKHNldCEgKGFnZXQgciBzcGFjZSkge30pKVxuICAgIChhZ2V0IHIgc3BhY2UpKSlcbiAgcmVjb3JkKSlcblxuKGRlZm4tIG1ha2VcbiAgW2xvY2FsUnVudGltZV0gKGxldFxuICBbZnMgICAgIChyZXF1aXJlIFwiZnNcIilcbiAgIFRhc2sgICAoRWxtLk5hdGl2ZS5UYXNrLm1ha2UgIGxvY2FsUnVudGltZSlcbiAgIFV0aWxzICAoRWxtLk5hdGl2ZS5VdGlscy5tYWtlIGxvY2FsUnVudGltZSlcbiAgIFR1cGxlMCAoOlR1cGxlMCBVdGlscyldXG4gIChkb1xuICAgIChzYW5pdGl6ZSBsb2NhbFJ1bnRpbWUgOk5hdGl2ZSA6Tm9kZSA6RlMpXG4gICAgKGlmIGxvY2FsUnVudGltZS5OYXRpdmUuTm9kZS5GUy52YWx1ZXNcbiAgICAgICAgbG9jYWxSdW50aW1lLk5hdGl2ZS5Ob2RlLkZTLnZhbHVlc1xuICAgICAgICAoc2V0ISBsb2NhbFJ1bnRpbWUuTmF0aXZlLk5vZGUuRlMudmFsdWVzIHtcbiAgICAgICAgICA6YWNjZXNzIChhY2Nlc3MgZnMgVGFzaylcbiAgICAgICAgICA6YXBwZW5kRmlsZSAoRjIgKGFwcGVuZEZpbGUgZnMgVGFzayBUdXBsZTApKVxuICAgICAgICAgIDpjaG1vZCAoY2htb2QgZnMgVGFzayBUdXBsZTApXG4gICAgICAgICAgOmNob3duIChjaG93biBmcyBUYXNrIFR1cGxlMCkgfSkpKSkpXG5cbihzYW5pdGl6ZSBFbG0gOk5hdGl2ZSA6Tm9kZSA6RlMpXG4oc2V0ISBFbG0uTmF0aXZlLk5vZGUuRlMubWFrZSBtYWtlKVxuIl19
+sanitize(Elm, 'Native', 'FS');
+Elm.Native.FS.make = make;
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImFub255bW91cy53aXNwIl0sIm5hbWVzIjpbInRhc2tDQiIsIlRhc2siLCJUdXBsZTAiLCJmIiwiYXN5bmNGdW5jdGlvbiIsImNhbGxiYWNrIiwiZXJyIiwiZXJyb3IiLCJzdWNjZXNzIiwiYWNjZXNzIiwiZnMiLCJwYXRoIiwic3VjY2VlZCIsImFwcGVuZEZpbGUiLCJkYXRhIiwiY2IiLCJjaG1vZCIsImNob3duIiwidWlkIiwiZ2lkIiwicmVhZEZpbGUiLCJmYWlsIiwic2FuaXRpemUiLCJyZWNvcmQiLCJzcGFjZXMiLCJyZWR1Y2UiLCJyIiwic3BhY2UiLCJtYWtlIiwibG9jYWxSdW50aW1lIiwiZnPDuDEiLCJyZXF1aXJlIiwiVGFza8O4MSIsIkVsbSIsIk5hdGl2ZS5UYXNrLm1ha2UiLCJVdGlsc8O4MSIsIk5hdGl2ZS5VdGlscy5tYWtlIiwiVHVwbGUww7gxIiwiTmF0aXZlLkZTLnZhbHVlcyIsIkYyIiwiTmF0aXZlLkZTLm1ha2UiXSwibWFwcGluZ3MiOiJBQWdDQSxJQUFPQSxNQUFBLEdBQVAsU0FBT0EsTUFBUCxDQUNHQyxJQURILEVBQ1FDLE1BRFIsRUFDZUMsQ0FEZixFQUVFO0FBQUEsV0FBZ0JGLElBQWYsQ0FBQ0csYUFBRixDQUFxQixVQUNsQkMsUUFEa0IsRUFFbkI7QUFBQSxlQUFDRixDQUFELENBQUcsVUFDQUcsR0FEQSxFQUVEO0FBQUEsbUJBQUNELFFBQUQsQ0FBY0MsR0FBSixHQUNQTCxJQUFBLENBQUtNLEtBQU4sQ0FBWUQsR0FBWixDQURRLEdBRVBMLElBQUEsQ0FBS08sT0FBTixDQUFjTixNQUFkLENBRkY7QUFBQSxTQUZGO0FBQUEsS0FGRjtBQUFBLENBRkY7QUFXQSxJQUFPTyxNQUFBLEdBQVAsU0FBT0EsTUFBUCxDQUNHQyxFQURILEVBQ01ULElBRE4sRUFDWTtBQUFBLHFCQUNUVSxJQURTLEVBRVY7QUFBQSxlQUFnQlYsSUFBZixDQUFDRyxhQUFGLENBQXFCLFVBQ2xCQyxRQURrQixFQUVuQjtBQUFBLG1CQUFTSyxFQUFS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TCxDQUF1QkwsWUFBdkIsQ0FBUCxDQURBO0FBQUEsUUFFQSxJQUFBTSxPLEdBQVFGLEdBQUEsQ0FBSUcsaUJBQUwsQ0FBdUJQLFlBQXZCLENBQVAsQ0FGQTtBQUFBLFFBR0EsSUFBQVEsUSxJQUFnQkYsTyxNQUFULEMsUUFBQSxDQUFQLENBSEE7QUFBQSxRQUlELE8sYUFDRTtBQUFBLFlBQUNiLFFBQUQsQ0FBVU8sWUFBVixFLFFBQUEsRSxJQUFBO0FBQUEsWUFDQSxPQUFJQSxZQUFBLENBQWFTLGdCQUFqQixHQUNJVCxZQUFBLENBQWFTLGdCQURqQixHQUVVVCxZQUFBLENBQWFTLGdCQUFuQixHQUFvQztBQUFBLGdCLFVBQ3pCN0IsTUFBRCxDQUFRcUIsSUFBUixFQUFXRSxNQUFYLENBRDBCO0FBQUEsZ0IsY0FFckJPLEVBQUQsQ0FBSzFCLFVBQUQsQ0FBWWlCLElBQVosRUFBZUUsTUFBZixFQUFvQkssUUFBcEIsQ0FBSixDQUZzQjtBQUFBLGdCLFNBRzFCckIsS0FBRCxDQUFPYyxJQUFQLEVBQVVFLE1BQVYsRUFBZUssUUFBZixDQUgyQjtBQUFBLGdCLFNBSTFCcEIsS0FBRCxDQUFPYSxJQUFQLEVBQVVFLE1BQVYsRUFBZUssUUFBZixDQUoyQjtBQUFBLGFBRnhDLENBREE7QUFBQSxTLENBQUEsRUFERixDQUpDO0FBQUEsSyxLQURjLEMsSUFBQTtBQUFBLENBRGpCLENBOURBO0FBOEVDZixRQUFELENBQVVXLEdBQVYsRSxRQUFBLEUsSUFBQSxFQTlFQTtBQStFTUEsR0FBQSxDQUFJTyxjQUFWLEdBQXlCWixJQUF6QiIsInNvdXJjZXNDb250ZW50IjpbIjsgZnMuY2xvc2UoZmQsIGNhbGxiYWNrKVxuOyBmcy5leGlzdHMocGF0aCwgY2FsbGJhY2spXG47IGZzLmZjaG1vZChmZCwgbW9kZSwgY2FsbGJhY2spXG47IGZzLmZjaG93bihmZCwgdWlkLCBnaWQsIGNhbGxiYWNrKVxuOyBmcy5mc3RhdChmZCwgY2FsbGJhY2spXG47IGZzLmZzeW5jKGZkLCBjYWxsYmFjaylcbjsgZnMuZnRydW5jYXRlKGZkLCBsZW4sIGNhbGxiYWNrKVxuOyBmcy5mdXRpbWVzKGZkLCBhdGltZSwgbXRpbWUsIGNhbGxiYWNrKVxuOyBmcy5sY2htb2QocGF0aCwgbW9kZSwgY2FsbGJhY2spXG47IGZzLmxjaG93bihwYXRoLCB1aWQsIGdpZCwgY2FsbGJhY2spXG47IGZzLmxpbmsoc3JjcGF0aCwgZHN0cGF0aCwgY2FsbGJhY2spXG47IGZzLmxzdGF0KHBhdGgsIGNhbGxiYWNrKVxuOyBmcy5ta2RpcihwYXRoWywgbW9kZV0sIGNhbGxiYWNrKVxuOyBmcy5vcGVuKHBhdGgsIGZsYWdzWywgbW9kZV0sIGNhbGxiYWNrKVxuOyBmcy5yZWFkKGZkLCBidWZmZXIsIG9mZnNldCwgbGVuZ3RoLCBwb3NpdGlvbiwgY2FsbGJhY2spXG47IGZzLnJlYWRkaXIocGF0aCwgY2FsbGJhY2spXG47IGZzLnJlYWRsaW5rKHBhdGgsIGNhbGxiYWNrKVxuOyBmcy5yZWFscGF0aChwYXRoWywgY2FjaGVdLCBjYWxsYmFjaylcbjsgZnMucmVuYW1lKG9sZFBhdGgsIG5ld1BhdGgsIGNhbGxiYWNrKVxuOyBmcy5ybWRpcihwYXRoLCBjYWxsYmFjaylcbjsgZnMuc3RhdChwYXRoLCBjYWxsYmFjaylcbjsgZnMuc3ltbGluayhkZXN0aW5hdGlvbiwgcGF0aFssIHR5cGVdLCBjYWxsYmFjaylcbjsgZnMudHJ1bmNhdGUocGF0aCwgbGVuLCBjYWxsYmFjaylcbjsgZnMudW5saW5rKHBhdGgsIGNhbGxiYWNrKVxuOyBmcy51bndhdGNoRmlsZShmaWxlbmFtZVssIGxpc3RlbmVyXSlcbjsgZnMudXRpbWVzKHBhdGgsIGF0aW1lLCBtdGltZSwgY2FsbGJhY2spXG47IGZzLndhdGNoKGZpbGVuYW1lWywgb3B0aW9uc11bLCBsaXN0ZW5lcl0pXG47IGZzLndhdGNoRmlsZShmaWxlbmFtZVssIG9wdGlvbnNdLCBsaXN0ZW5lcilcbjsgZnMud3JpdGUoZmQsIGJ1ZmZlciwgb2Zmc2V0LCBsZW5ndGhbLCBwb3NpdGlvbl0sIGNhbGxiYWNrKVxuOyBmcy53cml0ZShmZCwgZGF0YVssIHBvc2l0aW9uWywgZW5jb2RpbmddXSwgY2FsbGJhY2spXG47IGZzLndyaXRlRmlsZShmaWxlLCBkYXRhWywgb3B0aW9uc10sIGNhbGxiYWNrKVxuXG4oZGVmbi0gdGFza0NCXG4gIFtUYXNrIFR1cGxlMCBmXVxuICAoLmFzeW5jRnVuY3Rpb24gVGFzayAoZm5cbiAgICBbY2FsbGJhY2tdXG4gICAgKGYgKGZuXG4gICAgICBbZXJyXVxuICAgICAgKGNhbGxiYWNrIChpZiBlcnJcbiAgICAgICAgKFRhc2suZXJyb3IgZXJyKVxuICAgICAgICAoVGFzay5zdWNjZXNzIFR1cGxlMCkpKSkpKSkpXG5cbjsgZnMuYWNjZXNzKHBhdGhbLCBtb2RlXSwgY2FsbGJhY2spXG4oZGVmbi0gYWNjZXNzXG4gIFtmcyBUYXNrXSAoZm5cbiAgW3BhdGhdXG4gICguYXN5bmNGdW5jdGlvbiBUYXNrIChmblxuICAgIFtjYWxsYmFja11cbiAgICAoLmFjY2VzcyBmcyBwYXRoIChmblxuICAgICAgW2Vycl1cbiAgICAgIChjYWxsYmFjayAoLnN1Y2NlZWQgVGFzayAoaWYgZXJyIGZhbHNlIHRydWUpKSkpKSkpKSlcblxuOyBmcy5hcHBlbmRGaWxlKGZpbGUsIGRhdGFbLCBvcHRpb25zXSwgY2FsbGJhY2spXG4oZGVmbi0gYXBwZW5kRmlsZVxuICBbZnMgVGFzayBUdXBsZTBdIChmblxuICBbcGF0aCBkYXRhXVxuICAodGFza0NCIFRhc2sgVHVwbGUwIChmblxuICAgIFtjYl1cbiAgICAoLmFwcGVuZEZpbGUgZnMgcGF0aCBkYXRhIGNiKSkpKSlcblxuOyBmcy5jaG1vZChwYXRoLCBtb2RlLCBjYWxsYmFjaylcbihkZWZuLSBjaG1vZFxuICBbZnMgVGFzayBUdXBsZTBdIChmblxuICBbcGF0aF1cbiAgKHRhc2tDQiBUYXNrIFR1cGxlMCAoZm5cbiAgICBbY2JdXG4gICAgKC5jaG1vZCBmcyBwYXRoIGNiKSkpKSlcblxuOyBmcy5jaG93bihwYXRoLCB1aWQsIGdpZCwgY2FsbGJhY2spXG4oZGVmbi0gY2hvd25cbiAgW2ZzIFRhc2sgVHVwbGUwXSAoZm5cbiAgW3BhdGggdWlkIGdpZF1cbiAgKHRhc2tDQiBUYXNrIFR1cGxlMCAoZm5cbiAgICBbY2JdXG4gICAgKC5jaG93biBmcyBwYXRoIHVpZCBnaWQgY2IpKSkpKVxuXG47IGZzLnJlYWRGaWxlKGZpbGVbLCBvcHRpb25zXSwgY2FsbGJhY2spXG4oZGVmbi0gcmVhZEZpbGVcbiAgW2ZzIFRhc2tdIChmblxuICBbcGF0aF1cbiAgKC5hc3luY0Z1bmN0aW9uIFRhc2sgKGZuXG4gICAgW2NhbGxiYWNrXVxuICAgICgucmVhZEZpbGUgZnMgcGF0aCA6dXRmOCAoZm5cbiAgICAgIFtlcnIsIGRhdGFdXG4gICAgICAoY2FsbGJhY2sgKGlmIGVyclxuICAgICAgICAoVGFzay5mYWlsIGVycilcbiAgICAgICAgKFRhc2suc3VjY2VlZCBkYXRhKSkpKSkpKSkpXG5cbihkZWZuLSBzYW5pdGl6ZSBbcmVjb3JkICYgc3BhY2VzXVxuICAoc3BhY2VzLnJlZHVjZSAoZm4gW3Igc3BhY2VdIChkb1xuICAgIChpZiAoYWdldCByIHNwYWNlKSBuaWwgKHNldCEgKGFnZXQgciBzcGFjZSkge30pKVxuICAgIChhZ2V0IHIgc3BhY2UpKSlcbiAgcmVjb3JkKSlcblxuKGRlZm4tIG1ha2VcbiAgW2xvY2FsUnVudGltZV0gKGxldFxuICBbZnMgICAgIChyZXF1aXJlIFwiZnNcIilcbiAgIFRhc2sgICAoRWxtLk5hdGl2ZS5UYXNrLm1ha2UgIGxvY2FsUnVudGltZSlcbiAgIFV0aWxzICAoRWxtLk5hdGl2ZS5VdGlscy5tYWtlIGxvY2FsUnVudGltZSlcbiAgIFR1cGxlMCAoOlR1cGxlMCBVdGlscyldXG4gIChkb1xuICAgIChzYW5pdGl6ZSBsb2NhbFJ1bnRpbWUgOk5hdGl2ZSA6RlMpXG4gICAgKGlmIGxvY2FsUnVudGltZS5OYXRpdmUuRlMudmFsdWVzXG4gICAgICAgIGxvY2FsUnVudGltZS5OYXRpdmUuRlMudmFsdWVzXG4gICAgICAgIChzZXQhIGxvY2FsUnVudGltZS5OYXRpdmUuRlMudmFsdWVzIHtcbiAgICAgICAgICA6YWNjZXNzIChhY2Nlc3MgZnMgVGFzaylcbiAgICAgICAgICA6YXBwZW5kRmlsZSAoRjIgKGFwcGVuZEZpbGUgZnMgVGFzayBUdXBsZTApKVxuICAgICAgICAgIDpjaG1vZCAoY2htb2QgZnMgVGFzayBUdXBsZTApXG4gICAgICAgICAgOmNob3duIChjaG93biBmcyBUYXNrIFR1cGxlMCkgfSkpKSkpXG5cbihzYW5pdGl6ZSBFbG0gOk5hdGl2ZSA6RlMpXG4oc2V0ISBFbG0uTmF0aXZlLkZTLm1ha2UgbWFrZSlcbiJdfQ==
 
-Elm.Node = Elm.Node || {};
-Elm.Node.FS = Elm.Node.FS || {};
-Elm.Node.FS.make = function (_elm) {
+Elm.FS = Elm.FS || {};
+Elm.FS.Raw = Elm.FS.Raw || {};
+Elm.FS.Raw.make = function (_elm) {
    "use strict";
-   _elm.Node = _elm.Node || {};
-   _elm.Node.FS = _elm.Node.FS || {};
-   if (_elm.Node.FS.values) return _elm.Node.FS.values;
+   _elm.FS = _elm.FS || {};
+   _elm.FS.Raw = _elm.FS.Raw || {};
+   if (_elm.FS.Raw.values) return _elm.FS.Raw.values;
    var _U = Elm.Native.Utils.make(_elm),
    $Basics = Elm.Basics.make(_elm),
    $Debug = Elm.Debug.make(_elm),
+   $FS$Types = Elm.FS.Types.make(_elm),
    $List = Elm.List.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
-   $Native$Node$FS = Elm.Native.Node.FS.make(_elm),
-   $Node$FS$Types = Elm.Node.FS.Types.make(_elm),
+   $Native$FS = Elm.Native.FS.make(_elm),
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm),
    $Task = Elm.Task.make(_elm);
    var _op = {};
-   var access = $Native$Node$FS.access;
-   return _elm.Node.FS.values = {_op: _op,access: access};
+   var access = $Native$FS.access;
+   var readFile = $Native$FS.readFile;
+   var ReadError = {ctor: "ReadError"};
+   return _elm.FS.Raw.values = {_op: _op
+                               ,ReadError: ReadError
+                               ,readFile: readFile
+                               ,access: access};
 };
 Elm.Main = Elm.Main || {};
 Elm.Main.make = function (_elm) {
@@ -6142,9 +6154,9 @@ Elm.Main.make = function (_elm) {
    var _U = Elm.Native.Utils.make(_elm),
    $Basics = Elm.Basics.make(_elm),
    $Debug = Elm.Debug.make(_elm),
+   $FS$Raw = Elm.FS.Raw.make(_elm),
    $List = Elm.List.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
-   $Node$FS = Elm.Node.FS.make(_elm),
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm),
    $Task = Elm.Task.make(_elm);
@@ -6155,7 +6167,7 @@ Elm.Main.make = function (_elm) {
       {ctor: "_Tuple0"},
       A2($Debug.log,"access",_p0));
    },
-   $Node$FS.access("README.md")));
+   $FS$Raw.access("README.md")));
    return _elm.Main.values = {_op: _op};
 };
 Elm.worker(Elm.Main);

@@ -18,4 +18,4 @@ main : Html
 main = view initial
 
 elmId : (List String, String)
-elmId = (["Main"], "example/isomorphic-templating/main.js")
+elmId = (["Main"], "examples/LowLevel/isomorphic-templating/main.js")

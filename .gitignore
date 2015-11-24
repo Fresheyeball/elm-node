@@ -1,2 +1,3 @@
-elm-stuff
-examples/**/*.js
+example/**/*.js
+elm-stuff/
+node_modules/

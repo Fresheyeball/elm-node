@@ -14,7 +14,6 @@
 ; fs.open(path, flags[, mode], callback)
 ; fs.read(fd, buffer, offset, length, position, callback)
 ; fs.readdir(path, callback)
-; fs.readFile(file[, options], callback)
 ; fs.readlink(path, callback)
 ; fs.realpath(path[, cache], callback)
 ; fs.rename(oldPath, newPath, callback)
@@ -75,6 +74,18 @@
     [cb]
     (.chown fs path uid gid cb)))))
 
+; fs.readFile(file[, options], callback)
+(defn- readFile
+  [fs Task] (fn
+  [path]
+  (.asyncFunction Task (fn
+    [callback]
+    (.readFile fs path :utf8 (fn
+      [err, data]
+      (callback (if err
+        (Task.fail err)
+        (Task.succeed data)))))))))
+
 (defn- sanitize [record & spaces]
   (spaces.reduce (fn [r space] (do
     (if (aget r space) nil (set! (aget r space) {}))
@@ -88,14 +99,14 @@
    Utils  (Elm.Native.Utils.make localRuntime)
    Tuple0 (:Tuple0 Utils)]
   (do
-    (sanitize localRuntime :Native :Node :FS)
-    (if localRuntime.Native.Node.FS.values
-        localRuntime.Native.Node.FS.values
-        (set! localRuntime.Native.Node.FS.values {
+    (sanitize localRuntime :Native :FS)
+    (if localRuntime.Native.FS.values
+        localRuntime.Native.FS.values
+        (set! localRuntime.Native.FS.values {
           :access (access fs Task)
           :appendFile (F2 (appendFile fs Task Tuple0))
           :chmod (chmod fs Task Tuple0)
           :chown (chown fs Task Tuple0) })))))
 
-(sanitize Elm :Native :Node :FS)
-(set! Elm.Native.Node.FS.make make)
+(sanitize Elm :Native :FS)
+(set! Elm.Native.FS.make make)

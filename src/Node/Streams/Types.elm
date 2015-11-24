@@ -48,3 +48,8 @@ type alias Writable =
 type alias Duplex =
   { readable : Read
   , writable : Write }
+
+splitDuplex : Duplex -> (Readable, Writable)
+splitDuplex {readable, writable} =
+  ( {readable = readable}
+  , {writable = writable} )

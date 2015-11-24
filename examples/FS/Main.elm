@@ -11,7 +11,7 @@ itsCool = always (Task.succeed ())
 port run : Task x ()
 port run = let
   src = createReadStream "README.md"
-  sync = createWriteStream "Out.md"
+  sync = createWriteStream "README-CLONE.md"
   go r w = on (logBuffer utf8) Data r
          `andThen` always (pipe r w)
   in src `andThen` (\r ->

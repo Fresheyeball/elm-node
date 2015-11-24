@@ -4,11 +4,11 @@
     "repository": "https://github.com/user/project.git",
     "license": "BSD3",
     "source-directories": [
-      "examples/FS",
-      "src/Node/Streams"      
+      "src",
+      "examples/FS"
     ],
     "exposed-modules": [
-      "Node.Streams.Types"
+      
     ],
     "native-modules": true,
     "dependencies": {

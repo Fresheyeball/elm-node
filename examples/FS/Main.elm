@@ -5,5 +5,8 @@ import Node.Streams.Types exposing (foo)
 import Task
 import Debug
 
-port run : Task x ()
-port run = Task.succeed <| Debug.log ("foo: " ++ foo) ()
+port run : Task.Task x ()
+port run =
+  Debug.log "foo" foo
+  |> Task.succeed
+  |> Task.map (always ())

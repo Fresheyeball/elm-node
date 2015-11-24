@@ -6,9 +6,9 @@
 
 (defn- make [localRuntime] (do
     (sanitize localRuntime :Native :Node :Streams)
-    (if localRuntime.Native.Chartjs.values
-        localRuntime.Native.Chartjs.values
-        (set! localRuntime.Native.Chartjs.values {
+    (if localRuntime.Native.Node.Streams.values
+        localRuntime.Native.Node.Streams.values
+        (set! localRuntime.Native.Node.Streams.values {
           :foo "foo" }))))
 
 (sanitize Elm :Native :Node :Streams)

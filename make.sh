@@ -1,1 +1,1 @@
-cat src/Native/Streams.wisp | wisp > src/Native/Streams.js
+cat src/Native/Node/Streams.wisp | wisp > src/Native/Node/Streams.js

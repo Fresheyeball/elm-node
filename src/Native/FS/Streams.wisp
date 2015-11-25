@@ -19,12 +19,12 @@
   [fs     (require "fs")
    Task   (Elm.Native.Task.make  localRuntime)]
   (do
-    (sanitize localRuntime :Native :Node :FS :Streams)
-    (if localRuntime.Native.Node.FS.Streams.values
-        localRuntime.Native.Node.FS.Streams.values
-        (set! localRuntime.Native.Node.FS.Streams.values {
+    (sanitize localRuntime :Native :FS :Streams)
+    (if localRuntime.Native.FS.Streams.values
+        localRuntime.Native.FS.Streams.values
+        (set! localRuntime.Native.FS.Streams.values {
           :createReadStream  (F2 (createReadStream  fs Task))
-          :createWriteStream (createWriteStream fs Task) })))))
+          :createWriteStream (F2 (createWriteStream fs Task)) })))))
 
-(sanitize Elm :Native :Node :FS :Streams)
-(set! Elm.Native.Node.FS.Streams.make make)
+(sanitize Elm :Native :FS :Streams)
+(set! Elm.Native.FS.Streams.make make)

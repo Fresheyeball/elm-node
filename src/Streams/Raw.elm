@@ -1,27 +1,27 @@
-module Streams where
+module Streams.Raw where
 
 import Task exposing (Task)
 
-import Node.Streams.Types exposing (..)
-import Native.Node.Streams
+import Streams.Types exposing (..)
+import Native.Streams
 
 on' : String -> Read -> (Chunk -> Task x b) -> Task x b
 on' =
-  Native.Node.Streams.on
+  Native.Streams.on
 
 on : (Chunk -> Task x b) -> ReadableEvent -> Readable -> Task x b
 on f e r = on' (toNameR e) (.readable r) f
 
 pipe' : Read -> Write -> Task x ()
 pipe' =
-  Native.Node.Streams.pipe
+  Native.Streams.pipe
 
 pipe : Readable -> Writable -> Task x ()
 pipe r w = pipe' (.readable r) (.writable w)
 
 logBuffer' : String -> Chunk -> Task x ()
 logBuffer' =
-  Native.Node.Streams.logBuffer
+  Native.Streams.logBuffer
 
 logBuffer : Encoding -> Chunk -> Task x ()
-logBuffer = logBuffer' << toNameE
+logBuffer = logBuffer' << unsafeToNameE

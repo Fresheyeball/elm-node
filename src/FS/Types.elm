@@ -29,7 +29,7 @@ defaultReadOptions =
 
 marshallReadOptions : ReadOptions -> ReadOptionsRaw
 marshallReadOptions o =
-  { o | encoding = T.toNameE (.encoding o) }
+  { o | encoding = T.unsafeToNameE (.encoding o) }
 
 type alias WriteOptions =
   { flags           : String
@@ -49,4 +49,4 @@ defaultWriteOptions =
 
 marshallWriteOptions : WriteOptions -> WriteOptionsRaw
 marshallWriteOptions o =
-  { o | defaultEncoding = T.toNameE (.defaultEncoding o) }
+  { o | defaultEncoding = T.unsafeToNameE (.defaultEncoding o) }

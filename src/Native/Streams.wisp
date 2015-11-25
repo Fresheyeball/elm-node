@@ -10,15 +10,11 @@
     (.pipe readable writable)
     (.succeed Task Tuple0))))
 
-(defn- copeWithNull
-  [encoding]
-  (if (== encoding "null") null encoding))
-
 (defn- logBuffer
   [Task Tuple0] (fn
   [encoding chunk] (do
     (.log console
-      (if chunk (.toString chunk (codeWithNull encoding)) chunk))
+      (if chunk (.toString chunk encoding) chunk))
     (.succeed Task Tuple0))))
 
 (defn- on
@@ -36,13 +32,13 @@
    Utils  (Elm.Native.Utils.make localRuntime)
    Tuple0 (:Tuple0 Utils) ]
   (do
-    (sanitize localRuntime :Native :Node :Streams)
-    (if localRuntime.Native.Node.Streams.values
-        localRuntime.Native.Node.Streams.values
-        (set! localRuntime.Native.Node.Streams.values {
+    (sanitize localRuntime :Native :Streams)
+    (if localRuntime.Native.Streams.values
+        localRuntime.Native.Streams.values
+        (set! localRuntime.Native.Streams.values {
           :on (F3 (on Task))
           :pipe (F2 (pipe Task Tuple0))
           :logBuffer (F2 (logBuffer Task Tuple0)) })))))
 
-(sanitize Elm :Native :Node :Streams)
-(set! Elm.Native.Node.Streams.make make)
+(sanitize Elm :Native :Streams)
+(set! Elm.Native.Streams.make make)

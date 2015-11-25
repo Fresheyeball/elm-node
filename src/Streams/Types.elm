@@ -1,5 +1,7 @@
 module Streams.Types where
 
+import Marshall
+
 type ReadableEvent
   = Data
   | Read
@@ -30,6 +32,12 @@ toNameE e = case e of
   Hex -> "hex"
   Base64 -> "base64"
   Binary -> "null"
+
+unsafeToNameE : Encoding -> String
+unsafeToNameE e =
+  let x = toNameE e in case x of
+    "null" -> Marshall.unsafeNull
+    _ -> x
 
 toNameR : ReadableEvent -> String
 toNameR e = case e of

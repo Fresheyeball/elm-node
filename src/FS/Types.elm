@@ -2,34 +2,138 @@ module FS.Types where
 
 import Streams.Types as T
 
-type alias FilePath = String
-type ReadError      = ReadError String
-type WriteError     = WriteError String
-type FileDescriptor = FileDescriptor
 type alias Encoding = T.Encoding
+type alias FilePath = String
+type alias Mode     = Int
+
+type Buffer         = Buffer
+type FSError        = FSError String
+type FileDescriptor = FileDescriptor
+type Flags
+  = R
+  | Rplus
+  | RS
+  | RSplus
+  | W
+  | Wplus
+  | WX
+  | WXplus
+  | A
+  | AX
+  | Aplus
+  | AXplus
+
+flagsToString : Flags -> String
+flagsToString f = case f of
+  R      -> "r"
+  Rplus  -> "r+"
+  RS     -> "rs"
+  RSplus -> "rs+"
+  W      -> "w"
+  Wplus  -> "w+"
+  WX     -> "wx"
+  WXplus -> "wx+"
+  A      -> "a"
+  AX     -> "ax"
+  Aplus  -> "a+"
+  AXplus -> "ax+"
 
 type alias ReadOptions =
-  { flags     : String
+  { flags     : Flags
   , encoding  : Encoding
-  , mode      : Int
+  , mode      : Mode
+  , autoClose : Bool }
+
+type alias ReadOptionsRaw =
+  { flags     : String
+  , encoding  : String
+  , mode      : Mode
   , autoClose : Bool }
 
 defaultReadOptions : ReadOptions
 defaultReadOptions =
-  { flags     = "r"
-  , encoding  = T.Binary
-  , mode      = 0
-  , autoClose = True }
+  { flags          = R
+  , mode           = 438 -- 0o666
+  , autoClose      = True
+  , encoding       = T.Binary }
 
 marshallReadOptions : ReadOptions -> ReadOptionsRaw
+marshallReadOptions o =
+  { o | flags    = flagsToString (.flags o)
+      , encoding = T.unsafeToNameE (.encoding o) }
+
+type alias ReadFileOptions =
+  { flags    : Flags
+  , encoding : Encoding }
+
+type alias ReadFileOptionsRaw =
+  { flags    : String
+  , encoding : String }
+
+defaultReadFileOptions : ReadFileOptions
+defaultReadFileOptions =
+  { flags    = R
+  , encoding = T.Binary}
+
+marshallReadFileOptions : ReadFileOptions -> ReadFileOptionsRaw
+marshallReadFileOptions o =
+  { o | flags    = flagsToString (.flags o)
+      , encoding = T.unsafeToNameE (.encoding o) }
 
 type alias WriteOptions =
-  { flags           : String
+  { flags           : Flags
   , defaultEncoding : Encoding
-  , mode            : Int }
+  , mode            : Mode }
+
+type alias WriteOptionsRaw =
+  { flags           : String
+  , defaultEncoding : String
+  , mode            : Mode }
 
 defaultWriteOptions : WriteOptions
 defaultWriteOptions =
-  { flags           = "w"
-  , defaultEncoding = T.Binary
-  , mode            = 0 }
+  { flags           = W
+  , mode            = 438 -- 0o666
+  , defaultEncoding = T.Binary }
+
+marshallWriteOptions : WriteOptions -> WriteOptionsRaw
+marshallWriteOptions o =
+  { o | flags           = flagsToString (.flags o)
+      , defaultEncoding = T.unsafeToNameE (.defaultEncoding o) }
+
+type alias AppendOptions =
+  { flags    : Flags
+  , encoding : Encoding
+  , mode     : Mode }
+
+type alias AppendOptionsRaw =
+  { flags    : String
+  , encoding : String
+  , mode     : Mode }
+
+defaultAppendOptions : AppendOptions
+defaultAppendOptions =
+  { flags    = A
+  , mode     = 438 -- 0o666
+  , encoding = T.Binary }
+
+marshallAppendOptions : AppendOptions -> AppendOptionsRaw
+marshallAppendOptions o =
+  { o | flags    = flagsToString (.flags o)
+      , encoding = T.unsafeToNameE (.encoding o) }
+
+type alias Stats =
+  { dev       : Int
+  , mode      : Int
+  , nlink     : Int
+  , uid       : Int
+  , gid       : Int
+  , rdev      : Int
+  , blksize   : Int
+  , ino       : Int
+  , size      : Int
+  , blocks    : Int
+  , atime     : String
+  , mtime     : String
+  , ctime     : String
+  , birthtime : String }

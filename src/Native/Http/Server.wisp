@@ -63,9 +63,9 @@
    Tuple2 (:Tuple2 Utils)
    noop   (fn [] nil)]
 
-  (do (sanitize localRuntime :Native :Http)
-    (let [v localRuntime.Native.Http.values]
-      (if v v (set! localRuntime.Native.Http.values {
+  (do (sanitize localRuntime :Native :Http :Server)
+    (let [v         localRuntime.Native.Http.Server.values]
+      (if v v (set! localRuntime.Native.Http.Server.values {
 
         :createServer (createServer http Tuple2 Task)
         :listen       (F3 (listen    Task))
@@ -82,7 +82,7 @@
           :write        noop
           :writeHead    noop}}))))))
 
-(sanitize Elm :Native :Http)
-(set! Elm.Native.Http.make make)
+(sanitize Elm :Native :Http :Server)
+(set! Elm.Native.Http.Server.make make)
 
 (if (== (typeof window) :undefined) (set! window global))

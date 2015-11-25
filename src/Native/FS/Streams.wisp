@@ -6,13 +6,13 @@
 
 (defn- createReadStream
   [fs Task] (fn
-  [path]
-  (Task.succeed (.createReadStream fs path))))
+  [options path]
+  (Task.succeed (.createReadStream fs path options))))
 
 (defn- createWriteStream
   [fs Task] (fn
-  [path]
-  (Task.succeed (.createWriteStream fs path))))
+  [options path]
+  (Task.succeed (.createWriteStream fs path options))))
 
 (defn- make
   [localRuntime] (let
@@ -23,7 +23,7 @@
     (if localRuntime.Native.Node.FS.Streams.values
         localRuntime.Native.Node.FS.Streams.values
         (set! localRuntime.Native.Node.FS.Streams.values {
-          :createReadStream  (createReadStream  fs Task)
+          :createReadStream  (F2 (createReadStream  fs Task))
           :createWriteStream (createWriteStream fs Task) })))))
 
 (sanitize Elm :Native :Node :FS :Streams)

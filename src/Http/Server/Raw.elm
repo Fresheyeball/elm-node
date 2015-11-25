@@ -45,7 +45,7 @@ module Http.Server.Raw
 import Task exposing (Task, succeed, andThen)
 import Signal exposing (Address, Mailbox, mailbox)
 import Json.Encode as Json
-import Native.Http
+import Native.Http.Server
 
 {-| Port number for the server to listen -}
 type alias Port   = Int
@@ -77,7 +77,7 @@ type Method
   | NOOP
 
 on : eventName -> target -> Signal input
-on = Native.Http.on
+on = Native.Http.Server.on
 
 {-| "Request" events as a Signal.
 [Node docs](https://nodejs.org/api/http.html#http_event_request) -}
@@ -112,7 +112,7 @@ onFinishRes = on "finish"
 [Node docs](https://nodejs.org/api/http.html#http_http_createserver_requestlistener)
 -}
 createServer : Address (Request, Response) -> Task x Server
-createServer = Native.Http.createServer
+createServer = Native.Http.Server.createServer
 
 {-| Command Server to listen on a specific port,
     and echo a message to the console when active.
@@ -125,7 +125,7 @@ createServer = Native.Http.createServer
 [Node Docs](https://nodejs.org/api/http.html#http_server_listen_port_hostname_backlog_callback)
 -}
 listen : Port -> Echo -> Server -> Task x Server
-listen = Native.Http.listen
+listen = Native.Http.Server.listen
 
 {-| Create a Http Server and listen in one command! For example
 
@@ -140,37 +140,37 @@ createServer' address port' echo =
 {-| Write Headers to a Response
 [Node Docs](https://nodejs.org/api/http.html#http_response_writehead_statuscode_statusmessage_headers) -}
 writeHead : Code -> Header -> Response -> Task x Response
-writeHead = Native.Http.writeHead
+writeHead = Native.Http.Server.writeHead
 
 {-| Write body to a Response
 [Node Docs](https://nodejs.org/api/http.html#http_response_write_chunk_encoding_callback) -}
 write : String -> Response -> Task x Response
-write = Native.Http.write
+write = Native.Http.Server.write
 
 {-| End a Response
 [Node Docs](https://nodejs.org/api/http.html#http_response_end_data_encoding_callback) -}
 end : Response -> Task x ()
-end = Native.Http.end
+end = Native.Http.Server.end
 
 {-| Requests are Native Types, and so cannot be constructed inside Elm.
 `emptyReq` is a dummy Native Request object incase you need it, as the initial value of
 a `Signal.Mailbox` for example. -}
 emptyReq : Request
-emptyReq = Native.Http.emptyReq
+emptyReq = Native.Http.Server.emptyReq
 
 {-| Responses are Native Types, and so cannot be constructed inside Elm.
 `emptyRes` is a dummy Native Response object incase you need it, as the initial value of
 a `Signal.Mailbox` for example. -}
 emptyRes : Response
-emptyRes = Native.Http.emptyRes
+emptyRes = Native.Http.Server.emptyRes
 
 {-| Accessor for the Url of a Request
 [Node docs](https://nodejs.org/api/http.html#http_message_url) -}
 url : Request -> Url
-url = Native.Http.url
+url = Native.Http.Server.url
 
 method' : Request -> String
-method' = Native.Http.method
+method' = Native.Http.Server.method
 
 {-| Accessor for the Method of a Request
 [Node docs](https://nodejs.org/api/http.html#http_message_method) -}
@@ -186,7 +186,7 @@ method req =
 {-| Accessor for the statusCode of a Request
 [Node docs](https://nodejs.org/api/http.html#http_message_statuscode) -}
 statusCode : Request -> Code
-statusCode = Native.Http.statusCode
+statusCode = Native.Http.Server.statusCode
 
 writeAs : Header -> Response -> String -> Task x ()
 writeAs header res html =

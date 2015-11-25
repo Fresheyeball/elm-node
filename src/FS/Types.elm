@@ -14,22 +14,39 @@ type alias ReadOptions =
   , mode      : Int
   , autoClose : Bool }
 
+type alias ReadOptionsRaw =
+  { flags     : String
+  , encoding  : String
+  , mode      : Int
+  , autoClose : Bool }
+
 defaultReadOptions : ReadOptions
 defaultReadOptions =
-  { flags     = "r"
-  , encoding  = T.Binary
-  , mode      = 0
-  , autoClose = True }
+  { flags          = "r"
+  , mode           = 438 -- 0o666
+  , autoClose      = True
+  , encoding       = T.Binary }
 
 marshallReadOptions : ReadOptions -> ReadOptionsRaw
+marshallReadOptions o =
+  { o | encoding = T.toNameE (.encoding o) }
 
 type alias WriteOptions =
   { flags           : String
   , defaultEncoding : Encoding
   , mode            : Int }
 
+type alias WriteOptionsRaw =
+  { flags           : String
+  , defaultEncoding : String
+  , mode            : Int }
+
 defaultWriteOptions : WriteOptions
 defaultWriteOptions =
   { flags           = "w"
-  , defaultEncoding = T.Binary
-  , mode            = 0 }
+  , mode            = 438 -- 0o666
+  , defaultEncoding = T.Binary }
+
+marshallWriteOptions : WriteOptions -> WriteOptionsRaw
+marshallWriteOptions o =
+  { o | defaultEncoding = T.toNameE (.defaultEncoding o) }

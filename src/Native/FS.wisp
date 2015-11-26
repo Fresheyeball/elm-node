@@ -199,11 +199,44 @@
         (Task.succeed stats)))))))))
 
 ; fs.symlink(destination, path[, type], callback)
+(defn symlink
+  [fs Task Tuple0] (fn
+  [merr destination path type]
+  (taskCB merr Task Tuple0 (fn
+    [cb]
+    (.symlink fs destination path type cb)))))
+
 ; fs.truncate(path, len, callback)
+(defn- truncate
+  [fs Task Tuple0] (fn
+  [merr path len]
+  (taskCB merr Task Tuple0 (fn
+    [cb]
+    (.truncate fs path len cb)))))
+
 ; fs.unlink(path, callback)
+(defn unlink
+  [fs Task Tuple0] (fn
+  [merr path]
+  (taskCB merr Task Tuple0 (fn
+    [cb]
+    (.unlink fs path cb)))
+
 ; fs.unwatchFile(filename[, listener])
 ; fs.utimes(path, atime, mtime, callback)
+
 ; fs.watch(filename[, options][, listener])
+(defn- watch
+  [fs Task Tuple0 Tuple2 Signal] (fn
+  [path options createMessage]
+  (do
+    (.watch fs path options (fn
+      [event filename]
+      (.sendMessage Signal
+        (createMessage
+          (Tuple2 event filename)))))
+    (.succeed Task Tuple0))))
+
 ; fs.watchFile(filename[, options], listener)
 ; fs.write(fd, buffer, offset, length[, position], callback)
 ; fs.write(fd, data[, position[, encoding]], callback)
@@ -218,8 +251,9 @@
 (defn- make
   [localRuntime] (let
   [fs     (require "fs")
-   Task   (Elm.Native.Task.make  localRuntime)
-   Utils  (Elm.Native.Utils.make localRuntime)
+   Task   (Elm.Native.Task.make   localRuntime)
+   Signal (Elm.Native.Signal.make localRuntime)
+   Utils  (Elm.Native.Utils.make  localRuntime)
    Tuple0 (:Tuple0 Utils)
    Tuple2 (:Tuple2 Utils)]
   (do
@@ -246,7 +280,11 @@
           :rename     (F3 (rename     fs Task Tuple0))
           :rmdir      (F2 (rmdir      fs Task Tuple0))
           :stat       (F2 (stat       fs Task))
-        })))))
+          :symlink    (F4 (symlink    fs Task Tuple0))
+          :truncate   (F3 (truncate   fs Task Tuple0))
+          :unlink     (F2 (unlink     fs Task Tuple0))
+          :watch      (F3 (watch      fs Task Tuple0 Tuple2 Signal))
+        } )))))
 
 (sanitize Elm :Native :FS)
 (set! Elm.Native.FS.make make)

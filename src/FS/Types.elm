@@ -59,7 +59,7 @@ defaultReadOptions =
 
 marshallReadOptions : ReadOptions -> ReadOptionsRaw
 marshallReadOptions o =
-  { o | flags    = flagsToString (.flags o)
+  { o | flags    = flagsToString   (.flags o)
       , encoding = T.unsafeToNameE (.encoding o) }
 
 type alias ReadFileOptions =
@@ -77,7 +77,7 @@ defaultReadFileOptions =
 
 marshallReadFileOptions : ReadFileOptions -> ReadFileOptionsRaw
 marshallReadFileOptions o =
-  { o | flags    = flagsToString (.flags o)
+  { o | flags    = flagsToString   (.flags o)
       , encoding = T.unsafeToNameE (.encoding o) }
 
 type alias WriteOptions =
@@ -98,7 +98,7 @@ defaultWriteOptions =
 
 marshallWriteOptions : WriteOptions -> WriteOptionsRaw
 marshallWriteOptions o =
-  { o | flags           = flagsToString (.flags o)
+  { o | flags           = flagsToString   (.flags o)
       , defaultEncoding = T.unsafeToNameE (.defaultEncoding o) }
 
 type alias AppendOptions =
@@ -119,7 +119,7 @@ defaultAppendOptions =
 
 marshallAppendOptions : AppendOptions -> AppendOptionsRaw
 marshallAppendOptions o =
-  { o | flags    = flagsToString (.flags o)
+  { o | flags    = flagsToString   (.flags o)
       , encoding = T.unsafeToNameE (.encoding o) }
 
 type alias Stats =
@@ -137,3 +137,24 @@ type alias Stats =
   , mtime     : String
   , ctime     : String
   , birthtime : String }
+
+type SymType
+  = File
+  | Dir
+  | Junction
+
+symTypeToString : SymType -> String
+symTypeToString t =
+  case t of
+    File -> "file"
+    Dir -> "dir"
+    Junction -> "junction"
+
+type alias WatchOptions =
+  { persistent : Bool
+  , recursive  : Bool }
+
+defaultWatchOptions : WatchOptions
+defaultWatchOptions =
+  { persistent = True
+  , recursive  = False }

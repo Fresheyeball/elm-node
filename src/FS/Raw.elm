@@ -76,10 +76,26 @@ readlink : FilePath -> Task FSError String
 readlink = Native.FS.readlink FSError
 
 rename : FilePath -> FilePath -> Task FSError ()
-rename = Native.FS.rename FSError
+rename oldPath newPath =
+  Native.FS.rename FSError oldPath newPath
 
 rmdir : FilePath -> Task FSError ()
 rmdir = Native.FS.rmdir FSError
 
 stat : FilePath -> Task FSError Stats
 stat = Native.FS.stat FSError
+
+symlink : FilePath -> FilePath -> SymType -> Task FSError ()
+symlink destination path t =
+  Native.FS.symlink FSError destination path (symTypeToString t)
+
+truncate : Int -> FilePath -> Task FSError ()
+truncate = Native.FS.truncate FSError
+
+unlink : FilePath -> Task FSError ()
+unlink = Native.FS.unlink FSError
+
+watch : String -> WatchOptions -> Mailbox () -> Task x FSWatcher
+watch path options = let
+  createMessage = identity
+  in Native.FS.watch path options createMessage

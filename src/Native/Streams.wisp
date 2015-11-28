@@ -18,13 +18,13 @@
     (.succeed Task Tuple0))))
 
 (defn- on
-  [Task] (fn
+  [Task Tuple0] (fn
   [eventName stream aToTask]
-  (.asyncFunction Task (fn
-    [callback]
+  (do
     (.on stream eventName (fn
       [chunk]
-      (callback (aToTask chunk))))))))
+      (.perform Task (aToTask chunk))))
+    (.succeed Task Tuple0))))
 
 (defn- make
   [localRuntime] (let
@@ -36,8 +36,8 @@
     (if localRuntime.Native.Streams.values
         localRuntime.Native.Streams.values
         (set! localRuntime.Native.Streams.values {
-          :on (F3 (on Task))
-          :pipe (F2 (pipe Task Tuple0))
+          :on        (F3 (on        Task Tuple0))
+          :pipe      (F2 (pipe      Task Tuple0))
           :logBuffer (F2 (logBuffer Task Tuple0)) })))))
 
 (sanitize Elm :Native :Streams)

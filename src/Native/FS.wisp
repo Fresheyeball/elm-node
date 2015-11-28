@@ -227,17 +227,22 @@
 
 ; fs.watch(filename[, options][, listener])
 (defn- watch
-  [fs Task Tuple0 Tuple2 Signal] (fn
-  [path options createMessage]
+  [fs Task Tuple0 Tuple2] (fn
+  [path options handler]
   (do
     (.watch fs path options (fn
       [event filename]
-      (.sendMessage Signal
-        (createMessage
+      (.perform Task
+        (handler
           (Tuple2 event filename)))))
     (.succeed Task Tuple0))))
 
-; fs.watchFile(filename[, options], listener)
+; fs.watchFile(filename[, options], listener
+(defn- watchFile
+  [fs Task Tuple0 Tuple2] (fn
+  [path options handler]
+    ))
+
 ; fs.write(fd, buffer, offset, length[, position], callback)
 ; fs.write(fd, data[, position[, encoding]], callback)
 ; fs.writeFile(file, data[, options], callback)
@@ -252,7 +257,6 @@
   [localRuntime] (let
   [fs     (require "fs")
    Task   (Elm.Native.Task.make   localRuntime)
-   Signal (Elm.Native.Signal.make localRuntime)
    Utils  (Elm.Native.Utils.make  localRuntime)
    Tuple0 (:Tuple0 Utils)
    Tuple2 (:Tuple2 Utils)]
@@ -283,7 +287,7 @@
           :symlink    (F4 (symlink    fs Task Tuple0))
           :truncate   (F3 (truncate   fs Task Tuple0))
           :unlink     (F2 (unlink     fs Task Tuple0))
-          :watch      (F3 (watch      fs Task Tuple0 Tuple2 Signal))
+          :watch      (F3 (watch      fs Task Tuple0 Tuple2))
         } )))))
 
 (sanitize Elm :Native :FS)

@@ -1,6 +1,7 @@
 module FS.Raw where
 
 import FS.Types exposing (..)
+import Signal exposing (Address)
 import Task exposing (Task)
 import Native.FS
 
@@ -95,7 +96,33 @@ truncate = Native.FS.truncate FSError
 unlink : FilePath -> Task FSError ()
 unlink = Native.FS.unlink FSError
 
-watch : String -> WatchOptions -> Mailbox () -> Task x FSWatcher
-watch path options = let
-  createMessage = identity
-  in Native.FS.watch path options createMessage
+watch
+    : String
+   -> Address (WatchEvent, FilePath)
+   -> Task x FSWatcher
+watch path address =
+  watch' path defaultWatchOptions address
+
+watch'
+   : String
+  -> WatchOptions
+  -> Address (WatchEvent, FilePath)
+  -> Task x FSWatcher
+watch' path options address =
+  watchRaw path options (Signal.send address)
+
+watchRaw
+   : String
+  -> WatchOptions
+  -> ((WatchEvent, FilePath) -> Task x ())
+  -> Task x FSWatcher
+watchRaw path options handler =
+  Native.FS.watch path options <|
+    \(event, path') ->
+      case watchEventFromString event of
+        Just watchEvent -> handler (watchEvent, path')
+        _               -> Task.succeed ()
+
+watchFile
+   : FilePath
+  -> Address ()

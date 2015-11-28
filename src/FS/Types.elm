@@ -158,3 +158,15 @@ defaultWatchOptions : WatchOptions
 defaultWatchOptions =
   { persistent = True
   , recursive  = False }
+
+type FSWatcher = FSWatcher
+
+type WatchEvent
+  = Update
+  | WatchError
+
+watchEventFromString : String -> Maybe WatchEvent
+watchEventFromString s = case s of
+  "update" -> Just Update
+  "error"  -> Just WatchError
+  _ -> Nothing

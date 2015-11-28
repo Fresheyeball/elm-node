@@ -1,10 +1,16 @@
 module FS.Types where
 
 import Streams.Types as T
+import Time exposing (Time)
 
 type alias Encoding = T.Encoding
 type alias FilePath = String
 type alias Mode     = Int
+type alias Offset   = Int
+type alias Position = Int
+type alias Length   = Int
+type alias GID      = Int
+type alias UID      = Int
 
 type Buffer         = Buffer
 type FSError        = FSError String
@@ -63,21 +69,21 @@ marshallReadOptions o =
       , encoding = T.unsafeToNameE (.encoding o) }
 
 type alias ReadFileOptions =
-  { flags    : Flags
+  { flag     : Flags
   , encoding : Encoding }
 
 type alias ReadFileOptionsRaw =
-  { flags    : String
+  { flag     : String
   , encoding : String }
 
 defaultReadFileOptions : ReadFileOptions
 defaultReadFileOptions =
-  { flags    = R
+  { flag     = R
   , encoding = T.Binary}
 
 marshallReadFileOptions : ReadFileOptions -> ReadFileOptionsRaw
 marshallReadFileOptions o =
-  { o | flags    = flagsToString   (.flags o)
+  { o | flag     = flagsToString   (.flag o)
       , encoding = T.unsafeToNameE (.encoding o) }
 
 type alias WriteOptions =
@@ -102,27 +108,27 @@ marshallWriteOptions o =
       , defaultEncoding = T.unsafeToNameE (.defaultEncoding o) }
 
 type alias AppendOptions =
-  { flags    : Flags
+  { flag     : Flags
   , encoding : Encoding
   , mode     : Mode }
 
 type alias AppendOptionsRaw =
-  { flags    : String
+  { flag     : String
   , encoding : String
   , mode     : Mode }
 
 defaultAppendOptions : AppendOptions
 defaultAppendOptions =
-  { flags    = A
+  { flag     = A
   , mode     = 438 -- 0o666
   , encoding = T.Binary }
 
 marshallAppendOptions : AppendOptions -> AppendOptionsRaw
 marshallAppendOptions o =
-  { o | flags    = flagsToString   (.flags o)
+  { o | flag     = flagsToString   (.flag o)
       , encoding = T.unsafeToNameE (.encoding o) }
 
-type alias Stats =
+type alias Stat =
   { dev       : Int
   , mode      : Int
   , nlink     : Int
@@ -170,3 +176,31 @@ watchEventFromString s = case s of
   "update" -> Just Update
   "error"  -> Just WatchError
   _ -> Nothing
+
+type WatchFileListener = WatchFileListener
+
+type alias WatchFileOptions =
+  { persistent : Bool
+  , interval   : Time }
+
+type alias WriteFileOptions =
+  { encoding : Encoding
+  , mode     : Mode
+  , flag     : Flags }
+
+type alias WriteFileOptionsRaw =
+  { encoding : String
+  , mode     : Mode
+  , flag     : String }
+
+marshallWriteFileOptions : WriteFileOptions -> WriteFileOptionsRaw
+marshallWriteFileOptions {encoding, mode, flag} =
+  { encoding = T.toNameE encoding
+  , mode     = mode
+  , flag     = flagsToString flag }
+
+defaultWriteFileOptions : WriteFileOptions
+defaultWriteFileOptions =
+  { encoding = T.Utf8
+  , mode     = 438 -- 0o666
+  , flag     = W }

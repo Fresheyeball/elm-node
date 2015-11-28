@@ -45,7 +45,7 @@
       (do (.end res)
           (callback (.succeed Task Tuple0)))))))
 
-(defn on
+(defn- on
   [Signal]
   (fn [eventName x]
     (.on x eventName (fn [request, response]

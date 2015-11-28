@@ -8,7 +8,7 @@
         (Task.error (merr (.toString err)))
         (Task.success Tuple0))))))))
 
-; fs.access(path[, mode], callback)
+fs.access(path[, mode], callback)
 (defn- access
   [fs Task] (fn
   [path]
@@ -48,7 +48,7 @@
   [merr fd]
   (taskCB merr Task Tuple0 (fn
     [cb]
-    (.close fs fd cb))))
+    (.close fs fd cb)))))
 
 ; fs.fchmod(fd, mode, callback)
 (defn- fchmod
@@ -78,7 +78,7 @@
         (Task.fail (merr (.toString err)))
         (Task.success stats)))))))))
 
-; fs.fsync(fd, callback)
+fs.fsync(fd, callback)
 (defn- fsync
   [fs Task Tuple0] (fn
   [merr fd]
@@ -123,7 +123,7 @@
         (Task.succeed fd)))))))))
 
 ; fs.read(fd, buffer, offset, length, position, callback)
-(defn read
+(defn- read
   [fs Task Tuple2] (fn
   [merr fd buffer offset length position]
   (.asyncFunction Task (fn
@@ -187,7 +187,7 @@
     (.rmdir fs path cb)))))
 
 ; fs.stat(path, callback)
-(defn stat
+(defn- stat
   [fs Task] (fn
   [merr path]
   (.asyncFunction Task (fn
@@ -198,16 +198,103 @@
         (Task.fail (merr (.toString err)))
         (Task.succeed stats)))))))))
 
-; fs.symlink(destination, path[, type], callback)
+fs.symlink(destination, path[, type], callback)
+(defn- symlink
+  [fs Task Tuple0] (fn
+  [merr destination path type]
+  (taskCB merr Task Tuple0 (fn
+    [cb]
+    (.symlink fs destination path type cb)))))
+
 ; fs.truncate(path, len, callback)
+(defn- truncate
+  [fs Task Tuple0] (fn
+  [merr path len]
+  (taskCB merr Task Tuple0 (fn
+    [cb]
+    (.truncate fs path len cb)))))
+
 ; fs.unlink(path, callback)
+(defn- unlink
+  [fs Task Tuple0] (fn
+  [merr path]
+  (taskCB merr Task Tuple0 (fn
+    [cb]
+    (.unlink fs path cb)))))
+
 ; fs.unwatchFile(filename[, listener])
+(defn- unwatchFile
+  [fs Task Tuple0] (fn
+  [path listener]
+  (do
+    (.unwatchFile fs path listener)
+    (.succeed Task Tuple0))))
+
 ; fs.utimes(path, atime, mtime, callback)
+(defn- utimes
+  [fs Task Tuple0] (fn
+  [path times]
+  (do
+    (.utimes fs path (.atime times) (.mtime times))
+    (.succeed Task Tuple0))))
+
 ; fs.watch(filename[, options][, listener])
-; fs.watchFile(filename[, options], listener)
+(defn- watch
+  [fs Task Tuple0 Tuple2] (fn
+  [Just Nothing path options handler]
+  (do
+    (.watch fs path options (fn
+      [event filename]
+      (.perform Task (handler
+        (Tuple2 event (if filename
+                          (Just filename)
+                          Nothing))))))
+    (.succeed Task Tuple0))))
+
+; fs.watchFile(filename[, options], listener
+(defn- watchFile
+  [fs Task Tuple0 Tuple2] (fn
+  [path options handler]
+  (let
+    [handlerWrap (fn
+      [stat stat]
+      (.perform Task (handler (Tuple2 stat stat))))]
+    (do
+      (.watchFile fs path options handlerWrap)
+      (.succeed Task handlerWrap)))))
+
 ; fs.write(fd, buffer, offset, length[, position], callback)
+(defn- writeBuffer
+  [fs Task Tuple2] (fn
+  [merr fd buffer offset length position]
+    (.asyncFunction Task (fn
+      [callback]
+      (.write fs fd buffer offset length position (fn
+        [err written buff]
+        (callback (if err
+            (.fail Task (merr (.toString err)))
+            (.succeed Task (Tuple2 written buff))))))))))
+
 ; fs.write(fd, data[, position[, encoding]], callback)
+(defn- writeString
+  [fs Task Tuple2] (fn
+  [merr fd data position encoding]
+    (.asyncFunction Task (fn
+      [callback]
+      (.write fs fd data position encoding (fn
+        [err written string]
+        (callback (if err
+            (.fail Task (merr (.toString err)))
+            (.succeed Task (Tuple2 written string))))))))))
+
+
 ; fs.writeFile(file, data[, options], callback)
+(defn- writeFile
+  [fs Task Tuple0] (fn
+  [merr path data options]
+    (taskCB merr Task Tuple0 (fn
+      [cb]
+      (.writeFile path data options cb))
 
 (defn- sanitize [record & spaces]
   (spaces.reduce (fn [r space] (do
@@ -218,8 +305,8 @@
 (defn- make
   [localRuntime] (let
   [fs     (require "fs")
-   Task   (Elm.Native.Task.make  localRuntime)
-   Utils  (Elm.Native.Utils.make localRuntime)
+   Task   (Elm.Native.Task.make   localRuntime)
+   Utils  (Elm.Native.Utils.make  localRuntime)
    Tuple0 (:Tuple0 Utils)
    Tuple2 (:Tuple2 Utils)]
   (do
@@ -227,26 +314,36 @@
     (if localRuntime.Native.FS.values
         localRuntime.Native.FS.values
         (set! localRuntime.Native.FS.values {
-          :access         (access     fs Task)
-          :appendFile (F3 (appendFile fs Task Tuple0))
-          :chmod      (F3 (chmod      fs Task Tuple0))
-          :chown      (F4 (chown      fs Task Tuple0))
-          :close      (F2 (close      fs Task Tuple0))
-          :fchmod     (F3 (fchmod     fs Task Tuple0))
-          :fstat      (F2 (fstat      fs Task))
-          :fsync      (F2 (fsync      fs Task Tuple0))
-          :ftruncate  (F3 (ftruncate  fs Task Tuple0))
-          :link       (F3 (link       fs Task Tuple0))
-          :mkdir      (F3 (mkdir      fs Task Tuple0))
-          :open       (F4 (open       fs Task))
-          :read       (F6 (read       fs Task Tuple2))
-          :readFile   (F3 (readFile   fs Task Tuple0))
-          :readdir    (F2 (readdir    fs Task))
-          :readlink   (F2 (readlink   fs Task))
-          :rename     (F3 (rename     fs Task Tuple0))
-          :rmdir      (F2 (rmdir      fs Task Tuple0))
-          :stat       (F2 (stat       fs Task))
-        })))))
+          :access          (access      fs Task)
+          :appendFile  (F3 (appendFile  fs Task Tuple0))
+          :chmod       (F3 (chmod       fs Task Tuple0))
+          :chown       (F4 (chown       fs Task Tuple0))
+          :close       (F2 (close       fs Task Tuple0))
+          :fchmod      (F3 (fchmod      fs Task Tuple0))
+          :fstat       (F2 (fstat       fs Task))
+          :fsync       (F2 (fsync       fs Task Tuple0))
+          :ftruncate   (F3 (ftruncate   fs Task Tuple0))
+          :link        (F3 (link        fs Task Tuple0))
+          :mkdir       (F3 (mkdir       fs Task Tuple0))
+          :open        (F4 (open        fs Task))
+          :read        (F6 (read        fs Task Tuple2))
+          :readFile    (F3 (readFile    fs Task Tuple0))
+          :readdir     (F2 (readdir     fs Task))
+          :readlink    (F2 (readlink    fs Task))
+          :rename      (F3 (rename      fs Task Tuple0))
+          :rmdir       (F2 (rmdir       fs Task Tuple0))
+          :stat        (F2 (stat        fs Task))
+          :symlink     (F4 (symlink     fs Task Tuple0))
+          :truncate    (F3 (truncate    fs Task Tuple0))
+          :unlink      (F2 (unlink      fs Task Tuple0))
+          :unwatchFile (F2 (unwatchFile fs Task Tuple0))
+          :utimes      (F2 (utimes      fs Task Tuple0))
+          :watch       (F5 (watch       fs Task Tuple0 Tuple2))
+          :watchFile   (F3 (watchFile   fs Task Tuple0 Tuple2))
+          :writeString (F5 (writeString fs Task Tuple2))
+          :writeBuffer (F6 (writeBuffer fs Task Tuple2))
+          :writeFile   (F4 (writeFile   fs Task Tuple0))
+        } )))))
 
 (sanitize Elm :Native :FS)
 (set! Elm.Native.FS.make make)

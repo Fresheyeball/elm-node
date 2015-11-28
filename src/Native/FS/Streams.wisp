@@ -24,7 +24,8 @@
         localRuntime.Native.FS.Streams.values
         (set! localRuntime.Native.FS.Streams.values {
           :createReadStream  (F2 (createReadStream  fs Task))
-          :createWriteStream (F2 (createWriteStream fs Task)) })))))
+          :createWriteStream (F2 (createWriteStream fs Task))
+        })))))
 
 (sanitize Elm :Native :FS :Streams)
 (set! Elm.Native.FS.Streams.make make)

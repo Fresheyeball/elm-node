@@ -1,4 +1,3 @@
-
 cat src/Native/Marshall.wisp | wisp > src/Native/Marshall.js
 cat src/Native/Streams.wisp | wisp > src/Native/Streams.js
 cat src/Native/FS.wisp | wisp > src/Native/FS.js

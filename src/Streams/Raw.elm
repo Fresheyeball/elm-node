@@ -1,16 +1,16 @@
 module Streams.Raw where
 
 import Task exposing (Task)
+import Signal
 
 import Streams.Types exposing (..)
 import Native.Streams
 
-on' : String -> Read -> (Chunk -> Task x b) -> Task x b
-on' =
-  Native.Streams.on
+on' : (Chunk -> Task x b) -> ReadableEvent -> Readable -> Task x ()
+on' f e r = Native.Streams.on (toNameR e) (.readable r) f
 
-on : (Chunk -> Task x b) -> ReadableEvent -> Readable -> Task x b
-on f e r = on' (toNameR e) (.readable r) f
+on : Signal.Address Chunk -> ReadableEvent -> Readable -> Task x ()
+on address e r = on' (Signal.send address) e r
 
 pipe' : Read -> Write -> Task x ()
 pipe' =

@@ -46,9 +46,12 @@ pipe : Readable -> Writable -> Task x ()
 pipe r w =
   pipe' (.readable r) (.writable w)
 
-write : Encoding -> Chunk -> Task x ()
-write =
+write' : Encoding -> Chunk -> Task x ()
+write' =
   Debug.crash "not \"written\" yet!"
+
+write : Encoding -> Signal.Signal Chunk -> Signal.Signal (Task x ())
+write e s = write' e `Signal.map` s
 
 writeString : Encoding -> String -> Task x ()
 writeString =

@@ -6,7 +6,7 @@
 
 (defn- createReadStream
   [fs Task] (fn
-  [options path]
+  [options path] 
   (Task.succeed (.createReadStream fs path options))))
 
 (defn- createWriteStream

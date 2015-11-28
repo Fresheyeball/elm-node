@@ -294,7 +294,7 @@ fs.symlink(destination, path[, type], callback)
   [merr path data options]
     (taskCB merr Task Tuple0 (fn
       [cb]
-      (.writeFile path data options cb))
+      (.writeFile path data options cb)))))
 
 (defn- sanitize [record & spaces]
   (spaces.reduce (fn [r space] (do

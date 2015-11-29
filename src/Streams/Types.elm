@@ -18,6 +18,7 @@ type WritableEvent
   | WriteError
 
 type Buffer = BufferRaw
+            | BufferEmpty
 type alias Chunk = Either String Buffer
 
 type Encoding

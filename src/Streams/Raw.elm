@@ -19,27 +19,27 @@ on : Address Chunk -> ReadableEvent -> Readable -> Task x ()
 on address e r =
   on' (Signal.send address) e r
 
-onString' : (String -> Task x ()) -> ReadableEvent -> Readable -> Task x ()
-onString' f e r =
+onString' : ReadableEvent -> (String -> Task x ()) -> Readable -> Task x ()
+onString' e f r =
   on' (\chunk -> case chunk of
       Left s -> f s
       Right _ -> Task.succeed ()
     ) e r
 
-onBuffer' : (Buffer -> Task x ()) -> ReadableEvent -> Readable -> Task x ()
-onBuffer' f e r =
+onBuffer' : ReadableEvent -> (Buffer -> Task x ()) -> Readable -> Task x ()
+onBuffer' e f r =
   on' (\chunk -> case chunk of
       Left _ -> Task.succeed ()
       Right b -> f b
     ) e r
 
-onString : Address String -> ReadableEvent -> Readable -> Task x ()
-onString address e r =
-  onString' (Signal.send address) e r
+onString : ReadableEvent -> Address String -> Readable -> Task x ()
+onString e address r =
+  onString' e (Signal.send address) r
 
-onBuffer : Address Buffer -> ReadableEvent -> Readable -> Task x ()
-onBuffer address e r =
-  onBuffer' (Signal.send address) e r
+onBuffer : ReadableEvent -> Address Buffer -> Readable -> Task x ()
+onBuffer e address r =
+  onBuffer' e (Signal.send address) r
 
 pipe' : Read -> Write -> Task x ()
 pipe' =
@@ -49,30 +49,30 @@ pipe : Readable -> Writable -> Task x ()
 pipe r w =
   pipe' (.readable r) (.writable w)
 
-writeString' : Writable -> Encoding -> String -> Task x ()
-writeString' {writable} e data =
+writeString' :  Encoding -> String -> Writable -> Task x ()
+writeString' e data {writable} =
   Native.Streams.writeString writable (toNameE e) data
 
-writeBuffer' : Writable -> Buffer -> Task x ()
-writeBuffer' {writable} buffer =
+writeBuffer' : Buffer -> Writable -> Task x ()
+writeBuffer' buffer {writable} =
   Native.Streams.writeBuffer writable buffer
 
-write' : Writable -> Encoding -> Chunk -> Task x ()
-write' w e data = case data of
-  Left string  -> writeString' w e string
-  Right buffer -> writeBuffer' w buffer
+write' : Encoding -> Writable -> Chunk -> Task x ()
+write' e w data = case data of
+  Left string  -> writeString' e string w
+  Right buffer -> writeBuffer' buffer w
 
-writeString : Writable -> Encoding -> Signal String -> Signal (Task x ())
-writeString w e s =
-  writeString' w e <$> s
+writeString : Encoding -> Signal String -> Writable -> Task x ()
+writeString =
+  Native.Streams.writeStringSignal
 
-writeBuffer : Writable -> Signal Buffer -> Signal (Task x ())
-writeBuffer w s =
-  writeBuffer' w <$> s
+writeBuffer : Signal Buffer -> Writable -> Task x ()
+writeBuffer s {writable} =
+  Native.Streams.writeBufferSignal s writable
 
-write : Writable -> Encoding -> Signal Chunk -> Signal (Task x ())
+write : Writable -> Encoding -> Signal Chunk -> Task x ()
 write w e s =
-  write' w e <$> s
+  Debug.crash "no"
 
 logBuffer' : String -> Chunk -> Task x ()
 logBuffer' =

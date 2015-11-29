@@ -134,3 +134,5 @@
     [x a b c d e f] (.succeed Task ((aget x name) a b c d e f))))
 
 })
+
+(if (== (typeof window) :undefined) (set! window global))

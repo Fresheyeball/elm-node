@@ -2,6 +2,7 @@
   [localRuntime] (let
   [Task   (Elm.Native.Task.make  localRuntime)
    Utils  (Elm.Native.Utils.make localRuntime)
+   Signal (Elm.Native.Signal.make localRuntime)
    Tuple0 (:Tuple0 Utils)]
   (do
     (sanitize localRuntime :Native :Streams)
@@ -79,6 +80,22 @@
   ; writable.write(chunk[, encoding][, callback])
   :writeString (F2 (oo.method1cb "write" Task Tuple0))
   :writeBuffer (F3 (oo.method2cb "write" Task Tuple0))
+
+  :writeStringSignal (F3 (fn
+    [encoding signal stream]
+    (do
+      (.output Signal "write-stream-string" (fn
+        [chunk]
+        (.write stream chunk encoding)) signal)
+      (.succeed Task Tuple0))))
+
+  :writeBufferSignal (F2 (fn
+    [signal stream]
+    (do
+      (.output Signal "write-stream-buffer" (fn [chunk]
+        (do (.log console chunk)
+            (if chunk (.write stream chunk)))) signal)
+      (.succeed Task Tuple0))))
 
 })))))
 

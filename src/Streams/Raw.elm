@@ -3,9 +3,9 @@ module Streams.Raw where
 import Task exposing (Task)
 import Either exposing (..)
 import Signal exposing (..)
-import OOFFI
 
 import Streams.Types exposing (..)
+import Native.OOFFI
 import Native.Streams
 
 (<$>) : (a -> b) -> Signal a -> Signal b

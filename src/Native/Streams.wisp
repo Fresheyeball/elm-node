@@ -1,44 +1,86 @@
-(defn- sanitize [record & spaces]
-  (spaces.reduce (fn [r space] (do
-    (if (aget r space) nil (set! (aget r space) {}))
-    (aget r space)))
-  record))
-
-(defn- pipe
-  [Task Tuple0] (fn
-  [readable writable] (do
-    (.pipe readable writable)
-    (.succeed Task Tuple0))))
-
-(defn- logBuffer
-  [Task Tuple0] (fn
-  [encoding chunk] (do
-    (.log console
-      (if chunk (.toString chunk encoding) chunk))
-    (.succeed Task Tuple0))))
-
-(defn- on
-  [Task Tuple0] (fn
-  [eventName stream aToTask]
-  (do
-    (.on stream eventName (fn
-      [chunk]
-      (.perform Task (aToTask chunk))))
-    (.succeed Task Tuple0))))
-
 (defn- make
   [localRuntime] (let
   [Task   (Elm.Native.Task.make  localRuntime)
    Utils  (Elm.Native.Utils.make localRuntime)
-   Tuple0 (:Tuple0 Utils) ]
+   Tuple0 (:Tuple0 Utils)]
   (do
     (sanitize localRuntime :Native :Streams)
     (if localRuntime.Native.Streams.values
         localRuntime.Native.Streams.values
         (set! localRuntime.Native.Streams.values {
-          :on        (F3 (on        Task Tuple0))
-          :pipe      (F2 (pipe      Task Tuple0))
-          :logBuffer (F2 (logBuffer Task Tuple0)) })))))
+
+  :logBuffer (F2 (fn [encoding chunk]
+    (do
+      (.log console
+        (if chunk (.toString chunk encoding) chunk))
+      (.succeed Task Tuple0))))
+
+  ; Class: stream.Readable
+
+  :on (F3 (fn [eventName stream aToTask]
+    (do
+      (.on stream eventName (fn [chunk]
+        (.perform Task (aToTask chunk))))
+      (.succeed Task Tuple0))))
+
+  ; readable.isPaused()
+  :isPaused (oo.get0 "isPaused" Task)
+
+  ; readable.pause()
+  :pause (oo.method0 "pause" Task Tuple0)
+
+  ; readable.pipe(destination[, options])
+  :pipe (F2 (oo.method2 "pipe" Task Tuple0))
+
+  ; readable.read([size])
+  :read (F5 (fn [Left Right Just Nothing stream]
+    (.succeed Task (let [x (.read stream)]
+      (if x
+        (Just (if (== "string" (typeof x))
+          (Left  x)
+          (Right x)))
+        Nothing)))))
+  :readSize (F6 (fn [Left Right Just Nothing stream size]
+    (.succeed Task (let [x (.read stream size)]
+      (if x
+        (Just (if (== "string" (typeof x))
+          (Left  x)
+          (Right x)))
+        Nothing)))))
+
+  ; readable.resume()
+  :resume (oo.method0 "resume" Task Tuple0)
+
+  ; readable.setEncoding(encoding)
+  :setEncoding (F2 (oo.method1 "setEncoding" Task Tuple0))
+
+  ; readable.unpipe([destination])
+  :unpipe (F2 (oo.method1 "unpipe" Task Tuple0))
+  :unpipeAll (oo.method0 "unpipe" Task Tuple0)
+
+  ; readable.unshift(chunk)
+  :unshift (F2 (oo.method1 "unshift" Task Tuple0))
+
+  ; Class: stream.Writable
+
+  ; writable.cork()
+  :cork (oo.method0 "cork" Task Tuple0)
+
+  ; writable.end([chunk][, encoding][, callback])
+  :endString (F3 (oo.method2cb "end" Task Tuple0))
+  :endBuffer (F2 (oo.method1cb "end" Task Tuple0))
+
+  ; writable.setDefaultEncoding(encoding)
+  :setDefaultEncoding (F2 (oo.method1 "setDefaultEncoding" Task Tuple0))
+
+  ; writable.uncork()
+  :uncork (oo.method0 "uncork" Task Tuple0)
+
+  ; writable.write(chunk[, encoding][, callback])
+  :writeString (F2 (oo.method1cb "write" Task Tuple0))
+  :writeBuffer (F3 (oo.method2cb "write" Task Tuple0))
+
+})))))
 
 (sanitize Elm :Native :Streams)
 (set! Elm.Native.Streams.make make)

@@ -1,9 +1,3 @@
-(defn- sanitize [record & spaces]
-  (spaces.reduce (fn [r space] (do
-    (if (aget r space) nil (set! (aget r space) {}))
-    (aget r space)))
-  record))
-
 (defn- createReadStream
   [fs Task] (fn
   [options path]
@@ -13,6 +7,12 @@
   [fs Task] (fn
   [options path]
   (Task.succeed (.createWriteStream fs path options))))
+
+(defn- sanitize [record & spaces]
+  (spaces.reduce (fn [r space] (do
+    (if (aget r space) nil (set! (aget r space) {}))
+    (aget r space)))
+  record))
 
 (defn- make
   [localRuntime] (let
@@ -24,8 +24,7 @@
         localRuntime.Native.FS.Streams.values
         (set! localRuntime.Native.FS.Streams.values {
           :createReadStream  (F2 (createReadStream  fs Task))
-          :createWriteStream (F2 (createWriteStream fs Task))
-        })))))
+          :createWriteStream (F2 (createWriteStream fs Task)) })))))
 
 (sanitize Elm :Native :FS :Streams)
 (set! Elm.Native.FS.Streams.make make)

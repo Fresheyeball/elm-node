@@ -1,6 +1,7 @@
 module Streams.Types where
 
 import Marshall
+import Either exposing (..)
 
 type ReadableEvent
   = Data
@@ -16,7 +17,8 @@ type WritableEvent
   | Finish
   | WriteError
 
-type Chunk = ChunkRaw
+type Buffer = BufferRaw
+type alias Chunk = Either String Buffer
 
 type Encoding
   = Ascii

@@ -2,17 +2,20 @@ module Streams.Raw where
 
 import Task exposing (Task)
 import Either exposing (..)
-import Signal
-import Debug
+import Signal exposing (..)
+import OOFFI
 
 import Streams.Types exposing (..)
 import Native.Streams
+
+(<$>) : (a -> b) -> Signal a -> Signal b
+(<$>) = Signal.map
 
 on' : (Chunk -> Task x ()) -> ReadableEvent -> Readable -> Task x ()
 on' f e r =
   Native.Streams.on (toNameR e) (.readable r) f
 
-on : Signal.Address Chunk -> ReadableEvent -> Readable -> Task x ()
+on : Address Chunk -> ReadableEvent -> Readable -> Task x ()
 on address e r =
   on' (Signal.send address) e r
 
@@ -30,11 +33,11 @@ onBuffer' f e r =
       Right b -> f b
     ) e r
 
-onString : Signal.Address String -> ReadableEvent -> Readable -> Task x ()
+onString : Address String -> ReadableEvent -> Readable -> Task x ()
 onString address e r =
   onString' (Signal.send address) e r
 
-onBuffer : Signal.Address Buffer -> ReadableEvent -> Readable -> Task x ()
+onBuffer : Address Buffer -> ReadableEvent -> Readable -> Task x ()
 onBuffer address e r =
   onBuffer' (Signal.send address) e r
 
@@ -46,20 +49,30 @@ pipe : Readable -> Writable -> Task x ()
 pipe r w =
   pipe' (.readable r) (.writable w)
 
-write' : Encoding -> Chunk -> Task x ()
-write' =
-  Debug.crash "not \"written\" yet!"
+writeString' : Writable -> Encoding -> String -> Task x ()
+writeString' {writable} e data =
+  Native.Streams.writeString writable (toNameE e) data
 
-write : Encoding -> Signal.Signal Chunk -> Signal.Signal (Task x ())
-write e s = write' e `Signal.map` s
+writeBuffer' : Writable -> Buffer -> Task x ()
+writeBuffer' {writable} buffer =
+  Native.Streams.writeBuffer writable buffer
 
-writeString : Encoding -> String -> Task x ()
-writeString =
-  Debug.crash "not ready!"
+write' : Writable -> Encoding -> Chunk -> Task x ()
+write' w e data = case data of
+  Left string  -> writeString' w e string
+  Right buffer -> writeBuffer' w buffer
 
-writeBuffer : Buffer -> Task x ()
-writeBuffer =
-  Debug.crash "not ready!"
+writeString : Writable -> Encoding -> Signal String -> Signal (Task x ())
+writeString w e s =
+  writeString' w e <$> s
+
+writeBuffer : Writable -> Signal Buffer -> Signal (Task x ())
+writeBuffer w s =
+  writeBuffer' w <$> s
+
+write : Writable -> Encoding -> Signal Chunk -> Signal (Task x ())
+write w e s =
+  write' w e <$> s
 
 logBuffer' : String -> Chunk -> Task x ()
 logBuffer' =

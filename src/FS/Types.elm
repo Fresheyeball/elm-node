@@ -12,7 +12,6 @@ type alias Length   = Int
 type alias GID      = Int
 type alias UID      = Int
 
-type Buffer         = Buffer
 type FSError        = FSError String
 type FileDescriptor = FileDescriptor
 type Flags

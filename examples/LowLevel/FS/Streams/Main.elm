@@ -8,7 +8,7 @@ import Task exposing (Task, andThen)
 
 port run : Task x ()
 port run = let
-  src  = createReadStream "README.md"
+  src  = createReadStream  "README.md"
   sync = createWriteStream "README-CLONE.md"
   go r w = on' (logBuffer Utf8) Data r
          `andThen` always (pipe r w)

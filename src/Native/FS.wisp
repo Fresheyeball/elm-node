@@ -302,10 +302,14 @@
           ;             (.error Task (merr (.toString err)))
           ;             (.succeed Task Tuple0))))))))))))
           :writeFile (F3 (fn [file data options]
-            (do
-              (.log console "file:" file "data:" data "options:" options)
-              (.writeFileSync fs file data)
-              (.succeed Task Tuple0))))
+            (.asyncFunction Task (fn [callback]
+              (do
+                (.writeFileSync fs file data)
+                (callback (.succeed Task Tuple0)))))))
+          ; :writeFile (F3 (fn [file data options]
+          ;   (do
+          ;     (.writeFileSync fs file data)
+          ;     (.succeed Task Tuple0))))
 
         } )))))
 

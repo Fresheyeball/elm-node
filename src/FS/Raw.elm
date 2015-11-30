@@ -10,7 +10,7 @@ import Native.FS
 import Debug
 
 dirname : FilePath
-dirname = Native.FS.dirname69
+dirname = Native.FS.dirname
 
 access : FilePath -> Task x Bool
 access = Native.FS.access

@@ -12,8 +12,8 @@ import Native.Streams
 (<$>) = Signal.map
 
 on' : (Chunk -> Task x ()) -> ReadableEvent -> Readable -> Task x ()
-on' f e r =
-  Native.Streams.on (toNameR e) (.readable r) f
+on' f e {readable} =
+  Native.Streams.on Left Right (toNameR e) readable f
 
 on : Address Chunk -> ReadableEvent -> Readable -> Task x ()
 on address e r =
@@ -74,10 +74,7 @@ write : Writable -> Encoding -> Signal Chunk -> Task x ()
 write w e s =
   Debug.crash "no"
 
-logBuffer' : String -> Chunk -> Task x ()
-logBuffer' =
-  Native.Streams.logBuffer
 
-logBuffer : Encoding -> Chunk -> Task x ()
-logBuffer =
-  logBuffer' << unsafeToNameE
+logBuffer : Encoding -> Buffer -> Task x ()
+logBuffer e b =
+  Native.Streams.logBuffer (unsafeToNameE e) b

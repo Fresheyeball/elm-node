@@ -1,15 +1,18 @@
 module Main where
 
 import FS.Streams.Raw exposing (..)
-import FS.Types exposing (..)
 import Streams.Types exposing (..)
 import Streams.Raw exposing (..)
 
-import Signal exposing (..)
+import Signal exposing (Signal, mailbox, Mailbox)
 import Task exposing (Task, andThen, succeed)
 
 flow : Mailbox Buffer
 flow = mailbox BufferEmpty
+
+port log : Signal (Task x ())
+port log =
+  Signal.map (logBuffer Utf8) flow.signal
 
 port read : Task x ()
 port read =

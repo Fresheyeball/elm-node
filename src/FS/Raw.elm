@@ -1,12 +1,16 @@
 module FS.Raw where
 
 import FS.Types exposing (..)
-import Streams.Types exposing (toNameE)
+import Streams.Types exposing (toNameE, Buffer, Chunk)
 import Signal exposing (Address)
 import Task exposing (Task)
 import Time exposing (Time)
+import Either exposing (..)
 import Native.FS
 import Debug
+
+dirname : FilePath
+dirname = Native.FS.dirname69
 
 access : FilePath -> Task x Bool
 access = Native.FS.access
@@ -126,18 +130,18 @@ watchRaw path options handler =
         Just watchEvent -> handler (watchEvent, path')
         _               -> Task.succeed ()
 
-watchFile
-   : FilePath
-  -> Address (Stat, Stat)
-  -> Task x WatchFileListener
-watchFile = Debug.crash ""
-
-watchFile'
-   : FilePath
-  -> WatchFileOptions
-  -> Address (Stat, Stat)
-  -> Task x WatchFileListener
-watchFile' = Debug.crash ""
+-- watchFile
+--    : FilePath
+--   -> Address (Stat, Stat)
+--   -> Task x WatchFileListener
+-- watchFile = Debug.crash ""
+--
+-- watchFile'
+--    : FilePath
+--   -> WatchFileOptions
+--   -> Address (Stat, Stat)
+--   -> Task x WatchFileListener
+-- watchFile' = Debug.crash ""
 
 watchFileRaw
    : FilePath
@@ -152,21 +156,40 @@ unwatchFile = Native.FS.unwatchFile
 utimes : FilePath -> { atime : Time, mtime : Time} -> Task x ()
 utimes = Native.FS.utimes
 
-writeString : FileDescriptor -> String -> Position -> Encoding -> Task FSError (Int, String)
-writeString fd data position encoding =
+writeFileFromString : FileDescriptor -> String -> Position -> Encoding -> Task FSError (Int, String)
+writeFileFromString fd data position encoding =
   Native.FS.writeString FSError fd data position (toNameE encoding)
 
-writeBuffer : FileDescriptor
-           -> Buffer
-           -> Offset
-           -> Length
-           -> Position
-           -> Task FSError (Int, Buffer)
-writeBuffer = Native.FS.writeBuffer
+writeFileFromBuffer
+   : FileDescriptor
+  -> Buffer
+  -> Offset
+  -> Length
+  -> Position
+  -> Task FSError (Int, Buffer)
+writeFileFromBuffer = Native.FS.writeBuffer
 
-writeFile' : FilePath -> String -> WriteFileOptions -> Task FSError ()
-writeFile' path data options =
+writeFileString' : WriteFileOptions -> FilePath -> String -> Task FSError ()
+writeFileString' options path data =
+  Native.FS.writeFile path data (marshallWriteFileOptions options)
+
+writeFileString : FilePath -> String -> Task FSError ()
+writeFileString =
+  writeFileString' defaultWriteFileOptions
+
+writeFileBuffer' : WriteFileOptions -> FilePath -> Buffer -> Task FSError ()
+writeFileBuffer' options path data =
   Native.FS.writeFile FSError path data (marshallWriteFileOptions options)
 
-writeFile : FilePath -> String -> Task FSError ()
-writeFile path data = writeFile' path data defaultWriteFileOptions
+writeFileBuffer : FilePath -> Buffer -> Task FSError ()
+writeFileBuffer =
+  writeFileBuffer' defaultWriteFileOptions
+
+writeFile' : WriteFileOptions -> FilePath -> Chunk -> Task FSError ()
+writeFile' options path chunk =
+  case chunk of
+    Left  s -> writeFileString' options path s
+    Right b -> writeFileBuffer' options path b
+
+writeFile : FilePath -> Chunk -> Task FSError ()
+writeFile = writeFile' defaultWriteFileOptions

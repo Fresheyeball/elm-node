@@ -4,12 +4,22 @@ import FS.Streams.Raw exposing (..)
 import Streams.Types exposing (..)
 import Streams.Raw exposing (..)
 
-import Task exposing (Task, andThen)
+import Signal exposing (Signal, mailbox, Mailbox)
+import Task exposing (Task, andThen, succeed)
 
-port run : Task x ()
-port run = let
-  src  = createReadStream  "README.md"
-  sync = createWriteStream "README-CLONE.md"
-  go r w = on' (logBuffer Utf8) Data r
-         `andThen` always (pipe r w)
-  in Task.map2 go src sync `andThen` identity
+flow : Mailbox Buffer
+flow = mailbox BufferEmpty
+
+port log : Signal (Task x ())
+port log =
+  Signal.map (logBuffer Utf8) flow.signal
+
+port read : Task x ()
+port read =
+  createReadStream "README.md"
+  `andThen` onBuffer Data flow.address
+
+port write : Task x ()
+port write =
+  createWriteStream "README-CLONE.md"
+  `andThen` writeBuffer flow.signal

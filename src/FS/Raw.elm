@@ -12,6 +12,30 @@ import Debug
 dirname : FilePath
 dirname = Native.FS.dirname
 
+f_ok : Mode
+f_ok = Native.FS.f_ok
+
+r_ok : Mode
+r_ok = Native.FS.r_ok
+
+w_ok : Mode
+w_ok = Native.FS.w_ok
+
+x_ok : Mode
+x_ok = Native.FS.x_ok
+
+defaultReadOptions : ReadOptions
+defaultReadOptions =
+  { flags          = R
+  , mode           = 438 -- 0o666
+  , autoClose      = True
+  , encoding       = T.Binary }
+
+marshallReadOptions : ReadOptions -> ReadOptionsRaw
+marshallReadOptions o =
+  { o | flags    = flagsToString   (.flags o)
+      , encoding = T.unsafeToNameE (.encoding o) }
+
 access : FilePath -> Task x Bool
 access = Native.FS.access
 

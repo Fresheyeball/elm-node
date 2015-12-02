@@ -55,18 +55,6 @@ type alias ReadOptionsRaw =
   , mode      : Mode
   , autoClose : Bool }
 
-defaultReadOptions : ReadOptions
-defaultReadOptions =
-  { flags          = R
-  , mode           = 438 -- 0o666
-  , autoClose      = True
-  , encoding       = T.Binary }
-
-marshallReadOptions : ReadOptions -> ReadOptionsRaw
-marshallReadOptions o =
-  { o | flags    = flagsToString   (.flags o)
-      , encoding = T.unsafeToNameE (.encoding o) }
-
 type alias ReadFileOptions =
   { flag     : Flags
   , encoding : Encoding }

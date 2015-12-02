@@ -6,7 +6,7 @@
       [err]
       (callback (if err
         (Task.error (merr (.toString err)))
-        (Task.success Tuple0))))))))
+        (Task.succeed Tuple0))))))))
 
 ; fs.access(path[, mode], callback)
 (defn- access
@@ -58,13 +58,7 @@
     [cb]
     (.fchmod fs fd mode cb)))))
 
-; fs.fchown(fd, uid, gid, callback)
-(defn- fchown
-  [fs Task Tuple0] (fn
-  [merr fd uid gid]
-  (taskCB merr Task Tuple0 (fn
-    [cb]
-    (.fchown fs fd uid gid cb)))))
+
 
 ; fs.fstat(fd, callback)
 (defn- fstat
@@ -76,7 +70,7 @@
       [err stats]
       (callback (if err
         (Task.fail (merr (.toString err)))
-        (Task.success stats)))))))))
+        (Task.succeed stats)))))))))
 
 ; fs.fsync(fd, callback)
 (defn- fsync
@@ -129,22 +123,10 @@
   (.asyncFunction Task (fn
     [callback]
     (.read fs fd buffer offset length position (fn
-      [err bytesRead buffer']
+      [err bytesRead buffer_]
       (callback (if err
         (Task.fail (merr (.toString err)))
-        (Task.succeed (Tuple2 bytesRead buffer'))))))))))
-
-; fs.readFile(file[, options], callback)
-(defn- readFile
-  [fs Task] (fn
-  [merr options path]
-  (.asyncFunction Task (fn
-    [callback]
-    (.readFile fs path options (fn
-      [err data]
-      (callback (if err
-        (Task.fail (merr (.toString err)))
-        (Task.succeed data)))))))))
+        (Task.succeed (Tuple2 bytesRead buffer_))))))))))
 
 ; fs.readdir(path, callback)
 (defn- readdir
@@ -241,7 +223,7 @@
 
 ; fs.write(fd, buffer, offset, length[, position], callback)
 ; fs.write(fd, data[, position[, encoding]], callback)
-; fs.writeFile(file, data[, options], callback)
+
 
 (defn- sanitize [record & spaces]
   (spaces.reduce (fn [r space] (do
@@ -267,6 +249,14 @@
           :chown      (F4 (chown      fs Task Tuple0))
           :close      (F2 (close      fs Task Tuple0))
           :fchmod     (F3 (fchmod     fs Task Tuple0))
+
+          ; fs.fchown(fd, uid, gid, callback)
+          :fchown (F4 (fn
+            [merr fd uid gid]
+            (taskCB merr Task Tuple0 (fn
+              [cb]
+              (.fchown fs fd uid gid cb)))))
+
           :fstat      (F2 (fstat      fs Task))
           :fsync      (F2 (fsync      fs Task Tuple0))
           :ftruncate  (F3 (ftruncate  fs Task Tuple0))
@@ -274,7 +264,15 @@
           :mkdir      (F3 (mkdir      fs Task Tuple0))
           :open       (F4 (open       fs Task))
           :read       (F6 (read       fs Task Tuple2))
-          :readFile   (F3 (readFile   fs Task Tuple0))
+
+          ; fs.readFile(file[, options], callback)
+          :readFile (F3 (fn [merr options path]
+            (.asyncFunction Task (fn [callback]
+              (.readFile fs path options (fn [err data]
+                (callback (if err
+                  (Task.fail (merr (.toString err)))
+                  (Task.succeed data)))))))))
+
           :readdir    (F2 (readdir    fs Task))
           :readlink   (F2 (readlink   fs Task))
           :rename     (F3 (rename     fs Task Tuple0))
@@ -284,6 +282,17 @@
           :truncate   (F3 (truncate   fs Task Tuple0))
           :unlink     (F2 (unlink     fs Task Tuple0))
           :watch      (F3 (watch      fs Task Tuple0 Tuple2))
+
+          :dirname    __dirname
+
+          ; fs.writeFile(file, data[, options], callback)
+          :writeFile (F4 (fn [merr file data options]
+            (.asyncFunction Task (fn [callback]
+              (.writeFile fs file data (fn [err]
+                (callback (if err
+                  (.error Task (merr (.toString err)))
+                  (.succeed Task Tuple0)))))))))
+                  
         } )))))
 
 (sanitize Elm :Native :FS)

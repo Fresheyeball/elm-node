@@ -251,10 +251,8 @@
           :fchmod     (F3 (fchmod     fs Task Tuple0))
 
           ; fs.fchown(fd, uid, gid, callback)
-          :fchown (F4 (fn
-            [merr fd uid gid]
-            (taskCB merr Task Tuple0 (fn
-              [cb]
+          :fchown (F4 (fn [merr fd uid gid]
+            (taskCB merr Task Tuple0 (fn [cb]
               (.fchown fs fd uid gid cb)))))
 
           :fstat      (F2 (fstat      fs Task))
@@ -292,7 +290,7 @@
                 (callback (if err
                   (.error Task (merr (.toString err)))
                   (.succeed Task Tuple0)))))))))
-                  
+
         } )))))
 
 (sanitize Elm :Native :FS)

@@ -10,11 +10,13 @@
         localRuntime.Native.Streams.values
         (set! localRuntime.Native.Streams.values {
 
-  :logBuffer (F2 (fn [encoding chunk]
-    (do
-      (.log console
-        (if chunk (.toString chunk encoding) chunk))
-      (.succeed Task Tuple0))))
+  :bufferToString (F2 (fn [encoding chunk]
+    (.asyncFunction Task (fn [callback]
+      (callback
+        (.succeed Task
+          (if chunk
+            (.toString chunk encoding)
+            "")))))))
 
   ; Class: stream.Readable
 

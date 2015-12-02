@@ -19,7 +19,7 @@ flow = mailbox BufferEmpty
 port log : Signal (Task x ())
 port log =
   Signal.map
-    (Task.map (always () << Debug.log "flow") << bufferToString Utf8)
+    (bufferToString Utf8 >> Task.map (Debug.log "flow" >> always ()))
     flow.signal
 
 port read : Task FSError ()

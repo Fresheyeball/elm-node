@@ -15,19 +15,21 @@
       (callback
         (.succeed Task
           (if chunk
-            (.toString chunk encoding)
-            "")))))))
+            (if (== chunk.ctor "BufferEmpty")
+                ""
+                (.toString chunk encoding)))))))))
 
   ; Class: stream.Readable
 
   :on (F5 (fn [Left Right eventName stream f]
-    (do
-      (.on stream eventName (fn [chunk]
-        (.perform Task (f
-          (if (== (typeof chunk) "string")
-            (Left chunk)
-            (Right chunk))))))
-      (.succeed Task Tuple0))))
+    (.asyncFunction Task (fn [callback]
+      (do
+        (.on stream eventName (fn [chunk]
+          (.perform Task (f
+            (if (== (typeof chunk) "string")
+              (Left chunk)
+              (Right chunk))))))
+        (.succeed Task Tuple0))))))
 
   ; readable.isPaused()
   :isPaused (oo.get0 "isPaused" Task)

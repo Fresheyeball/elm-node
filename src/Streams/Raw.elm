@@ -74,7 +74,6 @@ write : Writable -> Encoding -> Signal Chunk -> Task x ()
 write w e s =
   Debug.crash "no"
 
-
-logBuffer : Encoding -> Buffer -> Task x ()
-logBuffer e b =
-  Native.Streams.logBuffer (unsafeToNameE e) b
+bufferToString : Encoding -> Buffer -> Task x String
+bufferToString e b =
+  Native.Streams.bufferToString (unsafeToNameE e) b

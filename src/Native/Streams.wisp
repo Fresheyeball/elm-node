@@ -10,22 +10,26 @@
         localRuntime.Native.Streams.values
         (set! localRuntime.Native.Streams.values {
 
-  :logBuffer (F2 (fn [encoding chunk]
-    (do
-      (.log console
-        (if chunk (.toString chunk encoding) chunk))
-      (.succeed Task Tuple0))))
+  :bufferToString (F2 (fn [encoding chunk]
+    (.asyncFunction Task (fn [callback]
+      (callback
+        (.succeed Task
+          (if chunk
+            (if (== chunk.ctor "BufferEmpty")
+                ""
+                (.toString chunk encoding)))))))))
 
   ; Class: stream.Readable
 
   :on (F5 (fn [Left Right eventName stream f]
-    (do
-      (.on stream eventName (fn [chunk]
-        (.perform Task (f
-          (if (== (typeof chunk) "string")
-            (Left chunk)
-            (Right chunk))))))
-      (.succeed Task Tuple0))))
+    (.asyncFunction Task (fn [callback]
+      (do
+        (.on stream eventName (fn [chunk]
+          (.perform Task (f
+            (if (== (typeof chunk) "string")
+              (Left chunk)
+              (Right chunk))))))
+        (.succeed Task Tuple0))))))
 
   ; readable.isPaused()
   :isPaused (oo.get0 "isPaused" Task)

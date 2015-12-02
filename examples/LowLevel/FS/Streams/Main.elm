@@ -8,6 +8,7 @@ import Streams.Raw exposing (..)
 
 import Signal exposing (Signal, mailbox, Mailbox)
 import Task exposing (Task, andThen, succeed)
+import Debug
 
 testFile : FilePath
 testFile = dirname ++ "/testfile"
@@ -17,7 +18,9 @@ flow = mailbox BufferEmpty
 
 port log : Signal (Task x ())
 port log =
-  Signal.map (logBuffer Utf8) flow.signal
+  Signal.map
+    (bufferToString Utf8 >> Task.map (Debug.log "flow" >> always ()))
+    flow.signal
 
 port read : Task FSError ()
 port read =

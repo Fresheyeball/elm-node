@@ -22,10 +22,10 @@ flow = mailbox BufferEmpty
 port read : Task FSError ()
 port read =
   writeFileString testFile "success"
-  `andThen` always (createReadStream testFile)
-  `andThen` onBuffer Data flow.address
+  -- `andThen` always (createReadStream testFile)
+  -- `andThen` onBuffer Data flow.address
 
-port write : Task x ()
-port write =
-  createWriteStream (testFile ++ "-clone")
-  `andThen` writeBuffer flow.signal
+-- port write : Task x ()
+-- port write =
+--   createWriteStream (testFile ++ "-clone")
+--   `andThen` writeBuffer flow.signal

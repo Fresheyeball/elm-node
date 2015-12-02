@@ -128,18 +128,6 @@
         (Task.fail (merr (.toString err)))
         (Task.succeed (Tuple2 bytesRead buffer_))))))))))
 
-; fs.readFile(file[, options], callback)
-(defn- readFile
-  [fs Task] (fn
-  [merr options path]
-  (.asyncFunction Task (fn
-    [callback]
-    (.readFile fs path options (fn
-      [err data]
-      (callback (if err
-        (Task.fail (merr (.toString err)))
-        (Task.succeed data)))))))))
-
 ; fs.readdir(path, callback)
 (defn- readdir
   [fs Task] (fn
@@ -276,7 +264,15 @@
           :mkdir      (F3 (mkdir      fs Task Tuple0))
           :open       (F4 (open       fs Task))
           :read       (F6 (read       fs Task Tuple2))
-          :readFile   (F3 (readFile   fs Task Tuple0))
+
+          ; fs.readFile(file[, options], callback)
+          :readFile (F3 (fn [merr options path]
+            (.asyncFunction Task (fn [callback]
+              (.readFile fs path options (fn [err data]
+                (callback (if err
+                  (Task.fail (merr (.toString err)))
+                  (Task.succeed data)))))))))
+
           :readdir    (F2 (readdir    fs Task))
           :readlink   (F2 (readlink   fs Task))
           :rename     (F3 (rename     fs Task Tuple0))
@@ -290,27 +286,13 @@
           :dirname    __dirname
 
           ; fs.writeFile(file, data[, options], callback)
-          ; :writeFile (F4 (fn
-          ;   [merr file data options]
-          ;   (.asyncFunction Task (fn [callback] (do
-          ;     (.log console "file:" (JSON.stringify file) "data:" data "options:" options)
-          ;     (.writeFile fs file data (fn [err] (do
-          ;       (.log console "moo")
-          ;       (callback (do
-          ;         (.log console "err: " err)
-          ;         (if err
-          ;             (.error Task (merr (.toString err)))
-          ;             (.succeed Task Tuple0))))))))))))
-          :writeFile (F3 (fn [file data options]
+          :writeFile (F4 (fn [merr file data options]
             (.asyncFunction Task (fn [callback]
-              (do
-                (.writeFileSync fs file data)
-                (callback (.succeed Task Tuple0)))))))
-          ; :writeFile (F3 (fn [file data options]
-          ;   (do
-          ;     (.writeFileSync fs file data)
-          ;     (.succeed Task Tuple0))))
-
+              (.writeFile fs file data (fn [err]
+                (callback (if err
+                  (.error Task (merr (.toString err)))
+                  (.succeed Task Tuple0)))))))))
+                  
         } )))))
 
 (sanitize Elm :Native :FS)

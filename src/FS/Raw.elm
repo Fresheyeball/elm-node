@@ -171,7 +171,7 @@ writeFileFromBuffer = Native.FS.writeBuffer
 
 writeFileString' : WriteFileOptions -> FilePath -> String -> Task FSError ()
 writeFileString' options path data =
-  Native.FS.writeFile path data (marshallWriteFileOptions options)
+  Native.FS.writeFile FSError path data (marshallWriteFileOptions options)
 
 writeFileString : FilePath -> String -> Task FSError ()
 writeFileString =

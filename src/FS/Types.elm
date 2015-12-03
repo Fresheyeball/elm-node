@@ -170,6 +170,11 @@ type alias WatchFileOptions =
   { persistent : Bool
   , interval   : Time }
 
+defaultWatchFileOptions : WatchFileOptions
+defaultWatchFileOptions =
+  { persistent = True
+  , interval   = 5007 }
+
 type alias WriteFileOptions =
   { encoding : Encoding
   , mode     : Mode

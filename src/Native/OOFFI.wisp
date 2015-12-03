@@ -112,6 +112,13 @@
     (.asyncFunction Task (fn [callback]
       (callback (.succeed Task ((aget x name) a b c d e f)))))))
 
+  :taskCB (fn [merr Task Tuple0 f]
+    (.asyncFunction Task (fn [callback]
+      (f (fn [err]
+        (callback (if err
+          (Task.error (merr (.toString err)))
+          (Task.succeed Tuple0))))))))
+
 })
 
 (if (== (typeof window) :undefined) (set! window global))

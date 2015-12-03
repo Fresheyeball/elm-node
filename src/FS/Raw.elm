@@ -1,13 +1,17 @@
 module FS.Raw where
 
 import FS.Types exposing (..)
-import Streams.Types exposing (toNameE, Buffer, Chunk)
-import Signal exposing (Address)
+import Streams.Types exposing
+  ( unsafeToNameE
+  , toNameE
+  , Buffer
+  , Chunk
+  , Encoding(Binary))
 import Task exposing (Task)
 import Time exposing (Time)
 import Either exposing (..)
 import Native.FS
-import Debug
+import Native.OOFFI
 
 dirname : FilePath
 dirname = Native.FS.dirname
@@ -29,12 +33,12 @@ defaultReadOptions =
   { flags          = R
   , mode           = 438 -- 0o666
   , autoClose      = True
-  , encoding       = T.Binary }
+  , encoding       = Binary }
 
 marshallReadOptions : ReadOptions -> ReadOptionsRaw
 marshallReadOptions o =
-  { o | flags    = flagsToString   (.flags o)
-      , encoding = T.unsafeToNameE (.encoding o) }
+  { o | flags    = flagsToString    (.flags o)
+      , encoding = unsafeToNameE (.encoding o) }
 
 access : FilePath -> Task x Bool
 access = Native.FS.access
@@ -127,38 +131,34 @@ truncate = Native.FS.truncate FSError
 unlink : FilePath -> Task FSError ()
 unlink = Native.FS.unlink FSError
 
-watch
-    : String
-   -> Address (WatchEvent, Maybe FilePath)
-   -> Task x FSWatcher
-watch path address =
-  watch' path defaultWatchOptions address
+-- watch
+--     : String
+--    -> Address (WatchEvent, Maybe FilePath)
+--    -> Task x FSWatcher
+-- watch path address =
+--   watch' path defaultWatchOptions address
+--
+-- watch'
+--    : String
+--   -> WatchOptions
+--   -> Address (WatchEvent, Maybe FilePath)
+--   -> Task x FSWatcher
+-- watch' path options address =
+--   watchRaw path options (Signal.send address)
 
-watch'
-   : String
-  -> WatchOptions
-  -> Address (WatchEvent, Maybe FilePath)
-  -> Task x FSWatcher
-watch' path options address =
-  watchRaw path options (Signal.send address)
+watchFile'
+   : WatchFileOptions
+  -> FilePath
+  -> ((Stat, Stat) -> Task x ())
+  -> Task x (Task x ())
+watchFile' =
+  Native.FS.watchFile
 
-watchRaw
-   : String
-  -> WatchOptions
-  -> ((WatchEvent, Maybe FilePath) -> Task x ())
-  -> Task x FSWatcher
-watchRaw path options handler =
-  Native.FS.watch Just Nothing path options <|
-    \(event, path') ->
-      case watchEventFromString event of
-        Just watchEvent -> handler (watchEvent, path')
-        _               -> Task.succeed ()
-
--- watchFile
---    : FilePath
---   -> Address (Stat, Stat)
---   -> Task x WatchFileListener
--- watchFile = Debug.crash ""
+watchFile
+   : FilePath
+  -> ((Stat, Stat) -> Task x ())
+  -> Task x (Task x ())
+watchFile = watchFile' defaultWatchFileOptions
 --
 -- watchFile'
 --    : FilePath
@@ -167,31 +167,26 @@ watchRaw path options handler =
 --   -> Task x WatchFileListener
 -- watchFile' = Debug.crash ""
 
-watchFileRaw
-   : FilePath
-  -> WatchFileOptions
-  -> ((Stat, Stat) -> Task x ())
-  -> Task x WatchFileListener
-watchFileRaw = Native.FS.watchFile
-
-unwatchFile : FilePath -> WatchFileListener -> Task x ()
-unwatchFile = Native.FS.unwatchFile
-
 utimes : FilePath -> { atime : Time, mtime : Time} -> Task x ()
 utimes = Native.FS.utimes
 
-writeFileFromString : FileDescriptor -> String -> Position -> Encoding -> Task FSError (Int, String)
-writeFileFromString fd data position encoding =
-  Native.FS.writeString FSError fd data position (toNameE encoding)
-
-writeFileFromBuffer
-   : FileDescriptor
-  -> Buffer
-  -> Offset
-  -> Length
-  -> Position
-  -> Task FSError (Int, Buffer)
-writeFileFromBuffer = Native.FS.writeBuffer
+-- writeFileFromString
+--    : FileDescriptor
+--   -> String
+--   -> Position
+--   -> Encoding
+--   -> Task FSError (Int, String)
+-- writeFileFromString fd data position encoding =
+--   Native.FS.write FSError fd data position (toNameE encoding)
+--
+-- writeFileFromBuffer
+--    : FileDescriptor
+--   -> Buffer
+--   -> Offset
+--   -> Length
+--   -> Position
+--   -> Task FSError (Int, Buffer)
+-- writeFileFromBuffer = Native.FS.write
 
 writeFileString' : WriteFileOptions -> FilePath -> String -> Task FSError ()
 writeFileString' options path data =

@@ -1,16 +1,3 @@
-(defn- taskCB [merr Task Tuple0 f]
-  (.asyncFunction Task (fn [callback]
-    (f (fn [err]
-      (callback (if err
-        (Task.error (merr (.toString err)))
-        (Task.succeed Tuple0))))))))
-
-(defn- sanitize [record & spaces]
-  (spaces.reduce (fn [r space] (do
-    (if (aget r space) nil (set! (aget r space) {}))
-    (aget r space)))
-  record))
-
 (defn- make
   [localRuntime] (let
   [fs     (require "fs")
@@ -181,6 +168,16 @@
         (callback (.succeed Task Tuple0)))))))
 
   ; fs.watchFile(filename[, options], listener
+  :watchFile (F3 (fn [options path handler]
+    (let
+      [handler_
+        (fn [curr prev]
+          (.perform Task (handler (Tuple2 curr prev))))]
+      (.asyncFunction Task (fn [callback] (do
+        (.watchFile fs path options handler_)
+        (callback (.succeed Task (.asyncFunction Task (fn [callback_] (do
+          (.unwatchFile fs path handler_)
+          (callback_ (.succeed Task Tuple0)))))))))))))
 
   ; fs.write(fd, buffer, offset, length[, position], callback)
   ; fs.write(fd, data[, position[, encoding]], callback)

@@ -8,9 +8,6 @@ import Streams.Types exposing (..)
 import Native.OOFFI
 import Native.Streams
 
-(<$>) : (a -> b) -> Signal a -> Signal b
-(<$>) = Signal.map
-
 on' : (Chunk -> Task x ()) -> ReadableEvent -> Readable -> Task x ()
 on' f e {readable} =
   Native.Streams.on Left Right (toNameR e) readable f

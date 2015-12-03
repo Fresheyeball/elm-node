@@ -1,3 +1,10 @@
+(defn- marshallStat [stat] (do
+  (set! stat.atime     (.getTime stat.atime))
+  (set! stat.mtime     (.getTime stat.mtime))
+  (set! stat.ctime     (.getTime stat.ctime))
+  (set! stat.birthtime (.getTime stat.birthtime))
+  stat))
+
 (defn- make
   [localRuntime] (let
   [fs     (require "fs")
@@ -60,7 +67,7 @@
       (.fstat fs fd (fn [err stats]
         (callback (if err
           (Task.fail (merr (.toString err)))
-          (Task.succeed stats)))))))))
+          (Task.succeed (marshallStat stats))))))))))
 
   ; fs.fsync(fd, callback)
   :fsync (F2 (fn [merr fd]
@@ -138,7 +145,7 @@
       (.stat fs path (fn [err stats]
         (callback (if err
           (Task.fail (merr (.toString err)))
-          (Task.succeed stats)))))))))
+          (Task.succeed (marshallStat stats))))))))))
 
   ; fs.symlink(destination, path[, type], callback)
   :symlink (F4 (fn [merr destination path type]
@@ -172,7 +179,8 @@
     (let
       [handler_
         (fn [curr prev]
-          (.perform Task (handler (Tuple2 curr prev))))]
+          (.perform Task (handler
+            (Tuple2 (marshallStat curr) (marshallStat prev)))))]
       (.asyncFunction Task (fn [callback] (do
         (.watchFile fs path options handler_)
         (callback (.succeed Task (.asyncFunction Task (fn [callback_] (do

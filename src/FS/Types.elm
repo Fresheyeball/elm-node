@@ -126,9 +126,9 @@ type alias Stat =
   , ino       : Int
   , size      : Int
   , blocks    : Int
-  , atime     : String
-  , mtime     : String
-  , ctime     : String
+  , atime     : Time
+  , mtime     : Time
+  , ctime     : Time
   , birthtime : String }
 
 type SymType

@@ -12,7 +12,7 @@ flow = S.mailbox Nothing
 (>|) t t' = t `andThen` always t'
 
 opts : WatchFileOptions
-opts = { defaultWatchFileOptions | interval = 300 }
+opts = { defaultWatchFileOptions | interval = 1000 }
 
 port run : Task FSError ()
 port run =

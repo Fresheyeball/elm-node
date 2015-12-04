@@ -33,32 +33,32 @@
 
   ; fs.appendFile(file, data[, options], callback)
   :appendFile (F3 (fn [merr path data]
-    (taskCB merr Task Tuple0 (fn [cb]
+    (oo.taskCB merr Task Tuple0 (fn [cb]
       (.appendFile fs path data cb)))))
 
   ; fs.chmod(path, mode, callback)
   :chmod (F3 (fn [merr path mode]
-    (taskCB merr Task Tuple0 (fn [cb]
+    (oo.taskCB merr Task Tuple0 (fn [cb]
       (.chmod fs path mode cb)))))
 
   ; fs.chown(path, uid, gid, callback)
   :chown (F4 (fn [merr path uid gid]
-    (taskCB merr Task Tuple0 (fn [cb]
+    (oo.taskCB merr Task Tuple0 (fn [cb]
       (.chown fs path uid gid cb)))))
 
   ; fs.fchown(fd, uid, gid, callback)
   :fchown (F4 (fn [merr fd uid gid]
-    (taskCB merr Task Tuple0 (fn [cb]
+    (oo.taskCB merr Task Tuple0 (fn [cb]
       (.fchown fs fd uid gid cb)))))
 
   ; fs.close(fd, callback)
   :close (F2 (fn [merr fd]
-    (taskCB merr Task Tuple0 (fn [cb]
+    (oo.taskCB merr Task Tuple0 (fn [cb]
       (.close fs fd cb)))))
 
   ; fs.fchmod(fd, mode, callback)
   :fchmod (F3 (fn [merr fd mode]
-    (taskCB merr Task Tuple0 (fn [cb]
+    (oo.taskCB merr Task Tuple0 (fn [cb]
       (.fchmod fs fd mode cb)))))
 
   ; fs.fstat(fd, callback)
@@ -71,22 +71,22 @@
 
   ; fs.fsync(fd, callback)
   :fsync (F2 (fn [merr fd]
-    (taskCB merr Task Tuple0 (fn [cb]
+    (oo.taskCB merr Task Tuple0 (fn [cb]
       (.fsync fs fd cb)))))
 
   ; fs.ftruncate(fd, len, callback)
   :ftruncate (F3 (fn [merr len fd]
-    (taskCB merr Task Tuple0 (fn [cb]
+    (oo.taskCB merr Task Tuple0 (fn [cb]
       (.ftruncate fs fd len cb)))))
 
   ; fs.link(srcpath, dstpath, callback)
   :link (F3 (fn [merr srcpath dstpath]
-    (taskCB merr Task Tuple0 (fn [cb]
+    (oo.taskCB merr Task Tuple0 (fn [cb]
       (.link fs srcpath dstpath cb)))))
 
   ; fs.mkdir(path[, mode], callback)
   :mkdir (F3 (fn [merr path mode]
-    (taskCB merr Task Tuple0 (fn [cb]
+    (oo.taskCB merr Task Tuple0 (fn [cb]
       (.mkdir fs path mode cb)))))
 
   ; fs.readFile(file[, options], callback)
@@ -131,12 +131,12 @@
 
   ; fs.rename(oldPath, newPath, callback)
   :rename (F3 (fn [merr oldPath newPath]
-    (taskCB merr Task Tuple0 (fn [cb]
+    (oo.taskCB merr Task Tuple0 (fn [cb]
       (.rename fs oldPath newPath cb)))))
 
   ; fs.rmdir(path, callback)
   :rmdir (F2 (fn [merr path]
-    (taskCB merr Task Tuple0 (fn [cb]
+    (oo.taskCB merr Task Tuple0 (fn [cb]
       (.rmdir fs path cb)))))
 
   ; fs.stat(path, callback)
@@ -149,17 +149,17 @@
 
   ; fs.symlink(destination, path[, type], callback)
   :symlink (F4 (fn [merr destination path type]
-    (taskCB merr Task Tuple0 (fn [cb]
+    (oo.taskCB merr Task Tuple0 (fn [cb]
       (.symlink fs destination path type cb)))))
 
   ; fs.truncate(path, len, callback)
   :truncate (F3 (fn [merr path len]
-    (taskCB merr Task Tuple0 (fn [cb]
+    (oo.taskCB merr Task Tuple0 (fn [cb]
       (.truncate fs path len cb)))))
 
   ; fs.unlink(path, callback)
   :unlink (F2 (fn [merr path]
-    (taskCB merr Task Tuple0 (fn [cb]
+    (oo.taskCB merr Task Tuple0 (fn [cb]
       (.unlink fs path cb)))))
 
   ; fs.unwatchFile(filename[, listener])

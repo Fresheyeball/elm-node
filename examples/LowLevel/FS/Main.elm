@@ -14,11 +14,16 @@ flow = S.mailbox Nothing
 opts : WatchFileOptions
 opts = { defaultWatchFileOptions | interval = 1000 }
 
+testFile : FilePath
+testFile = "testFile"
+
 port run : Task FSError ()
 port run =
-  writeFileString "test" "I feel like I'm being watched"
-  >| watchFile' opts "test" (Just >> S.send (.address flow))
-  >| Task.map (Debug.log "access" >> always ()) (access "test")
+  writeFileString testFile "I feel like I'm being watched"
+  >| appendFile testFile ". Wait who are you?"
+  >| Task.map (Debug.log "stat" >> always ()) (stat testFile)
+  >| watchFile' opts testFile (Just >> S.send (.address flow))
+  >| Task.map (Debug.log "access" >> always ()) (access testFile)
   >| Task.succeed ()
 
 port showWatch : Signal (Task x ())

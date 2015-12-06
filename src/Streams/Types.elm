@@ -1,6 +1,6 @@
 module Streams.Types where
 
-import Marshall
+import OOFFI
 import Either exposing (..)
 
 type ReadableEvent
@@ -39,7 +39,7 @@ toNameE e = case e of
 unsafeToNameE : Encoding -> String
 unsafeToNameE e =
   let x = toNameE e in case x of
-    "null" -> Marshall.unsafeNull
+    "null" -> OOFFI.unsafeNull
     _ -> x
 
 toNameR : ReadableEvent -> String

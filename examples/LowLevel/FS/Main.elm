@@ -17,12 +17,15 @@ opts = { defaultWatchFileOptions | interval = 1000 }
 testFile : FilePath
 testFile = "testFile"
 
+
+logAs s = Task.map (Debug.log s >> always())
+
 port run : Task FSError ()
 port run =
   writeFileString testFile "I feel like I'm being watched"
+  >| watchFile' opts testFile (Just >> S.send (.address flow))
   >| appendFile testFile ". Wait who are you?"
   >| Task.map (Debug.log "stat" >> always ()) (stat testFile)
-  >| watchFile' opts testFile (Just >> S.send (.address flow))
   >| Task.map (Debug.log "access" >> always ()) (access testFile)
   >| Task.succeed ()
 

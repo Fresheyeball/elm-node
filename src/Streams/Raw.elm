@@ -4,9 +4,12 @@ import Task exposing (Task)
 import Either exposing (..)
 import Signal exposing (..)
 
+import OOFFI exposing (..)
 import Streams.Types exposing (..)
-import Native.OOFFI
 import Native.Streams
+
+isPaused : Read -> Task x Bool
+isPaused = get0 "isPaused"
 
 on' : (Chunk -> Task x ()) -> ReadableEvent -> Readable -> Task x ()
 on' f e {readable} =

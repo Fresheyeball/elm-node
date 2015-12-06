@@ -47,6 +47,27 @@ methodAsync5 = Native.OOFFI.methodAsync5
 methodAsync6 : String -> object -> a -> b -> c -> d -> e -> f -> Task x ()
 methodAsync6 = Native.OOFFI.methodAsync6
 
+methodAsync0E : (String -> x) -> String -> object -> Task x ()
+methodAsync0E = Native.OOFFI.methodAsync0E
+
+methodAsync1E : (String -> x) -> String -> object -> a -> Task x ()
+methodAsync1E = Native.OOFFI.methodAsync1E
+
+methodAsync2E : (String -> x) -> String -> object -> a -> b -> Task x ()
+methodAsync2E = Native.OOFFI.methodAsync2E
+
+methodAsync3E : (String -> x) -> String -> object -> a -> b -> c -> Task x ()
+methodAsync3E = Native.OOFFI.methodAsync3E
+
+methodAsync4E : (String -> x) -> String -> object -> a -> b -> c -> d -> Task x ()
+methodAsync4E = Native.OOFFI.methodAsync4E
+
+methodAsync5E : (String -> x) -> String -> object -> a -> b -> c -> d -> e -> Task x ()
+methodAsync5E = Native.OOFFI.methodAsync5E
+
+methodAsync6E : (String -> x) -> String -> object -> a -> b -> c -> d -> e -> f -> Task x ()
+methodAsync6E = Native.OOFFI.methodAsync6E
+
 get0 : String -> object -> Task x a
 get0 = Native.OOFFI.get0
 
@@ -88,6 +109,27 @@ getAsync5 = Native.OOFFI.getAsync5
 
 getAsync6 : String -> object -> a -> b -> c -> d -> e -> f -> Task x g
 getAsync6 = Native.OOFFI.getAsync6
+
+getAsync0E : (String -> x) -> String -> object -> Task x a
+getAsync0E = Native.OOFFI.getAsync0E
+
+getAsync1E : (String -> x) -> String -> object -> a -> Task x b
+getAsync1E = Native.OOFFI.getAsync1E
+
+getAsync2E : (String -> x) -> String -> object -> a -> b -> Task x c
+getAsync2E = Native.OOFFI.getAsync2E
+
+getAsync3E : (String -> x) -> String -> object -> a -> b -> c -> Task x d
+getAsync3E = Native.OOFFI.getAsync3E
+
+getAsync4E : (String -> x) -> String -> object -> a -> b -> c -> d -> Task x e
+getAsync4E = Native.OOFFI.getAsync4E
+
+getAsync5E : (String -> x) -> String -> object -> a -> b -> c -> d -> e -> Task x f
+getAsync5E = Native.OOFFI.getAsync5E
+
+getAsync6E : (String -> x) -> String -> object -> a -> b -> c -> d -> e -> f -> Task x g
+getAsync6E = Native.OOFFI.getAsync6E
 
 unsafeNull : a
 unsafeNull = Native.OOFFI.unsafeNull

@@ -104,6 +104,62 @@
       ((aget object name) a b c d e f (fn []
         (callback (.succeed Task Tuple0))))))))
 
+  :methodAsync0E (F3 (fn [merr name object]
+    (.asyncFunction Task (fn [callback]
+      ((aget object name) (fn [err]
+        (callback
+          (if err
+            (.fail Task (merr (.toString err)))
+            (.succeed Task Tuple0)))))))))
+
+  :methodAsync1E (F4 (fn [merr name object a]
+    (.asyncFunction Task (fn [callback]
+      ((aget object name) a (fn [err]
+        (callback
+          (if err
+            (.fail Task (merr (.toString err)))
+            (.succeed Task Tuple0)))))))))
+
+  :methodAsync2E (F5 (fn [merr name object a b]
+    (.asyncFunction Task (fn [callback]
+      ((aget object name) a b (fn [err]
+        (callback
+          (if err
+            (.fail Task (merr (.toString err)))
+            (.succeed Task Tuple0)))))))))
+
+  :methodAsync3E (F6 (fn [merr name object a b c]
+    (.asyncFunction Task (fn [callback]
+      ((aget object name) a b c (fn [err]
+        (callback
+          (if err
+            (.fail Task (merr (.toString err)))
+            (.succeed Task Tuple0)))))))))
+
+  :methodAsync4E (F7 (fn [merr name object a b c d]
+    (.asyncFunction Task (fn [callback]
+      ((aget object name) a b c d (fn [err]
+        (callback
+          (if err
+            (.fail Task (merr (.toString err)))
+            (.succeed Task Tuple0)))))))))
+
+  :methodAsync5E (F8 (fn [merr name object a b c d e]
+    (.asyncFunction Task (fn [callback]
+      ((aget object name) a b c d e (fn [err]
+        (callback
+          (if err
+            (.fail Task (merr (.toString err)))
+            (.succeed Task Tuple0)))))))))
+
+  :methodAsync6E (F9 (fn [merr name object a b c d e f]
+    (.asyncFunction Task (fn [callback]
+      ((aget object name) a b c d e f (fn [err]
+        (callback
+          (if err
+            (.fail Task (merr (.toString err)))
+            (.succeed Task Tuple0)))))))))
+
   :get0 (F2 (fn [name object]
     (.asyncFunction Task (fn [callback]
       (callback (.succeed Task ((aget object name))))))))
@@ -166,6 +222,55 @@
     (.asyncFunction Task (fn [callback]
       ((aget object name) a b c d e f (fn [x]
         (callback (.succeed Task x))))))))
+
+  :getAsync0E (F3 (fn [merr name object]
+    (.asyncFunction Task (fn [callback]
+      ((aget object name) (fn [err x]
+        (callback (if err
+          (.fail Task (merr (.toString err)))
+          (.succeed Task (x))))))))))
+
+  :getAsync1E (F4 (fn [merr name object a]
+    (.asyncFunction Task (fn [callback]
+      ((aget object name) a (fn [err x]
+        (callback (if err
+          (.fail Task (merr (.toString err)))
+          (.succeed Task (x))))))))))
+
+  :getAsync2E (F5 (fn [merr name object a b]
+    (.asyncFunction Task (fn [callback]
+      ((aget object name) a b (fn [err x]
+        (callback (if err
+          (.fail Task (merr (.toString err)))
+          (.succeed Task (x))))))))))
+
+  :getAsync3E (F6 (fn [merr name object a b c]
+    (.asyncFunction Task (fn [callback]
+      ((aget object name) a b c (fn [err x]
+        (callback (if err
+          (.fail Task (merr (.toString err)))
+          (.succeed Task (x))))))))))
+
+  :getAsync4E (F7 (fn [merr name object a b c d]
+    (.asyncFunction Task (fn [callback]
+      ((aget object name) a b c d (fn [err x]
+        (callback (if err
+          (.fail Task (merr (.toString err)))
+          (.succeed Task (x))))))))))
+
+  :getAsync5E (F8 (fn [merr name object a b c d e]
+    (.asyncFunction Task (fn [callback]
+      ((aget object name) a b c d e (fn [err x]
+        (callback (if err
+          (.fail Task (merr (.toString err)))
+          (.succeed Task (x))))))))))
+
+  :getAsync6E (F9 (fn [merr name object a b c d e f]
+    (.asyncFunction Task (fn [callback]
+      ((aget object name) a b c d e f (fn [err x]
+        (callback (if err
+          (.fail Task (merr (.toString err)))
+          (.succeed Task (x))))))))))
 
   :unsafeGetGlobalConstant (fn [name] (aget window name))
 

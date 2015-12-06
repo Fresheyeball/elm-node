@@ -45,54 +45,71 @@ marshallReadOptions o =
   { o | flags    = flagsToString    (.flags o)
       , encoding = unsafeToNameE (.encoding o) }
 
-access : FilePath -> Task x Bool
-access = Task.map truthy << getAsync1 "access" fs
+access : FilePath -> Mode -> Task x Bool
+access path mode =
+  getAsync2 "access" fs path mode
+  |> Task.map truthy
 
+{-| fs.appendFile(file, data[, options], callback) -}
 appendFile : FilePath -> String -> Task FSError ()
-appendFile = Native.FS.appendFile FSError
+appendFile = methodAsync2E FSError "appendFile" fs
 
+{-| fs.chmod(path, mode, callback) -}
 chmod : FilePath -> Mode -> Task FSError ()
-chmod = Native.FS.chmod FSError
+chmod = methodAsync2E FSError "chmod" fs
 
+{-| fs.chown(path, uid, gid, callback) -}
 chown : FilePath -> UID -> GID -> Task FSError ()
-chown = Native.FS.chown FSError
+chown = methodAsync3E FSError "chown" fs
 
+{-| fs.close(fd, callback) -}
 close : FileDescriptor -> Task FSError ()
-close = Native.FS.close FSError
+close =  methodAsync1E FSError "close" fs
 
+{-| fs.fchmod(fd, mode, callback) -}
 fchmod : FileDescriptor -> Mode -> Task FSError ()
-fchmod = Native.FS.fchmod FSError
+fchmod = methodAsync2E FSError "fchmod" fs
 
+{-| fs.fchown(fd, uid, gid, callback) -}
 fchown : FileDescriptor -> UID -> GID -> Task FSError ()
-fchown = Native.FS.fchown FSError
+fchown = methodAsync3E FSError "fchown" fs
 
+{-| fs.fstat(fd, callback) -}
 fstat : FileDescriptor -> Task FSError Stat
-fstat = Native.FS.fstat FSError
+fstat fd = getAsync1E FSError "fstat" fs fd
+  |> Task.map Native.FS.marshallStat
 
+{-| fs.fsync(fd, callback) -}
 fsync : FileDescriptor -> Task FSError ()
-fsync = Native.FS.fsync FSError
+fsync = getAsync1E FSError "fsync" fs
 
+{-| fs.ftruncate(fd, len, callback) -}
 ftruncate : Length -> FileDescriptor -> Task FSError ()
-ftruncate = Native.FS.ftruncate FSError
+ftruncate len fd = getAsync2E FSError "ftruncate" fs fd len
 
+{-| fs.link(srcpath, dstpath, callback) -}
 link : FilePath -> FilePath -> Task FSError ()
 link srcpath dstpath =
-  Native.FS.link FSError srcpath dstpath
+  methodAsync2E FSError "link" fs srcpath dstpath
 
+{-| fs.mkdir(path[, mode], callback) -}
 mkdir' : FilePath -> Mode -> Task FSError ()
-mkdir' = Native.FS.mkdir FSError
+mkdir' = methodAsync2E FSError "mkdir" fs
 
+{-| fs.mkdir(path[, mode], callback) -}
 mkdir : FilePath -> Task FSError ()
-mkdir fp = mkdir' fp
-  511 -- 0o777
+mkdir path = mkdir' path
+  511 -- 777
 
+{-| fs.open(path, flags[, mode], callback) -}
 open' : FilePath -> Flags -> Mode -> Task FSError FileDescriptor
-open' fp flags mode =
-  Native.FS.open FSError fp (flagsToString flags) mode
+open' path flags mode =
+  getAsync3E FSError "open" fs path (flagsToString flags) mode
 
+{-| fs.open(path, flags[, mode], callback) -}
 open : FilePath -> Flags -> Task FSError FileDescriptor
-open fp flags = open' fp flags
-  438 -- 0o666
+open path flags = open' path flags
+  438 -- 666
 
 read : FileDescriptor
     -> Buffer
@@ -103,38 +120,48 @@ read : FileDescriptor
 read =
   Native.FS.read FSError
 
+{-| fs.readFile(file[, options], callback) -}
 readFile' : ReadFileOptions -> FilePath -> Task FSError String
-readFile' o =
-  Native.FS.readFile FSError (marshallReadFileOptions o)
+readFile' opts path =
+  getAsync2E FSError "readFile" fs path (marshallReadFileOptions opts)
 
+{-| fs.readFile(file[, options], callback) -}
 readFile : FilePath -> Task FSError String
 readFile = readFile' defaultReadFileOptions
 
+{-| fs.readdir(path, callback) -}
 readdir : FilePath -> Task FSError (List FilePath)
-readdir = Native.FS.readdir FSError
+readdir = getAsync1E FSError "readdir" fs
 
+{-| fs.readlink(path, callback) -}
 readlink : FilePath -> Task FSError String
-readlink = Native.FS.readlink FSError
+readlink = getAsync1E FSError "readLink" fs
 
+{-| fs.rename(oldPath, newPath, callback) -}
 rename : FilePath -> FilePath -> Task FSError ()
 rename oldPath newPath =
-  Native.FS.rename FSError oldPath newPath
+  methodAsync2E FSError "rename" fs oldPath newPath
 
+{-| fs.rmdir(path, callback) -}
 rmdir : FilePath -> Task FSError ()
-rmdir = Native.FS.rmdir FSError
+rmdir = methodAsync1E FSError "rmdir" fs
 
+{-| fs.stat(path, callback) -}
 stat : FilePath -> Task FSError Stat
-stat = Native.FS.stat FSError
+stat = getAsync1E FSError "stat" fs
 
+{-| fs.symlink(destination, path[, type], callback) -}
 symlink : FilePath -> FilePath -> SymType -> Task FSError ()
 symlink destination path t =
-  Native.FS.symlink FSError destination path (symTypeToString t)
+  methodAsync3E FSError "symlink" fs destination path (symTypeToString t)
 
+{-| fs.truncate(path, len, callback) -}
 truncate : Length -> FilePath -> Task FSError ()
-truncate = Native.FS.truncate FSError
+truncate len path = methodAsync2E FSError "truncate" fs path len
 
+{-| fs.unlink(path, callback) -}
 unlink : FilePath -> Task FSError ()
-unlink = Native.FS.unlink FSError
+unlink = methodAsync1E FSError "unlink" fs
 
 -- watch
 --     : String

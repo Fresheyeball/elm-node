@@ -27,114 +27,155 @@
          localRuntime.Native.OOFFI.values
          (set! localRuntime.Native.OOFFI.values {
 
- :method0 (F2 (fn [name object]
-   (.asyncFunction Task (fn [callback]
-     (do
-       ((aget object name))
-       (callback (.succeed Task Tuple0)))))))
+  :method0 (F2 (fn [name object]
+    (.asyncFunction Task (fn [callback]
+      (do
+        ((aget object name))
+        (callback (.succeed Task Tuple0)))))))
 
- :method1 (F3 (fn [name object a]
-   (.asyncFunction Task (fn [callback]
-     (do
-       ((aget object name) a)
-       (callback (.succeed Task Tuple0)))))))
+  :method1 (F3 (fn [name object a]
+    (.asyncFunction Task (fn [callback]
+      (do
+        ((aget object name) a)
+        (callback (.succeed Task Tuple0)))))))
 
- :method2 (F4 (fn [name object a b]
-   (.asyncFunction Task (fn [callback]
-     (do
-       ((aget object name) a b)
-       (callback (.succeed Task Tuple0)))))))
+  :method2 (F4 (fn [name object a b]
+    (.asyncFunction Task (fn [callback]
+      (do
+        ((aget object name) a b)
+        (callback (.succeed Task Tuple0)))))))
 
- :method3 (F5 (fn [name object a b c]
-   (.asyncFunction Task (fn [callback]
-     (do
-       ((aget object name) a b c)
-       (callback (.succeed Task Tuple0)))))))
+  :method3 (F5 (fn [name object a b c]
+    (.asyncFunction Task (fn [callback]
+      (do
+        ((aget object name) a b c)
+        (callback (.succeed Task Tuple0)))))))
 
- :method4 (F6 (fn [name object a b c d]
-   (.asyncFunction Task (fn [callback]
-     (do
-       ((aget object name) a b c d)
-       (callback (.succeed Task Tuple0)))))))
+  :method4 (F6 (fn [name object a b c d]
+    (.asyncFunction Task (fn [callback]
+      (do
+        ((aget object name) a b c d)
+        (callback (.succeed Task Tuple0)))))))
 
- :method5 (F7 (fn [name object a b c d e]
-   (.asyncFunction Task (fn [callback]
-     (do
-       ((aget object name) a b c d e)
-       (callback (.succeed Task Tuple0)))))))
+  :method5 (F7 (fn [name object a b c d e]
+    (.asyncFunction Task (fn [callback]
+      (do
+        ((aget object name) a b c d e)
+        (callback (.succeed Task Tuple0)))))))
 
- :method6 (F8 (fn [name object a b c d e f]
-   (.asyncFunction Task (fn [callback]
-     (do
-       ((aget object name) a b c d e f)
-       (callback (.succeed Task Tuple0)))))))
+  :method6 (F8 (fn [name object a b c d e f]
+    (.asyncFunction Task (fn [callback]
+      (do
+        ((aget object name) a b c d e f)
+        (callback (.succeed Task Tuple0)))))))
 
- :methodAsync0 (F2 (fn [name object]
-   (.asyncFunction Task (fn [callback]
-     ((aget object name) (fn []
-       (callback (.succeed Task Tuple0))))))))
+  :methodAsync0 (F2 (fn [name object]
+    (.asyncFunction Task (fn [callback]
+      ((aget object name) (fn []
+        (callback (.succeed Task Tuple0))))))))
 
- :methodAsync1 (F3 (fn [name object a]
-   (.asyncFunction Task (fn [callback]
-     ((aget object name) a (fn []
-       (callback (.succeed Task Tuple0))))))))
+  :methodAsync1 (F3 (fn [name object a]
+    (.asyncFunction Task (fn [callback]
+      ((aget object name) a (fn []
+        (callback (.succeed Task Tuple0))))))))
 
- :methodAsync2 (F4 (fn [name object a b]
-   (.asyncFunction Task (fn [callback]
-     ((aget object name) a b (fn []
-       (callback (.succeed Task Tuple0))))))))
+  :methodAsync2 (F4 (fn [name object a b]
+    (.asyncFunction Task (fn [callback]
+      ((aget object name) a b (fn []
+        (callback (.succeed Task Tuple0))))))))
 
- :methodAsync3 (F5 (fn [name object a b c]
-   (.asyncFunction Task (fn [callback]
-     ((aget object name) a b c (fn []
-       (callback (.succeed Task Tuple0))))))))
+  :methodAsync3 (F5 (fn [name object a b c]
+    (.asyncFunction Task (fn [callback]
+      ((aget object name) a b c (fn []
+        (callback (.succeed Task Tuple0))))))))
 
- :methodAsync4 (F6 (fn [name object a b c d]
-   (.asyncFunction Task (fn [callback]
-     ((aget object name) a b c d (fn []
-       (callback (.succeed Task Tuple0))))))))
+  :methodAsync4 (F6 (fn [name object a b c d]
+    (.asyncFunction Task (fn [callback]
+      ((aget object name) a b c d (fn []
+        (callback (.succeed Task Tuple0))))))))
 
- :methodAsync5 (F7 (fn [name object a b c d e]
-   (.asyncFunction Task (fn [callback]
-     ((aget object name) a b c d e (fn []
-       (callback (.succeed Task Tuple0))))))))
+  :methodAsync5 (F7 (fn [name object a b c d e]
+    (.asyncFunction Task (fn [callback]
+      ((aget object name) a b c d e (fn []
+        (callback (.succeed Task Tuple0))))))))
 
- :methodAsync6 (F8 (fn [name object a b c d e f]
-   (.asyncFunction Task (fn [callback]
-     ((aget object name) a b c d e f (fn []
-       (callback (.succeed Task Tuple0))))))))
+  :methodAsync6 (F8 (fn [name object a b c d e f]
+    (.asyncFunction Task (fn [callback]
+      ((aget object name) a b c d e f (fn []
+        (callback (.succeed Task Tuple0))))))))
 
- :get0 (F2 (fn [name object]
-   (.asyncFunction Task (fn [callback]
-     (callback (.succeed Task ((aget object name))))))))
+  :get0 (F2 (fn [name object]
+    (.asyncFunction Task (fn [callback]
+      (callback (.succeed Task ((aget object name))))))))
 
- :get1 (F3 (fn [name object a]
-   (.asyncFunction Task (fn [callback]
-     (callback (.succeed Task ((aget object name) a)))))))
+  :get1 (F3 (fn [name object a]
+    (.asyncFunction Task (fn [callback]
+      (callback (.succeed Task ((aget object name) a)))))))
 
- :get2 (F4 (fn [name object a b]
-   (.asyncFunction Task (fn [callback]
-     (callback (.succeed Task ((aget object name) a b)))))))
+  :get2 (F4 (fn [name object a b]
+    (.asyncFunction Task (fn [callback]
+      (callback (.succeed Task ((aget object name) a b)))))))
 
- :get3 (F5 (fn [name object a b c]
-   (.asyncFunction Task (fn [callback]
-     (callback (.succeed Task ((aget object name) a b c)))))))
+  :get3 (F5 (fn [name object a b c]
+    (.asyncFunction Task (fn [callback]
+      (callback (.succeed Task ((aget object name) a b c)))))))
 
- :get4 (F6 (fn [name object a b c d]
-   (.asyncFunction Task (fn [callback]
-     (callback (.succeed Task ((aget object name) a b c d)))))))
+  :get4 (F6 (fn [name object a b c d]
+    (.asyncFunction Task (fn [callback]
+      (callback (.succeed Task ((aget object name) a b c d)))))))
 
- :get5 (F7 (fn [name object a b c d e]
-   (.asyncFunction Task (fn [callback]
-     (callback (.succeed Task ((aget object name) a b c d e)))))))
+  :get5 (F7 (fn [name object a b c d e]
+    (.asyncFunction Task (fn [callback]
+      (callback (.succeed Task ((aget object name) a b c d e)))))))
 
- :get6 (F8 (fn [name object a b c d e f]
-   (.asyncFunction Task (fn [callback]
-     (callback (.succeed Task ((aget object name) a b c d e f)))))))
+  :get6 (F8 (fn [name object a b c d e f]
+    (.asyncFunction Task (fn [callback]
+      (callback (.succeed Task ((aget object name) a b c d e f)))))))
+
+  :getAsync0 (F2 (fn [name object]
+    (.asyncFunction Task (fn [callback]
+      ((aget object name) (fn [x]
+        (callback (.succeed Task x))))))))
+
+  :getAsync1 (F3 (fn [name object a]
+    (.asyncFunction Task (fn [callback]
+      ((aget object name) a (fn [x]
+        (callback (.succeed Task x))))))))
+
+  :getAsync2 (F4 (fn [name object a b]
+    (.asyncFunction Task (fn [callback]
+      ((aget object name) a b (fn [x]
+        (callback (.succeed Task x))))))))
+
+  :getAsync3 (F5 (fn [name object a b c]
+    (.asyncFunction Task (fn [callback]
+      ((aget object name) a b c (fn [x]
+        (callback (.succeed Task x))))))))
+
+  :getAsync4 (F6 (fn [name object a b c d]
+    (.asyncFunction Task (fn [callback]
+      ((aget object name) a b c d (fn [x]
+        (callback (.succeed Task x))))))))
+
+  :getAsync5 (F7 (fn [name object a b c d e]
+    (.asyncFunction Task (fn [callback]
+      ((aget object name) a b c d e (fn [x]
+        (callback (.succeed Task x))))))))
+
+  :getAsync6 (F2 (fn [name object a b c d e f]
+    (.asyncFunction Task (fn [callback]
+      ((aget object name) a b c d e f (fn [x]
+        (callback (.succeed Task x))))))))
+
+  :unsafeGetGlobalConstant (fn [name] (aget window name))
 
   :unsafeNull null
 
   :unsafeRequire (fn [module] (require module))
+
+  :unsafeGet0 (F2 (fn [name x] (aget x name)))
+
+  :truthy (fn [x] (if x true false))
 
   })))))
 

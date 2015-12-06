@@ -61,17 +61,8 @@ toNameW e = case e of
 type Read  = ReadRaw
 type Write = WriteRaw
 
-type alias Readable =
-  { readable : Read }
+type Readable = Readable
 
-type alias Writable =
-  { writable : Write }
+type Writable = Writable
 
-type alias Duplex =
-  { readable : Read
-  , writable : Write }
-
-splitDuplex : Duplex -> (Readable, Writable)
-splitDuplex {readable, writable} =
-  ( {readable = readable}
-  , {writable = writable} )
+type alias Duplex = (Readable, Writable)

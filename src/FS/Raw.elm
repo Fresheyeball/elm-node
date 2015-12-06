@@ -10,28 +10,33 @@ import Streams.Types exposing
 import Task exposing (Task)
 import Time exposing (Time)
 import Either exposing (..)
+import OOFFI exposing (..)
 import Native.FS
-import Native.OOFFI
+
+type FSRaw = FSRaw
+
+fs : FSRaw
+fs = unsafeRequire "fs"
 
 dirname : FilePath
-dirname = Native.FS.dirname
+dirname = unsafeGetGlobalConstant "__dirname"
 
 f_ok : Mode
-f_ok = Native.FS.f_ok
+f_ok = unsafeGet0 "F_OK" fs
 
 r_ok : Mode
-r_ok = Native.FS.r_ok
+r_ok = unsafeGet0 "R_OK" fs
 
 w_ok : Mode
-w_ok = Native.FS.w_ok
+w_ok = unsafeGet0 "W_OK" fs
 
 x_ok : Mode
-x_ok = Native.FS.x_ok
+x_ok = unsafeGet0 "X_OK" fs
 
 defaultReadOptions : ReadOptions
 defaultReadOptions =
   { flags          = R
-  , mode           = 438 -- 0o666
+  , mode           = 438 -- 666
   , autoClose      = True
   , encoding       = Binary }
 
@@ -41,7 +46,7 @@ marshallReadOptions o =
       , encoding = unsafeToNameE (.encoding o) }
 
 access : FilePath -> Task x Bool
-access = Native.FS.access
+access = Task.map truthy << getAsync1 "access" fs
 
 appendFile : FilePath -> String -> Task FSError ()
 appendFile = Native.FS.appendFile FSError

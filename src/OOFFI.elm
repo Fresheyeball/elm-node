@@ -3,6 +3,8 @@ module OOFFI where
 import Task exposing (Task)
 import Native.OOFFI
 
+type JSRaw = JSRaw
+
 method0 : String -> object -> Task x ()
 method0 = Native.OOFFI.method0
 
@@ -23,9 +25,6 @@ method5 = Native.OOFFI.method5
 
 method6 : String -> object -> a -> b -> c -> d -> e -> f -> Task x ()
 method6 = Native.OOFFI.method6
-
-method7 : String -> object -> a -> b -> c -> d -> e -> f -> g -> Task x ()
-method7 = Native.OOFFI.method7
 
 methodAsync0 : String -> object -> Task x ()
 methodAsync0 = Native.OOFFI.methodAsync0
@@ -48,9 +47,6 @@ methodAsync5 = Native.OOFFI.methodAsync5
 methodAsync6 : String -> object -> a -> b -> c -> d -> e -> f -> Task x ()
 methodAsync6 = Native.OOFFI.methodAsync6
 
-methodAsync7 : String -> object -> a -> b -> c -> d -> e -> f -> g -> Task x ()
-methodAsync7 = Native.OOFFI.methodAsync7
-
 get0 : String -> object -> Task x a
 get0 = Native.OOFFI.get0
 
@@ -72,11 +68,38 @@ get5 = Native.OOFFI.get5
 get6 : String -> object -> a -> b -> c -> d -> e -> f -> Task x g
 get6 = Native.OOFFI.get6
 
-get7 : String -> object -> a -> b -> c -> d -> e -> f -> g -> Task x h
-get7 = Native.OOFFI.get7
+getAsync0 : String -> object -> Task x a
+getAsync0 = Native.OOFFI.getAsync0
+
+getAsync1 : String -> object -> a -> Task x b
+getAsync1 = Native.OOFFI.getAsync1
+
+getAsync2 : String -> object -> a -> b -> Task x c
+getAsync2 = Native.OOFFI.getAsync2
+
+getAsync3 : String -> object -> a -> b -> c -> Task x d
+getAsync3 = Native.OOFFI.getAsync3
+
+getAsync4 : String -> object -> a -> b -> c -> d -> Task x e
+getAsync4 = Native.OOFFI.getAsync4
+
+getAsync5 : String -> object -> a -> b -> c -> d -> e -> Task x f
+getAsync5 = Native.OOFFI.getAsync5
+
+getAsync6 : String -> object -> a -> b -> c -> d -> e -> f -> Task x g
+getAsync6 = Native.OOFFI.getAsync6
 
 unsafeNull : a
 unsafeNull = Native.OOFFI.unsafeNull
 
 unsafeRequire : String -> a
 unsafeRequire = Native.OOFFI.unsafeRequire
+
+unsafeGetGlobalConstant : String -> a
+unsafeGetGlobalConstant = Native.OOFFI.unsafeGetGlobalConstant
+
+unsafeGet0 : String -> object -> a
+unsafeGet0 = Native.OOFFI.unsafeGet0
+
+truthy : JSRaw -> Bool
+truthy = Native.OOFFI.truthy

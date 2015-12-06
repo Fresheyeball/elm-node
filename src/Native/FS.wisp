@@ -18,13 +18,6 @@
         localRuntime.Native.FS.values
         (set! localRuntime.Native.FS.values {
 
-  :dirname __dirname
-
-  :f_ok (:F_OK fs)
-  :r_ok (:R_OK fs)
-  :w_ok (:W_OK fs)
-  :x_ok (:X_OK fs)
-
   ; fs.access(path[, mode], callback)
   :access (fn [path]
     (.asyncFunction Task (fn [callback]

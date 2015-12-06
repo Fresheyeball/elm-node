@@ -25,14 +25,6 @@
     (set! stat.birthtime (.getTime stat.birthtime))
     stat))
 
-  ; fs.read(fd, buffer, offset, length, position, callback)
-  :read (F6 (fn [merr fd buffer offset length position]
-    (.asyncFunction Task (fn [callback]
-      (.read fs fd buffer offset length position (fn [err bytesRead buffer_]
-        (callback (if err
-          (Task.fail (merr (.toString err)))
-          (Task.succeed (Tuple2 bytesRead buffer_))))))))))
-
   ; fs.unwatchFile(filename[, listener])
 
   ; fs.watch(filename[, options][, listener])

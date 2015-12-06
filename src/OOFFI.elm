@@ -131,6 +131,27 @@ getAsync5E = Native.OOFFI.getAsync5E
 getAsync6E : (String -> x) -> String -> object -> a -> b -> c -> d -> e -> f -> Task x g
 getAsync6E = Native.OOFFI.getAsync6E
 
+get2Async0E : (String -> x) -> String -> object -> Task x (a, b)
+get2Async0E = Native.OOFFI.get2Async0E
+
+get2Async1E : (String -> x) -> String -> object -> a -> Task x (b, c)
+get2Async1E = Native.OOFFI.get2Async1E
+
+get2Async2E : (String -> x) -> String -> object -> a -> b -> Task x (c, d)
+get2Async2E = Native.OOFFI.get2Async2E
+
+get2Async3E : (String -> x) -> String -> object -> a -> b -> c -> Task x (d, e)
+get2Async3E = Native.OOFFI.get2Async3E
+
+get2Async4E : (String -> x) -> String -> object -> a -> b -> c -> d -> Task x (e, f)
+get2Async4E = Native.OOFFI.get2Async4E
+
+get2Async5E : (String -> x) -> String -> object -> a -> b -> c -> d -> e -> Task x (f, g)
+get2Async5E = Native.OOFFI.get2Async5E
+
+get2Async6E : (String -> x) -> String -> object -> a -> b -> c -> d -> e -> f -> Task x (g, h)
+get2Async6E = Native.OOFFI.get2Async6E
+
 unsafeNull : a
 unsafeNull = Native.OOFFI.unsafeNull
 

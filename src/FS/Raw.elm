@@ -111,6 +111,7 @@ open : FilePath -> Flags -> Task FSError FileDescriptor
 open path flags = open' path flags
   438 -- 666
 
+{-| fs.read(fd, buffer, offset, length, position, callback) -}
 read : FileDescriptor
     -> Buffer
     -> Offset
@@ -118,7 +119,7 @@ read : FileDescriptor
     -> Position
     -> Task FSError (String, Buffer)
 read =
-  Native.FS.read FSError
+  get2Async5E FSError "read" fs
 
 {-| fs.readFile(file[, options], callback) -}
 readFile' : ReadFileOptions -> FilePath -> Task FSError String
@@ -163,20 +164,7 @@ truncate len path = methodAsync2E FSError "truncate" fs path len
 unlink : FilePath -> Task FSError ()
 unlink = methodAsync1E FSError "unlink" fs
 
--- watch
---     : String
---    -> Address (WatchEvent, Maybe FilePath)
---    -> Task x FSWatcher
--- watch path address =
---   watch' path defaultWatchOptions address
---
--- watch'
---    : String
---   -> WatchOptions
---   -> Address (WatchEvent, Maybe FilePath)
---   -> Task x FSWatcher
--- watch' path options address =
---   watchRaw path options (Signal.send address)
+
 
 {-| fs.watchFile(filename[, options], listener -}
 watchFile'
@@ -198,15 +186,15 @@ watchFile = watchFile' defaultWatchFileOptions
 utimes : FilePath -> Time -> Time -> Task x ()
 utimes = methodAsync3 "utimes" fs
 
--- writeFileFromString
---    : FileDescriptor
---   -> String
---   -> Position
---   -> Encoding
---   -> Task FSError (Int, String)
--- writeFileFromString fd data position encoding =
---   Native.FS.write FSError fd data position (toNameE encoding)
---
+writeFileFromString
+   : FileDescriptor
+  -> String
+  -> Position
+  -> Encoding
+  -> Task FSError (Int, String)
+writeFileFromString fd data position encoding =
+  get2Async4E FSError "write" fs fd data position (toNameE encoding)
+
 -- writeFileFromBuffer
 --    : FileDescriptor
 --   -> Buffer

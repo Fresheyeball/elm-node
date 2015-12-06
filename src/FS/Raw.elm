@@ -178,6 +178,7 @@ unlink = methodAsync1E FSError "unlink" fs
 -- watch' path options address =
 --   watchRaw path options (Signal.send address)
 
+{-| fs.watchFile(filename[, options], listener -}
 watchFile'
    : WatchFileOptions
   -> FilePath
@@ -186,21 +187,16 @@ watchFile'
 watchFile' =
   Native.FS.watchFile
 
+{-| fs.watchFile(filename[, options], listener -}
 watchFile
    : FilePath
   -> ((Stat, Stat) -> Task x ())
   -> Task x (Task x ())
 watchFile = watchFile' defaultWatchFileOptions
---
--- watchFile'
---    : FilePath
---   -> WatchFileOptions
---   -> Address (Stat, Stat)
---   -> Task x WatchFileListener
--- watchFile' = Debug.crash ""
 
-utimes : FilePath -> { atime : Time, mtime : Time} -> Task x ()
-utimes = Native.FS.utimes
+{-| fs.utimes(path, atime, mtime, callback) -}
+utimes : FilePath -> Time -> Time -> Task x ()
+utimes = methodAsync3 "utimes" fs
 
 -- writeFileFromString
 --    : FileDescriptor
@@ -220,27 +216,35 @@ utimes = Native.FS.utimes
 --   -> Task FSError (Int, Buffer)
 -- writeFileFromBuffer = Native.FS.write
 
+{-| fs.writeFile(file, data[, options], callback) -}
 writeFileString' : WriteFileOptions -> FilePath -> String -> Task FSError ()
 writeFileString' options path data =
-  Native.FS.writeFile FSError path data (marshallWriteFileOptions options)
+  methodAsync3E FSError "writeFile" fs path data
+    (marshallWriteFileOptions options)
 
+{-| fs.writeFile(file, data[, options], callback) -}
 writeFileString : FilePath -> String -> Task FSError ()
 writeFileString =
   writeFileString' defaultWriteFileOptions
 
+{-| fs.writeFile(file, data[, options], callback) -}
 writeFileBuffer' : WriteFileOptions -> FilePath -> Buffer -> Task FSError ()
 writeFileBuffer' options path data =
-  Native.FS.writeFile FSError path data (marshallWriteFileOptions options)
+  methodAsync3E FSError "writeFile" fs path data
+    (marshallWriteFileOptions options)
 
+{-| fs.writeFile(file, data[, options], callback) -}
 writeFileBuffer : FilePath -> Buffer -> Task FSError ()
 writeFileBuffer =
   writeFileBuffer' defaultWriteFileOptions
 
+{-| fs.writeFile(file, data[, options], callback) -}
 writeFile' : WriteFileOptions -> FilePath -> Chunk -> Task FSError ()
 writeFile' options path chunk =
   case chunk of
     Left  s -> writeFileString' options path s
     Right b -> writeFileBuffer' options path b
 
+{-| fs.writeFile(file, data[, options], callback) -}
 writeFile : FilePath -> Chunk -> Task FSError ()
 writeFile = writeFile' defaultWriteFileOptions

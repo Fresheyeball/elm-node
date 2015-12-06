@@ -18,6 +18,12 @@
         localRuntime.Native.FS.values
         (set! localRuntime.Native.FS.values {
 
+  :marshallStat (fn [stat] (do
+    (set! stat.atime     (.getTime stat.atime))
+    (set! stat.mtime     (.getTime stat.mtime))
+    (set! stat.ctime     (.getTime stat.ctime))
+    (set! stat.birthtime (.getTime stat.birthtime))
+    stat))
 
   ; fs.read(fd, buffer, offset, length, position, callback)
   :read (F6 (fn [merr fd buffer offset length position]
@@ -28,7 +34,6 @@
           (Task.succeed (Tuple2 bytesRead buffer_))))))))))
 
   ; fs.unwatchFile(filename[, listener])
-  ; fs.utimes(path, atime, mtime, callback)
 
   ; fs.watch(filename[, options][, listener])
   :watch (F3 (fn [path options handler]
@@ -54,14 +59,6 @@
 
   ; fs.write(fd, buffer, offset, length[, position], callback)
   ; fs.write(fd, data[, position[, encoding]], callback)
-
-  ; fs.writeFile(file, data[, options], callback)
-  :writeFile (F4 (fn [merr file data options]
-    (.asyncFunction Task (fn [callback]
-      (.writeFile fs file data (fn [err]
-        (callback (if err
-          (.error Task (merr (.toString err)))
-          (.succeed Task Tuple0)))))))))
 
         } )))))
 

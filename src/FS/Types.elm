@@ -129,7 +129,7 @@ type alias Stat =
   , atime     : Time
   , mtime     : Time
   , ctime     : Time
-  , birthtime : String }
+  , birthtime : Time }
 
 type SymType
   = File

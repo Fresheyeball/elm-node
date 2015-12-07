@@ -13,8 +13,8 @@ import Either exposing (..)
 import OOFFI exposing (..)
 import Native.FS
 
-type FSRaw = FSRaw
-type StatRaw = StatRaw
+type FSRaw = FSRaw FSRaw
+type StatRaw = StatRaw StatRaw
 
 fs : FSRaw
 fs = unsafeRequire "fs"

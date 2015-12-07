@@ -58,11 +58,6 @@ toNameW e = case e of
   Finish -> "finish"
   WriteError -> "error"
 
-type Read  = ReadRaw
-type Write = WriteRaw
-
-type Readable = Readable
-
-type Writable = Writable
-
+type Readable = Readable Readable
+type Writable = Writable Writable
 type alias Duplex = (Readable, Writable)

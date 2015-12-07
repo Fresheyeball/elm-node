@@ -68,6 +68,36 @@ methodAsync5E = Native.OOFFI.methodAsync5E
 methodAsync6E : (String -> x) -> String -> object -> a -> b -> c -> d -> e -> f -> Task x ()
 methodAsync6E = Native.OOFFI.methodAsync6E
 
+listen0 : String -> String -> object -> Task x () -> Task x (Task x ())
+listen0 = Native.OOFFI.listen0
+
+listen1 : String -> String -> object -> a -> Task x () -> Task x (Task x ())
+listen1 = Native.OOFFI.listen1
+
+listen2 : String -> String -> object -> a -> b -> Task x () -> Task x (Task x ())
+listen2 = Native.OOFFI.listen2
+
+listen3 : String -> String -> object -> a -> b -> c -> Task x () -> Task x (Task x ())
+listen3 = Native.OOFFI.listen3
+
+listen4 : String -> String -> object -> a -> b -> c -> d -> Task x () -> Task x (Task x ())
+listen4 = Native.OOFFI.listen4
+
+listen0_2 : String -> String -> object -> ((a,b) -> Task x ()) -> Task x (Task x ())
+listen0_2 = Native.OOFFI.listen0_2
+
+listen1_2 : String -> String -> object -> a -> ((b,c) -> Task x ()) -> Task x (Task x ())
+listen1_2 = Native.OOFFI.listen1_2
+
+listen2_2 : String -> String -> object -> a -> b -> ((c,d) -> Task x ()) -> Task x (Task x ())
+listen2_2 = Native.OOFFI.listen2_2
+
+listen3_2 : String -> String -> object -> a -> b -> c -> ((d,e) -> Task x ()) -> Task x (Task x ())
+listen3_2 = Native.OOFFI.listen3_2
+
+listen4_2 : String -> String -> object -> a -> b -> c -> d -> ((e,f) -> Task x ()) -> Task x (Task x ())
+listen4_2 = Native.OOFFI.listen4_2
+
 get0 : String -> object -> Task x a
 get0 = Native.OOFFI.get0
 
@@ -131,26 +161,47 @@ getAsync5E = Native.OOFFI.getAsync5E
 getAsync6E : (String -> x) -> String -> object -> a -> b -> c -> d -> e -> f -> Task x g
 getAsync6E = Native.OOFFI.getAsync6E
 
-get2Async0E : (String -> x) -> String -> object -> Task x (a, b)
-get2Async0E = Native.OOFFI.get2Async0E
+getAsync0_2E : (String -> x) -> String -> object -> Task x (a, b)
+getAsync0_2E = Native.OOFFI.getAsync0_2E
 
-get2Async1E : (String -> x) -> String -> object -> a -> Task x (b, c)
-get2Async1E = Native.OOFFI.get2Async1E
+getAsync1_2E : (String -> x) -> String -> object -> a -> Task x (b, c)
+getAsync1_2E = Native.OOFFI.getAsync1_2E
 
-get2Async2E : (String -> x) -> String -> object -> a -> b -> Task x (c, d)
-get2Async2E = Native.OOFFI.get2Async2E
+getAsync2_2E : (String -> x) -> String -> object -> a -> b -> Task x (c, d)
+getAsync2_2E = Native.OOFFI.getAsync2_2E
 
-get2Async3E : (String -> x) -> String -> object -> a -> b -> c -> Task x (d, e)
-get2Async3E = Native.OOFFI.get2Async3E
+getAsync3_2E : (String -> x) -> String -> object -> a -> b -> c -> Task x (d, e)
+getAsync3_2E = Native.OOFFI.getAsync3_2E
 
-get2Async4E : (String -> x) -> String -> object -> a -> b -> c -> d -> Task x (e, f)
-get2Async4E = Native.OOFFI.get2Async4E
+getAsync4_2E : (String -> x) -> String -> object -> a -> b -> c -> d -> Task x (e, f)
+getAsync4_2E = Native.OOFFI.getAsync4_2E
 
-get2Async5E : (String -> x) -> String -> object -> a -> b -> c -> d -> e -> Task x (f, g)
-get2Async5E = Native.OOFFI.get2Async5E
+getAsync5_2E : (String -> x) -> String -> object -> a -> b -> c -> d -> e -> Task x (f, g)
+getAsync5_2E = Native.OOFFI.getAsync5_2E
 
-get2Async6E : (String -> x) -> String -> object -> a -> b -> c -> d -> e -> f -> Task x (g, h)
-get2Async6E = Native.OOFFI.get2Async6E
+getAsync6_2E : (String -> x) -> String -> object -> a -> b -> c -> d -> e -> f -> Task x (g, h)
+getAsync6_2E = Native.OOFFI.getAsync6_2E
+
+getAsync0_2 : String -> object -> Task x (a, b)
+getAsync0_2 = Native.OOFFI.getAsync0_2
+
+getAsync1_2 : String -> object -> a -> Task x (b, c)
+getAsync1_2 = Native.OOFFI.getAsync1_2
+
+getAsync2_2 : String -> object -> a -> b -> Task x (c, d)
+getAsync2_2 = Native.OOFFI.getAsync2_2
+
+getAsync3_2 : String -> object -> a -> b -> c -> Task x (d, e)
+getAsync3_2 = Native.OOFFI.getAsync3_2
+
+getAsync4_2 : String -> object -> a -> b -> c -> d -> Task x (e, f)
+getAsync4_2 = Native.OOFFI.getAsync4_2
+
+getAsync5_2 : String -> object -> a -> b -> c -> d -> e -> Task x (f, g)
+getAsync5_2 = Native.OOFFI.getAsync5_2
+
+getAsync6_2 : String -> object -> a -> b -> c -> d -> e -> f -> Task x (g, h)
+getAsync6_2 = Native.OOFFI.getAsync6_2
 
 unsafeNull : a
 unsafeNull = Native.OOFFI.unsafeNull

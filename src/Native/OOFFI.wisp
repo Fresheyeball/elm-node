@@ -20,7 +20,8 @@
   [localRuntime] (let
   [Task   (Elm.Native.Task.make   localRuntime)
    Utils  (Elm.Native.Utils.make  localRuntime)
-   Tuple0 (:Tuple0 Utils)]
+   Tuple0 (:Tuple0 Utils)
+   Tuple2 (:Tuple2 Utils)]
    (do
      (ooffi.sanitize localRuntime :Native :OOFFI)
      (if localRuntime.Native.OOFFI.values
@@ -160,6 +161,133 @@
             (.fail Task (merr (.toString err)))
             (.succeed Task Tuple0)))))))))
 
+  :listen0 (F4 (fn [onname offname object handler]
+    (let
+      [handler_ (fn [] (.perform Task handler))]
+      (.asyncFunction Task (fn [callback]
+        (do
+          ((aget object onname) handler_)
+          (callback (.succeed Task (.asyncFunction Task (fn [callback_]
+            (do
+              ((aget object offname) handler_)
+              (callback_ (.succeed Task Tuple0)))))))))))))
+
+  :listen1 (F5 (fn [onname offname object a handler]
+    (let
+      [handler_ (fn [] (.perform Task handler))]
+      (.asyncFunction Task (fn [callback]
+        (do
+          ((aget object onname) a handler_)
+          (callback (.succeed Task (.asyncFunction Task (fn [callback_]
+            (do
+              ((aget object offname) a handler_)
+              (callback_ (.succeed Task Tuple0)))))))))))))
+
+  :listen2 (F6 (fn [onname offname object a b handler]
+    (let
+      [handler_ (fn [] (.perform Task handler))]
+      (.asyncFunction Task (fn [callback]
+        (do
+          ((aget object onname) a b handler_)
+          (callback (.succeed Task (.asyncFunction Task (fn [callback_]
+            (do
+              ((aget object offname) a handler_)
+              (callback_ (.succeed Task Tuple0)))))))))))))
+
+  :listen3 (F7 (fn [onname offname object a b c handler]
+    (let
+      [handler_ (fn [] (.perform Task handler))]
+      (.asyncFunction Task (fn [callback]
+        (do
+          ((aget object onname) a b c handler_)
+          (callback (.succeed Task (.asyncFunction Task (fn [callback_]
+            (do
+              ((aget object offname) a handler_)
+              (callback_ (.succeed Task Tuple0)))))))))))))
+
+  :listen4 (F8 (fn [onname offname object a b c d handler]
+    (let
+      [handler_ (fn [] (.perform Task handler))]
+      (.asyncFunction Task (fn [callback]
+        (do
+          ((aget object onname) a b c d handler_)
+          (callback (.succeed Task (.asyncFunction Task (fn [callback_]
+            (do
+              ((aget object offname) a handler_)
+              (callback_ (.succeed Task Tuple0)))))))))))))
+
+  :listen0_2 (F4 (fn [onname offname object handler]
+    (let
+      [handler_ (fn [x y]
+          (.perform Task (handler (Tuple2 x y))))]
+      (.asyncFunction Task (fn [callback]
+        (do
+          ((aget object onname) handler_)
+          (callback (.succeed Task (.asyncFunction Task (fn [callback_]
+            (do
+              ((aget object offname) handler_)
+              (callback_ (.succeed Task Tuple0)))))))))))))
+
+  :listen1_2 (F5 (fn [onname offname object a handler]
+    (let
+      [handler_ (fn [x y]
+          (.perform Task (handler (Tuple2 x y))))]
+      (.asyncFunction Task (fn [callback]
+        (do
+          ((aget object onname) a handler_)
+          (callback (.succeed Task (.asyncFunction Task (fn [callback_]
+            (do
+              ((aget object offname) a handler_)
+              (callback_ (.succeed Task Tuple0)))))))))))))
+
+  :listen2_2 (F6 (fn [onname offname object a b handler]
+    (let
+      [handler_ (fn [x y]
+          (.perform Task (handler (Tuple2 x y))))]
+      (.asyncFunction Task (fn [callback]
+        (do
+          ((aget object onname) a b handler_)
+          (callback (.succeed Task (.asyncFunction Task (fn [callback_]
+            (do
+              ((aget object offname) a handler_)
+              (callback_ (.succeed Task Tuple0)))))))))))))
+
+  :listen3_2 (F7 (fn [onname offname object a b c handler]
+    (let
+      [handler_ (fn [x y]
+          (.perform Task (handler (Tuple2 x y))))]
+      (.asyncFunction Task (fn [callback]
+        (do
+          ((aget object onname) a b c handler_)
+          (callback (.succeed Task (.asyncFunction Task (fn [callback_]
+            (do
+              ((aget object offname) a handler_)
+              (callback_ (.succeed Task Tuple0)))))))))))))
+
+  :listen4_2 (F8 (fn [onname offname object a b c d handler]
+    (let
+      [handler_ (fn [x y]
+          (.perform Task (handler (Tuple2 x y))))]
+      (.asyncFunction Task (fn [callback]
+        (do
+          ((aget object onname) a b c d handler_)
+          (callback (.succeed Task (.asyncFunction Task (fn [callback_]
+            (do
+              ((aget object offname) a handler_)
+              (callback_ (.succeed Task Tuple0)))))))))))))
+
+  :listen5_2 (F9 (fn [onname offname object a b c d e handler]
+    (let
+      [handler_ (fn [x y]
+          (.perform Task (handler (Tuple2 x y))))]
+      (.asyncFunction Task (fn [callback]
+        (do
+          ((aget object onname) a b c d e handler_)
+          (callback (.succeed Task (.asyncFunction Task (fn [callback_]
+            (do
+              ((aget object offname) a handler_)
+              (callback_ (.succeed Task Tuple0)))))))))))))
+
   :get0 (F2 (fn [name object]
     (.asyncFunction Task (fn [callback]
       (callback (.succeed Task ((aget object name))))))))
@@ -272,49 +400,84 @@
           (.fail Task (merr (.toString err)))
           (.succeed Task x)))))))))
 
-  :get2Async0E (F3 (fn [merr name object]
+  :getAsync0_2 (F2 (fn [name object]
+    (.asyncFunction Task (fn [callback]
+      ((aget object name) (fn [x y]
+        (callback (.succeed Task (Tuple2 x y)))))))))
+
+  :getAsync1_2 (F3 (fn [name object a]
+    (.asyncFunction Task (fn [callback]
+      ((aget object name) a (fn [x y]
+        (callback (.succeed Task (Tuple2 x y)))))))))
+
+  :getAsync2_2 (F4 (fn [name object a b]
+    (.asyncFunction Task (fn [callback]
+      ((aget object name) a b (fn [x y]
+        (callback (.succeed Task (Tuple2 x y)))))))))
+
+  :getAsync3_2 (F5 (fn [name object a b c]
+    (.asyncFunction Task (fn [callback]
+      ((aget object name) a b c (fn [x y]
+        (callback (.succeed Task (Tuple2 x y)))))))))
+
+  :getAsync4_2 (F6 (fn [name object a b c d]
+    (.asyncFunction Task (fn [callback]
+      ((aget object name) a b c d (fn [x y]
+        (callback (.succeed Task (Tuple2 x y)))))))))
+
+  :getAsync5_2 (F7 (fn [name object a b c d e]
+    (.asyncFunction Task (fn [callback]
+      ((aget object name) a b c d e (fn [x y]
+        (callback (.succeed Task (Tuple2 x y)))))))))
+
+  :getAsync6_2 (F8 (fn [name object a b c d e f]
+    (.asyncFunction Task (fn [callback]
+      ((aget object name) a b c d e f (fn [x y]
+        (callback (.succeed Task (Tuple2 x y)))))))))
+
+  :getAsync0_2E (F3 (fn [merr name object]
     (.asyncFunction Task (fn [callback]
       ((aget object name) (fn [err x y]
         (callback (if err
           (.fail Task (merr (.toString err)))
           (.succeed Task (Tuple2 x y))))))))))
 
-  :get2Async1E (F4 (fn [merr name object a]
+  :getAsync1_2E (F4 (fn [merr name object a]
     (.asyncFunction Task (fn [callback]
       ((aget object name) a (fn [err x y]
         (callback (if err
           (.fail Task (merr (.toString err)))
           (.succeed Task (Tuple2 x y))))))))))
 
-  :get2Async2E (F5 (fn [merr name object a b]
+  :getAsync2_2E (F5 (fn [merr name object a b]
     (.asyncFunction Task (fn [callback]
       ((aget object name) a b (fn [err x y]
         (callback (if err
           (.fail Task (merr (.toString err)))
           (.succeed Task (Tuple2 x y))))))))))
 
-  :get2Async3E (F6 (fn [merr name object a b c]
+  :getAsync3_2E (F6 (fn [merr name object a b c]
     (.asyncFunction Task (fn [callback]
       ((aget object name) a b c (fn [err x y]
         (callback (if err
           (.fail Task (merr (.toString err)))
           (.succeed Task (Tuple2 x y))))))))))
 
-  :get2Async4E (F7 (fn [merr name object a b c d]
+  :getAsync4_2E (F7 (fn [merr name object a b c d]
     (.asyncFunction Task (fn [callback]
       ((aget object name) a b c d (fn [err x y]
         (callback (if err
           (.fail Task (merr (.toString err)))
           (.succeed Task (Tuple2 x y))))))))))
 
-  :get2Async5E (F8 (fn [merr name object a b c d e]
+  :getAsync5_2E (F8 (fn [merr name object a b c d e]
     (.asyncFunction Task (fn [callback]
       ((aget object name) a b c d e (fn [err x y]
         (callback (if err
           (.fail Task (merr (.toString err)))
           (.succeed Task (Tuple2 x y))))))))))
 
-  :get2Async6E (F9 (fn [merr name object a b c d e f]
+  :getAsync6_2E (F9 (fn [merr name object a b c d e f]
     (.asyncFunction Task (fn [callback]
       ((aget object name) a b c d e f (fn [err x y]
         (callback (if err

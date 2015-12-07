@@ -14,6 +14,7 @@ import OOFFI exposing (..)
 import Native.FS
 
 type FSRaw = FSRaw
+type StatRaw = StatRaw
 
 fs : FSRaw
 fs = unsafeRequire "fs"
@@ -45,10 +46,16 @@ marshallReadOptions o =
   { o | flags    = flagsToString    (.flags o)
       , encoding = unsafeToNameE (.encoding o) }
 
-access : FilePath -> Mode -> Task x Bool
-access path mode =
+marshallStat : StatRaw -> Stat
+marshallStat = Native.FS.marshallStat
+
+access' : FilePath -> Mode -> Task x Bool
+access' path mode =
   getAsync2 "access" fs path mode
   |> Task.map truthy
+
+access : FilePath -> Task x Bool
+access path = access' path f_ok
 
 {-| fs.appendFile(file, data[, options], callback) -}
 appendFile : FilePath -> String -> Task FSError ()
@@ -76,8 +83,8 @@ fchown = methodAsync3E FSError "fchown" fs
 
 {-| fs.fstat(fd, callback) -}
 fstat : FileDescriptor -> Task FSError Stat
-fstat fd = getAsync1E FSError "fstat" fs fd
-  |> Task.map Native.FS.marshallStat
+fstat = getAsync1E FSError "fstat" fs
+  >> Task.map marshallStat
 
 {-| fs.fsync(fd, callback) -}
 fsync : FileDescriptor -> Task FSError ()
@@ -119,7 +126,7 @@ read : FileDescriptor
     -> Position
     -> Task FSError (String, Buffer)
 read =
-  get2Async5E FSError "read" fs
+  getAsync5_2E FSError "read" fs
 
 {-| fs.readFile(file[, options], callback) -}
 readFile' : ReadFileOptions -> FilePath -> Task FSError String
@@ -149,7 +156,7 @@ rmdir = methodAsync1E FSError "rmdir" fs
 
 {-| fs.stat(path, callback) -}
 stat : FilePath -> Task FSError Stat
-stat = getAsync1E FSError "stat" fs
+stat = Task.map marshallStat << getAsync1E FSError "stat" fs
 
 {-| fs.symlink(destination, path[, type], callback) -}
 symlink : FilePath -> FilePath -> SymType -> Task FSError ()
@@ -164,16 +171,17 @@ truncate len path = methodAsync2E FSError "truncate" fs path len
 unlink : FilePath -> Task FSError ()
 unlink = methodAsync1E FSError "unlink" fs
 
-
-
-{-| fs.watchFile(filename[, options], listener -}
+{-| fs.watchFile(filename[, options], listener
+    fs.unwatchFile(filename[, listener]) -}
 watchFile'
    : WatchFileOptions
   -> FilePath
   -> ((Stat, Stat) -> Task x ())
   -> Task x (Task x ())
-watchFile' =
-  Native.FS.watchFile
+watchFile' opts path handler =
+  listen2_2 "watchFile" "unwatchFile" fs path opts <|
+    \(sraw, sraw') -> handler ( (marshallStat sraw)
+                              , (marshallStat sraw') )
 
 {-| fs.watchFile(filename[, options], listener -}
 watchFile
@@ -182,27 +190,60 @@ watchFile
   -> Task x (Task x ())
 watchFile = watchFile' defaultWatchFileOptions
 
+{-| fs.watch(filename[, options][, listener]) -}
+watch' : WatchOptions -> FilePath -> ((WatchEvent, FilePath) -> Task x ()) -> Task x (Task x ())
+watch' opts path handler = listen2_2 "watch" "unwatch" fs path opts
+  <| \(weRaw, path') -> case watchEventFromString weRaw of
+    Just x -> handler (x, path')
+    Nothing -> Task.succeed ()
+
+{-| fs.watch(filename[, options][, listener]) -}
+watch : FilePath -> ((WatchEvent, FilePath) -> Task x ()) -> Task x (Task x ())
+watch = watch' defaultWatchOptions
+
 {-| fs.utimes(path, atime, mtime, callback) -}
 utimes : FilePath -> Time -> Time -> Task x ()
 utimes = methodAsync3 "utimes" fs
 
-writeFileFromString
-   : FileDescriptor
+{-| fs.write(fd, data[, position[, encoding]], callback) -}
+writeFileFromString'
+   : FS.Types.Encoding
+  -> FileDescriptor
   -> String
   -> Position
-  -> Encoding
   -> Task FSError (Int, String)
-writeFileFromString fd data position encoding =
-  get2Async4E FSError "write" fs fd data position (toNameE encoding)
+writeFileFromString' encoding fd data position  =
+  getAsync4_2E FSError "write" fs fd data position (toNameE encoding)
 
--- writeFileFromBuffer
---    : FileDescriptor
---   -> Buffer
---   -> Offset
---   -> Length
---   -> Position
---   -> Task FSError (Int, Buffer)
--- writeFileFromBuffer = Native.FS.write
+{-| fs.write(fd, data[, position[, encoding]], callback) -}
+writeFileFromString
+   : FS.Types.Encoding
+  -> FileDescriptor
+  -> String
+  -> Task FSError (Int, String)
+writeFileFromString encoding fd data =
+  getAsync3_2E FSError "write" fs fd data (toNameE encoding)
+
+{-| fs.write(fd, buffer, offset, length[, position], callback) -}
+writeFileFromBuffer'
+   : FileDescriptor
+  -> Buffer
+  -> Offset
+  -> Length
+  -> Position
+  -> Task FSError (Int, Buffer)
+writeFileFromBuffer' =
+  getAsync5_2E FSError "write" fs
+
+{-| fs.write(fd, buffer, offset, length[, position], callback) -}
+writeFileFromBuffer
+   : FileDescriptor
+  -> Buffer
+  -> Offset
+  -> Length
+  -> Task FSError (Int, Buffer)
+writeFileFromBuffer =
+  getAsync4_2E FSError "write" fs
 
 {-| fs.writeFile(file, data[, options], callback) -}
 writeFileString' : WriteFileOptions -> FilePath -> String -> Task FSError ()

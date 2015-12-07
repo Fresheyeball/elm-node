@@ -2,41 +2,34 @@ module Streams.Raw where
 
 import Task exposing (Task)
 import Either exposing (..)
-import Signal exposing (..)
 
+import OOFFI exposing (..)
 import Streams.Types exposing (..)
-import Native.OOFFI
 import Native.Streams
 
-on' : (Chunk -> Task x ()) -> ReadableEvent -> Readable -> Task x ()
-on' f e {readable} =
+isPaused : Read -> Task x Bool
+isPaused = get0 "isPaused"
+
+pause : Read -> Task x ()
+pause = method0 "pause"
+
+on : (Chunk -> Task x ()) -> ReadableEvent -> Readable -> Task x ()
+on f e {readable} =
   Native.Streams.on Left Right (toNameR e) readable f
 
-on : Address Chunk -> ReadableEvent -> Readable -> Task x ()
-on address e r =
-  on' (Signal.send address) e r
-
-onString' : ReadableEvent -> (String -> Task x ()) -> Readable -> Task x ()
-onString' e f r =
-  on' (\chunk -> case chunk of
+onString : ReadableEvent -> (String -> Task x ()) -> Readable -> Task x ()
+onString e f r =
+  on (\chunk -> case chunk of
       Left s -> f s
       Right _ -> Task.succeed ()
     ) e r
 
-onBuffer' : ReadableEvent -> (Buffer -> Task x ()) -> Readable -> Task x ()
-onBuffer' e f r =
-  on' (\chunk -> case chunk of
+onBuffer : ReadableEvent -> (Buffer -> Task x ()) -> Readable -> Task x ()
+onBuffer e f r =
+  on (\chunk -> case chunk of
       Left _ -> Task.succeed ()
       Right b -> f b
     ) e r
-
-onString : ReadableEvent -> Address String -> Readable -> Task x ()
-onString e address r =
-  onString' e (Signal.send address) r
-
-onBuffer : ReadableEvent -> Address Buffer -> Readable -> Task x ()
-onBuffer e address r =
-  onBuffer' e (Signal.send address) r
 
 pipe' : Read -> Write -> Task x ()
 pipe' =

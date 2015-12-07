@@ -1,6 +1,6 @@
 module Streams.Types where
 
-import Marshall
+import OOFFI
 import Either exposing (..)
 
 type ReadableEvent
@@ -39,7 +39,7 @@ toNameE e = case e of
 unsafeToNameE : Encoding -> String
 unsafeToNameE e =
   let x = toNameE e in case x of
-    "null" -> Marshall.unsafeNull
+    "null" -> OOFFI.unsafeNull
     _ -> x
 
 toNameR : ReadableEvent -> String
@@ -61,17 +61,8 @@ toNameW e = case e of
 type Read  = ReadRaw
 type Write = WriteRaw
 
-type alias Readable =
-  { readable : Read }
+type Readable = Readable
 
-type alias Writable =
-  { writable : Write }
+type Writable = Writable
 
-type alias Duplex =
-  { readable : Read
-  , writable : Write }
-
-splitDuplex : Duplex -> (Readable, Writable)
-splitDuplex {readable, writable} =
-  ( {readable = readable}
-  , {writable = writable} )
+type alias Duplex = (Readable, Writable)

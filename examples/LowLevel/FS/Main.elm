@@ -12,13 +12,21 @@ flow = S.mailbox Nothing
 (>|) t t' = t `andThen` always t'
 
 opts : WatchFileOptions
-opts = { defaultWatchFileOptions | interval = 300 }
+opts = { defaultWatchFileOptions | interval = 1000 }
+
+testFile : FilePath
+testFile = "testFile"
+
+
+logAs s = Task.map (Debug.log s >> always())
 
 port run : Task FSError ()
 port run =
-  writeFileString "test" "I feel like I'm being watched"
-  >| watchFile' opts "test" (Just >> S.send (.address flow))
-  >| Task.map (Debug.log "access" >> always ()) (access "test")
+  writeFileString testFile "I feel like I'm being watched"
+  >| watchFile' opts testFile (Just >> S.send (.address flow))
+  >| appendFile testFile ". Wait who are you?"
+  >| Task.map (Debug.log "stat" >> always ()) (stat testFile)
+  >| Task.map (Debug.log "access" >> always ()) (access testFile)
   >| Task.succeed ()
 
 port showWatch : Signal (Task x ())

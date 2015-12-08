@@ -216,6 +216,79 @@
               ((aget object offname) a handler_)
               (callback_ (.succeed Task Tuple0)))))))))))))
 
+
+  :listen0_1 (F4 (fn [onname offname object handler]
+    (let
+      [handler_ (fn [x]
+          (.perform Task (handler x)))]
+      (.asyncFunction Task (fn [callback]
+        (do
+          ((aget object onname) handler_)
+          (callback (.succeed Task (.asyncFunction Task (fn [callback_]
+            (do
+              ((aget object offname) handler_)
+              (callback_ (.succeed Task Tuple0)))))))))))))
+
+  :listen1_1 (F5 (fn [onname offname object a handler]
+    (let
+      [handler_ (fn [x]
+          (.perform Task (handler x)))]
+      (.asyncFunction Task (fn [callback]
+        (do
+          ((aget object onname) a handler_)
+          (callback (.succeed Task (.asyncFunction Task (fn [callback_]
+            (do
+              ((aget object offname) a handler_)
+              (callback_ (.succeed Task Tuple0)))))))))))))
+
+  :listen2_1 (F6 (fn [onname offname object a b handler]
+    (let
+      [handler_ (fn [x]
+          (.perform Task (handler x)))]
+      (.asyncFunction Task (fn [callback]
+        (do
+          ((aget object onname) a b handler_)
+          (callback (.succeed Task (.asyncFunction Task (fn [callback_]
+            (do
+              ((aget object offname) a handler_)
+              (callback_ (.succeed Task Tuple0)))))))))))))
+
+  :listen3_1 (F7 (fn [onname offname object a b c handler]
+    (let
+      [handler_ (fn [x]
+          (.perform Task (handler x)))]
+      (.asyncFunction Task (fn [callback]
+        (do
+          ((aget object onname) a b c handler_)
+          (callback (.succeed Task (.asyncFunction Task (fn [callback_]
+            (do
+              ((aget object offname) a handler_)
+              (callback_ (.succeed Task Tuple0)))))))))))))
+
+  :listen4_1 (F8 (fn [onname offname object a b c d handler]
+    (let
+      [handler_ (fn [x]
+          (.perform Task (handler x)))]
+      (.asyncFunction Task (fn [callback]
+        (do
+          ((aget object onname) a b c d handler_)
+          (callback (.succeed Task (.asyncFunction Task (fn [callback_]
+            (do
+              ((aget object offname) a handler_)
+              (callback_ (.succeed Task Tuple0)))))))))))))
+
+  :listen5_1 (F9 (fn [onname offname object a b c d e handler]
+    (let
+      [handler_ (fn [x]
+          (.perform Task (handler x)))]
+      (.asyncFunction Task (fn [callback]
+        (do
+          ((aget object onname) a b c d e handler_)
+          (callback (.succeed Task (.asyncFunction Task (fn [callback_]
+            (do
+              ((aget object offname) a handler_)
+              (callback_ (.succeed Task Tuple0)))))))))))))
+
   :listen0_2 (F4 (fn [onname offname object handler]
     (let
       [handler_ (fn [x y]

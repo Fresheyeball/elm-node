@@ -14,21 +14,23 @@ testFile : FilePath
 testFile = dirname ++ "/testfile"
 
 flow : Mailbox Buffer
-flow = mailbox BufferEmpty
+flow = mailbox emptyBuffer
 
 port log : Signal (Task x ())
 port log =
   Signal.map
-    (bufferToString Utf8 >> Task.map (Debug.log "flow" >> always ()))
+    (bufferToString >> Task.map (Debug.log "flow" >> always ()))
     flow.signal
 
 port read : Task FSError ()
 port read =
   writeFileString testFile "success"
   `andThen` always (createReadStream testFile)
-  `andThen` onBuffer Data flow.address
+  `andThen` onBuffer Data (Signal.send flow.address)
+  `andThen` always (succeed ())
 
-port write : Task x ()
+port write : Task x (Signal (Task x ()))
 port write =
   createWriteStream (testFile ++ "-clone")
-  `andThen` writeBuffer flow.signal
+  |> Task.map (\stream ->
+    Signal.map (writeBuffer stream) flow.signal)

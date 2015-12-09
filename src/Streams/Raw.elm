@@ -153,12 +153,6 @@ writeString w s = writeString' w defaultEncoding s
 writeBuffer : Writable -> Buffer -> Task x ()
 writeBuffer = methodAsync1 "write"
 
-suck : (a -> Task x ()) -> Signal a -> Task x ()
-suck = Debug.crash "suck"
-
-writeSignalBuffer : Writable -> Signal Buffer -> Task x ()
-writeSignalBuffer w = suck <| writeBuffer w
-
 {-| writable.write(chunk[, encoding][, callback]) -}
 write' : Writable -> Encoding -> Chunk -> Task x ()
 write' w e c = case c of
@@ -175,3 +169,6 @@ bufferToString' e b =
 
 bufferToString : Buffer -> Task x String
 bufferToString = bufferToString' defaultEncoding
+
+withSignal : Signal a -> (a -> Task x ()) -> Task x ()
+withSignal = Native.Streams.withSignal

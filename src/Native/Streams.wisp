@@ -1,23 +1,29 @@
 (defn- make
   [localRuntime] (let
-  [Task   (Elm.Native.Task.make  localRuntime)
-   Utils  (Elm.Native.Utils.make localRuntime)
-   Signal (Elm.Native.Signal.make localRuntime)
-   Tuple0 (:Tuple0 Utils)]
+  [Task            (Elm.Native.Task.make   localRuntime)
+   Signal          (Elm.Native.Signal.make localRuntime)
+   Tuple0 (:Tuple0 (Elm.Native.Utils.make  localRuntime))]
   (do
-    (sanitize localRuntime :Native :Streams)
+    (ooffi.sanitize localRuntime :Native :Streams)
     (if localRuntime.Native.Streams.values
         localRuntime.Native.Streams.values
         (set! localRuntime.Native.Streams.values {
 
-  :emptyBuffer (.Buffer [])
+  :emptyBuffer (Buffer. [])
 
   :marshallChunk (F3 (fn [Left Right chunk]
     (if (== (typeof chunk) "string")
         (Left chunk)
         (Right chunk))))
 
+  :withSignal (F2 (fn [signal f]
+    (.asyncFunction Task (fn [callback]
+      (do
+        (.output Signal "withSignal" (fn [value]
+          (.perform Task (f value))) signal)
+        (.succeed Task Tuple0))))))
+
 })))))
 
-(sanitize Elm :Native :Streams)
+(ooffi.sanitize Elm :Native :Streams)
 (set! Elm.Native.Streams.make make)

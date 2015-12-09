@@ -29,8 +29,7 @@ port read =
   `andThen` onBuffer Data (Signal.send flow.address)
   `andThen` always (succeed ())
 
-port write : Task x (Signal (Task x ()))
+port write : Task x ()
 port write =
   createWriteStream (testFile ++ "-clone")
-  |> Task.map (\stream ->
-    Signal.map (writeBuffer stream) flow.signal)
+  `andThen` \stream -> flow.signal `withSignal` writeBuffer stream

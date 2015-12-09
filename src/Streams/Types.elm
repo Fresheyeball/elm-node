@@ -17,8 +17,7 @@ type WritableEvent
   | Finish
   | WriteError
 
-type Buffer = BufferRaw
-            | BufferEmpty
+type Buffer = Buffer Buffer
 type alias Chunk = Either String Buffer
 
 type Encoding
@@ -27,6 +26,9 @@ type Encoding
   | Hex
   | Base64
   | Binary
+
+defaultEncoding : Encoding
+defaultEncoding = Utf8
 
 toNameE : Encoding -> String
 toNameE e = case e of

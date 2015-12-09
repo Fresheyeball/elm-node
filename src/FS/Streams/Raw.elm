@@ -9,7 +9,6 @@ import Native.FS.Streams
 createReadStream' : ReadOptions -> FilePath -> Task x Readable
 createReadStream' o =
   Native.FS.Streams.createReadStream (marshallReadOptions o)
-  >> Task.map Readable
 
 createReadStream : FilePath -> Task x Readable
 createReadStream =
@@ -18,7 +17,6 @@ createReadStream =
 createWriteStream' : WriteOptions -> FilePath -> Task x Writable
 createWriteStream' o =
   Native.FS.Streams.createWriteStream (marshallWriteOptions o)
-  >> Task.map Writable
 
 createWriteStream : FilePath -> Task x Writable
 createWriteStream = createWriteStream' defaultWriteOptions

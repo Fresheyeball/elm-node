@@ -221,7 +221,7 @@ getAsync6_2 = Native.OOFFI.getAsync6_2
 unsafeNull : a
 unsafeNull = Native.OOFFI.unsafeNull
 
-unsafeRequire : String -> JSRaw
+unsafeRequire : String -> a
 unsafeRequire = Native.OOFFI.unsafeRequire
 
 unsafeGetGlobalConstant : String -> a

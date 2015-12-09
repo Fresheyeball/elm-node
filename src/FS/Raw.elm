@@ -13,14 +13,11 @@ import Either exposing (..)
 import OOFFI exposing (..)
 import Native.FS
 
-type FSRaw = FSRaw
-type StatRaw = StatRaw
-
-fs : FSRaw
+fs : JSRaw
 fs = unsafeRequire "fs"
 
 dirname : FilePath
-dirname = unsafeGetGlobalConstant "__dirname"
+dirname = Native.FS.dirname
 
 f_ok : Mode
 f_ok = unsafeGet0 "F_OK" fs
@@ -34,19 +31,7 @@ w_ok = unsafeGet0 "W_OK" fs
 x_ok : Mode
 x_ok = unsafeGet0 "X_OK" fs
 
-defaultReadOptions : ReadOptions
-defaultReadOptions =
-  { flags          = R
-  , mode           = 438 -- 666
-  , autoClose      = True
-  , encoding       = Binary }
-
-marshallReadOptions : ReadOptions -> ReadOptionsRaw
-marshallReadOptions o =
-  { o | flags    = flagsToString    (.flags o)
-      , encoding = unsafeToNameE (.encoding o) }
-
-marshallStat : StatRaw -> Stat
+marshallStat : JSRaw -> Stat
 marshallStat = Native.FS.marshallStat
 
 access' : FilePath -> Mode -> Task x Bool

@@ -17,7 +17,6 @@ opts = { defaultWatchFileOptions | interval = 1000 }
 testFile : FilePath
 testFile = "testFile"
 
-
 logAs s = Task.map (Debug.log s >> always())
 
 port run : Task FSError ()

@@ -6,6 +6,8 @@
         localRuntime.Native.FS.values
         (set! localRuntime.Native.FS.values {
 
+  :dirname __dirname
+
   :marshallStat (fn [stat] (do
     (set! stat.atime     (.getTime stat.atime))
     (set! stat.mtime     (.getTime stat.mtime))

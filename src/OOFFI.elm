@@ -3,7 +3,7 @@ module OOFFI where
 import Task exposing (Task)
 import Native.OOFFI
 
-type JSRaw = JSRaw
+type JSRaw = JSRaw JSRaw
 
 method0 : String -> object -> Task x ()
 method0 = Native.OOFFI.method0
@@ -82,6 +82,21 @@ listen3 = Native.OOFFI.listen3
 
 listen4 : String -> String -> object -> a -> b -> c -> d -> Task x () -> Task x (Task x ())
 listen4 = Native.OOFFI.listen4
+
+listen0_1 : String -> String -> object -> (a -> Task x ()) -> Task x (Task x ())
+listen0_1 = Native.OOFFI.listen0_1
+
+listen1_1 : String -> String -> object -> a -> (b -> Task x ()) -> Task x (Task x ())
+listen1_1 = Native.OOFFI.listen1_1
+
+listen2_1 : String -> String -> object -> a -> b -> (c -> Task x ()) -> Task x (Task x ())
+listen2_1 = Native.OOFFI.listen2_1
+
+listen3_1 : String -> String -> object -> a -> b -> c -> (d -> Task x ()) -> Task x (Task x ())
+listen3_1 = Native.OOFFI.listen3_1
+
+listen4_1 : String -> String -> object -> a -> b -> c -> d -> (e -> Task x ()) -> Task x (Task x ())
+listen4_1 = Native.OOFFI.listen4_1
 
 listen0_2 : String -> String -> object -> ((a,b) -> Task x ()) -> Task x (Task x ())
 listen0_2 = Native.OOFFI.listen0_2
@@ -206,7 +221,7 @@ getAsync6_2 = Native.OOFFI.getAsync6_2
 unsafeNull : a
 unsafeNull = Native.OOFFI.unsafeNull
 
-unsafeRequire : String -> a
+unsafeRequire : String -> JSRaw
 unsafeRequire = Native.OOFFI.unsafeRequire
 
 unsafeGetGlobalConstant : String -> a

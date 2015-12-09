@@ -73,6 +73,18 @@ marshallReadFileOptions o =
   { o | flag     = flagsToString   (.flag o)
       , encoding = T.unsafeToNameE (.encoding o) }
 
+defaultReadOptions : ReadOptions
+defaultReadOptions =
+  { flags          = R
+  , mode           = 438 -- 666
+  , autoClose      = True
+  , encoding       = T.Binary }
+
+marshallReadOptions : ReadOptions -> ReadOptionsRaw
+marshallReadOptions o =
+  { o | flags    = flagsToString    (.flags o)
+      , encoding = T.unsafeToNameE (.encoding o) }
+
 type alias WriteOptions =
   { flags           : Flags
   , defaultEncoding : Encoding

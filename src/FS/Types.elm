@@ -1,5 +1,6 @@
 module FS.Types where
 
+import OOFFI exposing (JSRaw)
 import Streams.Types as T
 import Time exposing (Time)
 
@@ -164,7 +165,7 @@ defaultWatchOptions =
   { persistent = True
   , recursive  = False }
 
-type FSWatcher = FSWatcher
+type FSWatcher = FSWatcher JSRaw
 
 type WatchEvent
   = Update
@@ -176,7 +177,7 @@ watchEventFromString s = case s of
   "error"  -> Just WatchError
   _ -> Nothing
 
-type WatchFileListener = WatchFileListener
+type WatchFileListener = WatchFileListener JSRaw
 
 type alias WatchFileOptions =
   { persistent : Bool

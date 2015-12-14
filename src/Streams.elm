@@ -1,4 +1,4 @@
-module Streams.Raw where
+module Streams where
 
 import Task exposing (Task)
 import Either exposing (..)

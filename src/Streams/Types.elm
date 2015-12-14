@@ -1,6 +1,6 @@
 module Streams.Types where
 
-import OOFFI
+import OOFFI exposing (JSRaw)
 import Either exposing (..)
 
 type ReadableEvent
@@ -17,7 +17,7 @@ type WritableEvent
   | Finish
   | WriteError
 
-type Buffer = Buffer Buffer
+type Buffer = Buffer JSRaw
 type alias Chunk = Either String Buffer
 
 type Encoding
@@ -60,6 +60,6 @@ toNameW e = case e of
   Finish -> "finish"
   WriteError -> "error"
 
-type Readable = Readable Readable
-type Writable = Writable Writable
+type Readable = Readable JSRaw
+type Writable = Writable JSRaw
 type alias Duplex = (Readable, Writable)

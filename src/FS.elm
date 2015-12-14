@@ -1,4 +1,32 @@
-module FS.Raw where
+module FS
+  ( dirname
+  , f_ok, r_ok, w_ok, x_ok
+  , access', access
+  , appendFile
+  , chmod, fchmod
+  , chown, fchown
+  , stat, fstat
+  , fsync
+  , ftruncate, truncate
+  , link, unlink
+  , mkdir', mkdir
+  , open', open
+  , read
+  , readFile', readFile
+  , readdir, readlink
+  , rename, rmdir
+  , symlink
+  , watchFile', watchFile, watch', watch
+  , writeFileFromString', writeFileFromString
+  , writeFileFromBuffer', writeFileFromBuffer
+  , writeFileString', writeFileString
+  , writeFileBuffer', writeFileBuffer
+  , writeFile', writeFile
+  , close, utimes ) where
+
+{-| Low level bindings to Node.js's FileSystem module
+
+-}
 
 import FS.Types exposing (..)
 import Streams.Types exposing

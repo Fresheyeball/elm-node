@@ -1,58 +1,238 @@
-module Http.Server where
+module Http.Server
+  ( createServer, listen
+  , createServer'
+  , writeHead, write, end
+  , writeHtml, writeJson, writeText
+  , Port, Code, Echo, Header, Url
+  , Server, Method(..)
+  , emptyReq, Request
+  , emptyRes, Response
+  , url, method, statusCode
+  , textHtml, applicationJson, plainText
+  , onRequest
+  , onClose, onCloseReq
+  , onCloseRes, onFinishRes) where
 
-import Http.Server.Raw as Raw
-import Html
+{-| Simple bindings to Node.js's Http.Server
+
+# Init the server
+
+## Instaniation
+@docs createServer, createServer', listen
+
+## Types
+@docs Server, Port, Code, Echo, Url, Header
+
+# Handle Requests
+@docs Request, emptyReq
+
+## Get meta data
+@docs Method, method, url, statusCode
+
+# Write out responses
+@docs Response, emptyRes
+
+## High level api
+@docs writeHtml, writeJson, writeText
+
+## Lower level api
+@docs writeHead, write, end, textHtml, applicationJson, plainText
+
+# Listen for events
+@docs onRequest, onClose, onCloseReq, onCloseRes, onFinishRes
+-}
+
+import OOFFI exposing (..)
+import Task exposing (Task, succeed, andThen)
+import Signal exposing (Address, Mailbox, mailbox)
 import Json.Encode as Json
-import Task exposing (Task, andThen)
-import VDOMtoHTML exposing (toHTML)
-import Signal exposing (..)
+import Native.Http.Server
 
-type alias Head = List Raw.Header
+{-| Port number for the server to listen -}
+type alias Port   = Int
+{-| StatusCode ie 200 or 404 -}
+type alias Code   = Int
+{-| Echo is a message to send to the console, effectfully -}
+type alias Echo   = String
+{-| Url the url of a request -}
+type alias Url    = String
+{-| An http header, such as content type -}
+type alias Header = (String, String)
 
-type Response
-  = Html Html.Html
-  | Json Json.Value
-  | Text String
-  | EmptyRes
+{-| Node.js native Server object
+[Node Docs](https://nodejs.org/api/http.html#http_class_http_server) -}
+type Server       = Server JSRaw
+{-| Node.js native Request object
+[Node Docs](https://nodejs.org/api/http.html#http_http_incomingmessage) -}
+type Request      = Request JSRaw
+{-| Node.js native Response object
+[Node Docs](https://nodejs.org/api/http.html#http_class_http_serverresponse) -}
+type Response     = Response JSRaw
 
-type alias Request =
-  { url        : Raw.Url
-  , method     : Raw.Method
-  , statusCode : Raw.Code }
+{-| Standard Http Methods, useful for routing -}
+type Method
+  = GET
+  | POST
+  | PUT
+  | DELETE
 
-marshallRequest : Raw.Request -> Request
-marshallRequest req =
-  Request
-    (Raw.url req)
-    (Raw.method req)
-    (Raw.statusCode req)
+http : JSRaw
+http = unsafeRequire "http"
 
-runResponse : Response -> Raw.Response -> Task x ()
-runResponse res rawres = case res of
-  Html vdom -> Raw.writeHtml rawres (toHTML vdom)
-  Json json -> Raw.writeJson rawres json
-  Text text -> Raw.writeText rawres text
-  EmptyRes  -> Task.succeed ()
+on : String -> object -> ((a,b) -> Task x ()) -> Task x (Task x ())
+on eventName o handler = listen1_2 "on" "removeListener" o eventName handler
 
-type alias Server model = Signal Request -> Signal (model, Response)
-type alias Port = Raw.Port
+{-| "Request" events as a Signal.
+[Node docs](https://nodejs.org/api/http.html#http_event_request) -}
+onRequest : Server -> ((Request, Response) -> Task x ()) -> Task x (Task x ())
+onRequest = on "request"
 
-run : Port -> Server model -> Signal (Task x ())
-run p s = let
+{-| "Close" events as a Signal for Servers.
+[Node docs](https://nodejs.org/api/http.html#http_event_close) -}
+onClose : Server -> (() -> Task x ()) -> Task x (Task x ())
+onClose = on "close"
 
-  server : Mailbox (Raw.Request, Raw.Response)
-  server = mailbox (Raw.emptyReq, Raw.emptyRes)
+{-| "Close" events as a Signal for Request objects.
+[Node docs](https://nodejs.org/api/http.html#http_event_close_2) -}
+onCloseReq : Request -> (() -> Task x ()) -> Task x (Task x ())
+onCloseReq = on "close"
 
-  reply : Signal (Task x ())
-  reply = Signal.map2
-    (snd >> runResponse)
-    (Signal.map (fst >> marshallRequest) server.signal |> s)
-    (Signal.map  snd                     server.signal     )
+{-| "Close" events as a Signal for Response objects.
+[Node docs](https://nodejs.org/api/http.html#http_event_close_1) -}
+onCloseRes : Response -> (() -> Task x ()) -> Task x (Task x ())
+onCloseRes = on "close"
 
-  create : Signal (Task x ())
-  create = constant <|
-    Raw.createServer'
-      server.address p ("Listening on " ++ toString p)
-    `andThen` always (Task.succeed ())
+{-| "Finsh" events as a Signal for Reponse objects.
+[Node docs](https://nodejs.org/api/http.html#http_event_finish) -}
+onFinishRes : Response -> (() -> Task x ()) -> Task x (Task x ())
+onFinishRes = on "finish"
 
-  in merge create reply
+{-| Create a new Http Server, and send (Request, Response) to an Address. For example
+
+    port serve : Task x Server
+    port serve = createServer server.address
+
+[Node docs](https://nodejs.org/api/http.html#http_http_createserver_requestlistener)
+-}
+createServer : Address (Request, Response) -> Task x Server
+createServer = Native.Http.Server.createServer
+
+{-| Command Server to listen on a specific port,
+    and echo a message to the console when active.
+    Task will not resolve until listening is successful.
+    For example
+
+    port listen : Task x Server
+    port listen = listen 8080 "Listening on 8080" server
+
+[Node Docs](https://nodejs.org/api/http.html#http_server_listen_port_hostname_backlog_callback)
+-}
+listen : Port -> Echo -> Server -> Task x Server
+listen = Native.Http.Server.listen
+
+{-| Create a Http Server and listen in one command! For example
+
+    port serve : Task x Server
+    port serve = createServer' server.address 8080 "Alive on 8080!"
+
+-}
+createServer' : Address (Request, Response) -> Port -> Echo -> Task x Server
+createServer' address port' echo =
+  createServer address `andThen` listen port' echo
+
+{-| Write Headers to a Response
+[Node Docs](https://nodejs.org/api/http.html#http_response_writehead_statuscode_statusmessage_headers) -}
+writeHead : Code -> Header -> Response -> Task x Response
+writeHead = Native.Http.Server.writeHead
+
+{-| Write body to a Response
+[Node Docs](https://nodejs.org/api/http.html#http_response_write_chunk_encoding_callback) -}
+write : String -> Response -> Task x Response
+write = Native.Http.Server.write
+
+{-| End a Response
+[Node Docs](https://nodejs.org/api/http.html#http_response_end_data_encoding_callback) -}
+end : Response -> Task x ()
+end = Native.Http.Server.end
+
+{-| Requests are Native Types, and so cannot be constructed inside Elm.
+`emptyReq` is a dummy Native Request object incase you need it, as the initial value of
+a `Signal.Mailbox` for example. -}
+emptyReq : Request
+emptyReq = Native.Http.Server.emptyReq
+
+{-| Responses are Native Types, and so cannot be constructed inside Elm.
+`emptyRes` is a dummy Native Response object incase you need it, as the initial value of
+a `Signal.Mailbox` for example. -}
+emptyRes : Response
+emptyRes = Native.Http.Server.emptyRes
+
+{-| Accessor for the Url of a Request
+[Node docs](https://nodejs.org/api/http.html#http_message_url) -}
+url : Request -> Url
+url = Native.Http.Server.url
+
+method' : Request -> String
+method' = Native.Http.Server.method
+
+{-| Accessor for the Method of a Request
+[Node docs](https://nodejs.org/api/http.html#http_message_method) -}
+method : Request -> Maybe Method
+method req =
+  case method' req of
+    "GET"    -> Just GET
+    "POST"   -> Just POST
+    "PUT"    -> Just PUT
+    "DELETE" -> Just DELETE
+    _        -> Nothing
+
+{-| Accessor for the statusCode of a Request
+[Node docs](https://nodejs.org/api/http.html#http_message_statuscode) -}
+statusCode : Request -> Code
+statusCode = Native.Http.Server.statusCode
+
+writeAs : Header -> Response -> String -> Task x ()
+writeAs header res html =
+  writeHead 200 header res
+  `andThen` write html `andThen` end
+
+{-| Html Header {"Content-Type":"text/html"}-}
+textHtml : Header
+textHtml = ("Content-Type", "text/html")
+
+{-| Write out HTML to a Response. For example
+
+    res `writeHtml` "<h1>Howdy</h1>"
+
+ -}
+writeHtml : Response -> String -> Task x ()
+writeHtml = writeAs textHtml
+
+{-| Json Header {"Content-Type":"application/json"}-}
+applicationJson : Header
+applicationJson = ("Content-Tyoe", "application/json")
+
+{-| Write out JSON to a Response. For example
+
+    res `writeJson` Json.object
+      [ ("foo", Json.string "bar")
+      , ("baz", Json.int 0) ]
+
+-}
+writeJson : Response -> Json.Value -> Task x ()
+writeJson res = writeAs applicationJson res << Json.encode 0
+
+{-| Text Header {"Content-Type":"plain/text"}-}
+plainText : Header
+plainText = ("Content-Tyoe", "plain/text")
+
+{-| Write out Text to a Response. For example
+
+    res `writeText` """
+      Hello, kind vistor.
+      How goes it?
+    """
+
+-}
+writeText : Response -> String -> Task x ()
+writeText = writeAs plainText

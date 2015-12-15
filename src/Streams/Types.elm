@@ -1,6 +1,7 @@
 module Streams.Types where
 
-import OOFFI
+import Foreign.Types exposing (JSRaw)
+import Foreign.Marshall exposing (unsafeNull)
 import Either exposing (..)
 
 type ReadableEvent
@@ -17,7 +18,7 @@ type WritableEvent
   | Finish
   | WriteError
 
-type Buffer = Buffer Buffer
+type Buffer = Buffer JSRaw
 type alias Chunk = Either String Buffer
 
 type Encoding
@@ -41,7 +42,7 @@ toNameE e = case e of
 unsafeToNameE : Encoding -> String
 unsafeToNameE e =
   let x = toNameE e in case x of
-    "null" -> OOFFI.unsafeNull
+    "null" -> unsafeNull
     _ -> x
 
 toNameR : ReadableEvent -> String
@@ -60,6 +61,6 @@ toNameW e = case e of
   Finish -> "finish"
   WriteError -> "error"
 
-type Readable = Readable Readable
-type Writable = Writable Writable
+type Readable = Readable JSRaw
+type Writable = Writable JSRaw
 type alias Duplex = (Readable, Writable)

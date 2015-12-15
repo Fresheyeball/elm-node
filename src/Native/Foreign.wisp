@@ -1,4 +1,4 @@
-(set! global.ooffi {
+(set! global.foreign {
 
   :sanitize (fn
     [record & spaces]
@@ -6,13 +6,6 @@
         (if (aget r space) nil (set! (aget r space) {}))
         (aget r space)))
       record))
-
-  :taskCB (fn [merr Task Tuple0 f]
-    (.asyncFunction Task (fn [callback]
-      (f (fn [err]
-        (callback (if err
-          (Task.error (merr (.toString err)))
-          (Task.succeed Tuple0))))))))
 
 })
 
@@ -23,10 +16,10 @@
    Tuple0 (:Tuple0 Utils)
    Tuple2 (:Tuple2 Utils)]
    (do
-     (ooffi.sanitize localRuntime :Native :OOFFI)
-     (if localRuntime.Native.OOFFI.values
-         localRuntime.Native.OOFFI.values
-         (set! localRuntime.Native.OOFFI.values {
+     (foreign.sanitize localRuntime :Native :Foreign)
+     (if localRuntime.Native.Foreign.values
+         localRuntime.Native.Foreign.values
+         (set! localRuntime.Native.Foreign.values {
 
   :method0 (F2 (fn [name object]
     (.asyncFunction Task (fn [callback]
@@ -557,6 +550,16 @@
           (.fail Task (merr (.toString err)))
           (.succeed Task (Tuple2 x y))))))))))
 
+  :get (F2 (fn [name object]
+    (.asyncFunction Task (fn [callback]
+      (callback (.success Task (aget object name)))))))
+
+  :modify (F3 (fn [name object f]
+    (.asyncFunction Task (fn [callback]
+      (do
+        (set! (aget object name) (f (aget object name)))
+        (callback (.success Task Tuple0)))))))
+
   :unsafeGetGlobalConstant (fn [name] (aget window name))
 
   :unsafeNull null
@@ -565,10 +568,13 @@
 
   :unsafeGet0 (F2 (fn [name x] (aget x name)))
 
+  :getTime (fn [date] (.getTime date))
+  :fromTime (fn [time] (Date. time))
+
   :truthy (fn [x] (if x true false))
 
   })))))
 
 (if (== (typeof window) :undefined) (set! window global))
-(ooffi.sanitize Elm :Native :OOFFI)
-(set! Elm.Native.OOFFI.make make)
+(foreign.sanitize Elm :Native :Foreign)
+(set! Elm.Native.Foreign.make make)

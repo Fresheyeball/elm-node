@@ -1,4 +1,28 @@
-module FS.Raw where
+module FS
+  ( dirname
+  , f_ok, r_ok, w_ok, x_ok
+  , access', access
+  , appendFile
+  , chmod, fchmod
+  , chown, fchown
+  , stat, fstat
+  , fsync
+  , ftruncate, truncate
+  , link, unlink
+  , mkdir', mkdir
+  , open', open
+  , read
+  , readFile', readFile
+  , readdir, readlink
+  , rename, rmdir
+  , symlink
+  , watchFile', watchFile, watch', watch
+  , writeFileFromString', writeFileFromString
+  , writeFileFromBuffer', writeFileFromBuffer
+  , writeFileString', writeFileString
+  , writeFileBuffer', writeFileBuffer
+  , writeFile', writeFile
+  , close, utimes ) where
 
 import FS.Types exposing (..)
 import Streams.Types exposing
@@ -9,8 +33,10 @@ import Streams.Types exposing
   , Encoding(Binary))
 import Task exposing (Task)
 import Time exposing (Time)
-import Either exposing (..)
-import OOFFI exposing (..)
+import Either exposing (Either(..))
+import Foreign.Pattern exposing (..)
+import Foreign.Types exposing (..)
+import Foreign.Marshall exposing (..)
 import Native.FS
 
 fs : JSRaw
@@ -30,9 +56,6 @@ w_ok = unsafeGet0 "W_OK" fs
 
 x_ok : Mode
 x_ok = unsafeGet0 "X_OK" fs
-
-marshallStat : JSRaw -> Stat
-marshallStat = Native.FS.marshallStat
 
 access' : FilePath -> Mode -> Task x Bool
 access' path mode =

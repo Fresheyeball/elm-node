@@ -1,10 +1,13 @@
-module Streams.Raw where
+module Streams where
 
 import Task exposing (Task)
 import Either exposing (..)
 
-import OOFFI exposing (..)
+import Foreign.Types exposing (JSRaw)
+import Foreign.Marshall exposing (truthy)
+import Foreign.Pattern exposing (..)
 import Streams.Types exposing (..)
+import Emitter exposing (on1, once1)
 import Native.Streams
 
 {-| readable.isPaused() -}
@@ -29,7 +32,11 @@ marshallChunk = Native.Streams.marshallChunk Left Right
 
 on : (Chunk -> Task x ()) -> ReadableEvent -> Readable -> Task x (Task x ())
 on f e readable =
-  listen1_1 "on" "removeListener" readable (toNameR e) (marshallChunk >> f)
+  on1 (toNameR e) readable (marshallChunk >> f)
+
+once : (Chunk -> Task x ()) -> ReadableEvent -> Readable -> Task x ()
+once f e readable =
+  once1 (toNameR e) readable (marshallChunk >> f)
 
 onString : ReadableEvent -> (String -> Task x ()) -> Readable -> Task x (Task x ())
 onString e f r =

@@ -1,5 +1,7 @@
 module FS.Types where
 
+import Foreign.Types exposing (JSRaw, JSDate)
+import Native.FS
 import Streams.Types as T
 import Time exposing (Time)
 
@@ -13,7 +15,7 @@ type alias GID      = Int
 type alias UID      = Int
 
 type FSError        = FSError String
-type FileDescriptor = FileDescriptor
+type FileDescriptor = FileDescriptor JSRaw
 type Flags
   = R
   | Rplus
@@ -143,6 +145,9 @@ type alias Stat =
   , ctime     : Time
   , birthtime : Time }
 
+marshallStat : JSRaw -> Stat
+marshallStat = Native.FS.marshallStat
+
 type SymType
   = File
   | Dir
@@ -164,7 +169,7 @@ defaultWatchOptions =
   { persistent = True
   , recursive  = False }
 
-type FSWatcher = FSWatcher
+type FSWatcher = FSWatcher JSRaw
 
 type WatchEvent
   = Update
@@ -176,7 +181,7 @@ watchEventFromString s = case s of
   "error"  -> Just WatchError
   _ -> Nothing
 
-type WatchFileListener = WatchFileListener
+type WatchFileListener = WatchFileListener JSRaw
 
 type alias WatchFileOptions =
   { persistent : Bool

@@ -1,58 +1,48 @@
 module Http.Server where
 
-import Http.Server.Raw as Raw
-import Html
+import Emitter exposing (..)
+import Foreign.Pattern exposing (..)
+import Task exposing (Task, succeed, andThen)
+import Signal exposing (Address, Mailbox, mailbox)
 import Json.Encode as Json
-import Task exposing (Task, andThen)
-import VDOMtoHTML exposing (toHTML)
-import Signal exposing (..)
+import Native.Http.Server
 
-type alias Head = List Raw.Header
+-- HTTP
 
-type Response
-  = Html Html.Html
-  | Json Json.Value
-  | Text String
-  | EmptyRes
+type ServerEvent
+  = CheckContinue
+  | ClientError
+  | Close
+  | Connect
+  | Connection
+  | Request
+  | Upgrade
 
-type alias Request =
-  { url        : Raw.Url
-  , method     : Raw.Method
-  , statusCode : Raw.Code }
+toNameE : ServerEvent -> String
+toNameE se = case se of
+  CheckContinue -> "checkContinue"
 
-marshallRequest : Raw.Request -> Request
-marshallRequest req =
-  Request
-    (Raw.url req)
-    (Raw.method req)
-    (Raw.statusCode req)
 
-runResponse : Response -> Raw.Response -> Task x ()
-runResponse res rawres = case res of
-  Html vdom -> Raw.writeHtml rawres (toHTML vdom)
-  Json json -> Raw.writeJson rawres json
-  Text text -> Raw.writeText rawres text
-  EmptyRes  -> Task.succeed ()
+-- Class: http.Server
+-- Event: 'checkContinue'
+-- Event: 'clientError'
+-- Event: 'close'
+-- Event: 'connect'
+-- Event: 'connection'
+-- Event: 'request'
+-- Event: 'upgrade'
+-- server.close([callback])
+-- server.listen(handle[, callback])
+-- server.listen(path[, callback])
+-- server.listen(port[, hostname][, backlog][, callback])
+-- server.maxHeadersCount
+-- server.setTimeout(msecs, callback)
+-- server.timeout
 
-type alias Server model = Signal Request -> Signal (model, Response)
-type alias Port = Raw.Port
-
-run : Port -> Server model -> Signal (Task x ())
-run p s = let
-
-  server : Mailbox (Raw.Request, Raw.Response)
-  server = mailbox (Raw.emptyReq, Raw.emptyRes)
-
-  reply : Signal (Task x ())
-  reply = Signal.map2
-    (snd >> runResponse)
-    (Signal.map (fst >> marshallRequest) server.signal |> s)
-    (Signal.map  snd                     server.signal     )
-
-  create : Signal (Task x ())
-  create = constant <|
-    Raw.createServer'
-      server.address p ("Listening on " ++ toString p)
-    `andThen` always (Task.succeed ())
-
-  in merge create reply
+-- http.METHODS
+-- http.STATUS_CODES
+-- http.createClient([port][, host])
+-- http.createServer([requestListener])
+-- http.get(options[, callback])
+-- http.globalAgent
+-- http.request(options[, callback])

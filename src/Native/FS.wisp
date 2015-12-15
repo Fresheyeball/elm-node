@@ -1,7 +1,7 @@
 (defn- make
   [localRuntime]
   (do
-    (ooffi.sanitize localRuntime :Native :FS)
+    (foreign.sanitize localRuntime :Native :FS)
     (if localRuntime.Native.FS.values
         localRuntime.Native.FS.values
         (set! localRuntime.Native.FS.values {
@@ -17,5 +17,5 @@
 
   } ))))
 
-(ooffi.sanitize Elm :Native :FS)
+(foreign.sanitize Elm :Native :FS)
 (set! Elm.Native.FS.make make)

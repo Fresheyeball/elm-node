@@ -24,95 +24,6 @@ module FS
   , writeFile', writeFile
   , close, utimes ) where
 
-{-| Low level bindings to Node.js's FileSystem module
-File System
-Class: fs.FSWatcher
-Event: 'change'
-Event: 'error'
-watcher.close()
-Class: fs.ReadStream
-Event: 'open'
-Class: fs.Stats
-Stat Time Values
-Class: fs.WriteStream
-Event: 'open'
-writeStream.bytesWritten
-fs.access(path[, mode], callback)
-fs.accessSync(path[, mode])
-fs.appendFile(file, data[, options], callback)
-fs.appendFileSync(file, data[, options])
-fs.chmod(path, mode, callback)
-fs.chmodSync(path, mode)
-fs.chown(path, uid, gid, callback)
-fs.chownSync(path, uid, gid)
-fs.close(fd, callback)
-fs.closeSync(fd)
-fs.createReadStream(path[, options])
-fs.createWriteStream(path[, options])
-fs.exists(path, callback)
-fs.existsSync(path)
-fs.fchmod(fd, mode, callback)
-fs.fchmodSync(fd, mode)
-fs.fchown(fd, uid, gid, callback)
-fs.fchownSync(fd, uid, gid)
-fs.fstat(fd, callback)
-fs.fstatSync(fd)
-fs.fsync(fd, callback)
-fs.fsyncSync(fd)
-fs.ftruncate(fd, len, callback)
-fs.ftruncateSync(fd, len)
-fs.futimes(fd, atime, mtime, callback)
-fs.futimesSync(fd, atime, mtime)
-fs.lchmod(path, mode, callback)
-fs.lchmodSync(path, mode)
-fs.lchown(path, uid, gid, callback)
-fs.lchownSync(path, uid, gid)
-fs.link(srcpath, dstpath, callback)
-fs.linkSync(srcpath, dstpath)
-fs.lstat(path, callback)
-fs.lstatSync(path)
-fs.mkdir(path[, mode], callback)
-fs.mkdirSync(path[, mode])
-fs.open(path, flags[, mode], callback)
-fs.openSync(path, flags[, mode])
-fs.read(fd, buffer, offset, length, position, callback)
-fs.readdir(path, callback)
-fs.readdirSync(path)
-fs.readFile(file[, options], callback)
-fs.readFileSync(file[, options])
-fs.readlink(path, callback)
-fs.readlinkSync(path)
-fs.realpath(path[, cache], callback)
-fs.readSync(fd, buffer, offset, length, position)
-fs.realpathSync(path[, cache])
-fs.rename(oldPath, newPath, callback)
-fs.renameSync(oldPath, newPath)
-fs.rmdir(path, callback)
-fs.rmdirSync(path)
-fs.stat(path, callback)
-fs.statSync(path)
-fs.symlink(target, path[, type], callback)
-fs.symlinkSync(target, path[, type])
-fs.truncate(path, len, callback)
-fs.truncateSync(path, len)
-fs.unlink(path, callback)
-fs.unlinkSync(path)
-fs.unwatchFile(filename[, listener])
-fs.utimes(path, atime, mtime, callback)
-fs.utimesSync(path, atime, mtime)
-fs.watch(filename[, options][, listener])
-Caveats
-Availability
-Filename Argument
-fs.watchFile(filename[, options], listener)
-fs.write(fd, buffer, offset, length[, position], callback)
-fs.write(fd, data[, position[, encoding]], callback)
-fs.writeFile(file, data[, options], callback)
-fs.writeFileSync(file, data[, options])
-fs.writeSync(fd, buffer, offset, length[, position])
-fs.writeSync(fd, data[, position[, encoding]])
--}
-
 import FS.Types exposing (..)
 import Streams.Types exposing
   ( unsafeToNameE
@@ -122,8 +33,10 @@ import Streams.Types exposing
   , Encoding(Binary))
 import Task exposing (Task)
 import Time exposing (Time)
-import Either exposing (..)
-import OOFFI exposing (..)
+import Either exposing (Either(..))
+import Foreign.Pattern exposing (..)
+import Foreign.Types exposing (..)
+import Foreign.Marshall exposing (..)
 import Native.FS
 
 fs : JSRaw
@@ -143,9 +56,6 @@ w_ok = unsafeGet0 "W_OK" fs
 
 x_ok : Mode
 x_ok = unsafeGet0 "X_OK" fs
-
-marshallStat : JSRaw -> Stat
-marshallStat = Native.FS.marshallStat
 
 access' : FilePath -> Mode -> Task x Bool
 access' path mode =

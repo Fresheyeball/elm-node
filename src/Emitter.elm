@@ -1,6 +1,6 @@
-module Emitter.Internal where
+module Emitter where
 
-import OOFFI exposing (..)
+import Foreign.Pattern exposing (..)
 import Task exposing (Task)
 
 type alias EventName = String

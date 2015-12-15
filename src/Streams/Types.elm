@@ -1,6 +1,7 @@
 module Streams.Types where
 
-import OOFFI exposing (JSRaw)
+import Foreign.Types exposing (JSRaw)
+import Foreign.Marshall exposing (unsafeNull)
 import Either exposing (..)
 
 type ReadableEvent
@@ -41,7 +42,7 @@ toNameE e = case e of
 unsafeToNameE : Encoding -> String
 unsafeToNameE e =
   let x = toNameE e in case x of
-    "null" -> OOFFI.unsafeNull
+    "null" -> unsafeNull
     _ -> x
 
 toNameR : ReadableEvent -> String

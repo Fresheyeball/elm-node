@@ -4,7 +4,7 @@
    Signal          (Elm.Native.Signal.make localRuntime)
    Tuple0 (:Tuple0 (Elm.Native.Utils.make  localRuntime))]
   (do
-    (ooffi.sanitize localRuntime :Native :Streams)
+    (foreign.sanitize localRuntime :Native :Streams)
     (if localRuntime.Native.Streams.values
         localRuntime.Native.Streams.values
         (set! localRuntime.Native.Streams.values {
@@ -25,5 +25,5 @@
 
 })))))
 
-(ooffi.sanitize Elm :Native :Streams)
+(foreign.sanitize Elm :Native :Streams)
 (set! Elm.Native.Streams.make make)

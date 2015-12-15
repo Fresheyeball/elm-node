@@ -1,8 +1,11 @@
-module FS.Streams.Raw where
+module FS.Streams where
 
 import Task exposing (Task)
 
-import OOFFI exposing (..)
+import Foreign.Types exposing (JSRaw)
+import Foreign.Marshall exposing (unsafeRequire)
+import Foreign.Pattern exposing (get2)
+
 import Streams.Types exposing (..)
 import FS.Types exposing (..)
 

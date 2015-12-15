@@ -1,6 +1,7 @@
 module FS.Types where
 
-import OOFFI exposing (JSRaw)
+import Foreign.Types exposing (JSRaw, JSDate)
+import Native.FS
 import Streams.Types as T
 import Time exposing (Time)
 
@@ -14,7 +15,7 @@ type alias GID      = Int
 type alias UID      = Int
 
 type FSError        = FSError String
-type FileDescriptor = FileDescriptor
+type FileDescriptor = FileDescriptor JSRaw
 type Flags
   = R
   | Rplus
@@ -143,6 +144,9 @@ type alias Stat =
   , mtime     : Time
   , ctime     : Time
   , birthtime : Time }
+
+marshallStat : JSRaw -> Stat
+marshallStat = Native.FS.marshallStat
 
 type SymType
   = File

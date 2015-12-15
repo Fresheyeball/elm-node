@@ -1,10 +1,10 @@
 module Main where
 
 import FS.Types exposing (FilePath, FSError)
-import FS.Raw exposing (..)
-import FS.Streams.Raw exposing (..)
+import FS exposing (..)
+import FS.Streams exposing (..)
 import Streams.Types exposing (..)
-import Streams.Raw exposing (..)
+import Streams exposing (..)
 
 import Signal exposing (Signal, mailbox, Mailbox)
 import Task exposing (Task, andThen, succeed)

@@ -1,5 +1,6 @@
 module Foreign.Marshall where
 
+import Json.Decode as Json
 import Foreign.Types exposing (JSRaw)
 import Native.Foreign
 
@@ -15,5 +16,5 @@ unsafeGetGlobalConstant = Native.Foreign.unsafeGetGlobalConstant
 truthy : JSRaw -> Bool
 truthy = Native.Foreign.truthy
 
-unsafeTypeAs : JSRaw -> a
-unsafeTypeAs = Native.Foreign.unsafeTypeAs
+unsafeTypeAsJson : JSRaw -> Json.Value
+unsafeTypeAsJson = Native.Foreign.unsafeTypeAs

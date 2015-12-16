@@ -1,5 +1,5 @@
 module FS
-  ( dirname
+  ( currentDirectory
   , f_ok, r_ok, w_ok, x_ok
   , access', access
   , appendFile
@@ -37,13 +37,14 @@ import Either exposing (Either(..))
 import Foreign.Pattern exposing (..)
 import Foreign.Types exposing (..)
 import Foreign.Marshall exposing (..)
+
 import Native.FS
 
 fs : JSRaw
 fs = unsafeRequire "fs"
 
-dirname : FilePath
-dirname = Native.FS.dirname
+currentDirectory : String
+currentDirectory = Native.FS.dirname
 
 f_ok : Mode
 f_ok = unsafeGet0 "F_OK" fs

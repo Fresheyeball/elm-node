@@ -11,7 +11,7 @@ import Task exposing (Task, andThen, succeed)
 import Debug
 
 testFile : FilePath
-testFile = dirname ++ "/testfile"
+testFile = currentDirectory ++ "/testfile"
 
 flow : Mailbox Buffer
 flow = mailbox emptyBuffer

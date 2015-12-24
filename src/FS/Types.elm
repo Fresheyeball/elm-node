@@ -3,12 +3,12 @@ module FS.Types where
 
 import Foreign.Types exposing (JSRaw, JSDate)
 import Native.FS
-import Streams.Types as T
+import Chunk as C
 import Time exposing (Time)
 
 
 type alias Encoding =
-  T.Encoding
+  C.Encoding
 
 type alias FilePath =
   String
@@ -35,8 +35,10 @@ type alias UID =
 type FSError =
   FSError String
 
+
 type FileDescriptor =
   FileDescriptor JSRaw
+
 
 type Flags
   = R
@@ -97,13 +99,13 @@ type alias ReadFileOptionsRaw =
 defaultReadFileOptions : ReadFileOptions
 defaultReadFileOptions =
   { flag     = R
-  , encoding = T.Binary}
+  , encoding = C.Binary}
 
 
 marshallReadFileOptions : ReadFileOptions -> ReadFileOptionsRaw
 marshallReadFileOptions o =
-  { o | flag     = flagsToString   (.flag o)
-      , encoding = T.unsafeToNameE (.encoding o) }
+  { o | flag     = flagsToString        (.flag o)
+      , encoding = C.unsafeShowEncoding (.encoding o) }
 
 
 defaultReadOptions : ReadOptions
@@ -111,13 +113,13 @@ defaultReadOptions =
   { flags          = R
   , mode           = 438 -- 666
   , autoClose      = True
-  , encoding       = T.Binary }
+  , encoding       = C.Binary }
 
 
 marshallReadOptions : ReadOptions -> ReadOptionsRaw
 marshallReadOptions o =
-  { o | flags    = flagsToString    (.flags o)
-      , encoding = T.unsafeToNameE (.encoding o) }
+  { o | flags    = flagsToString        (.flags o)
+      , encoding = C.unsafeShowEncoding (.encoding o) }
 
 
 type alias WriteOptions =
@@ -136,13 +138,13 @@ defaultWriteOptions : WriteOptions
 defaultWriteOptions =
   { flags           = W
   , mode            = 438 -- 0o666
-  , defaultEncoding = T.Binary }
+  , defaultEncoding = C.Binary }
 
 
 marshallWriteOptions : WriteOptions -> WriteOptionsRaw
 marshallWriteOptions o =
   { o | flags           = flagsToString   (.flags o)
-      , defaultEncoding = T.unsafeToNameE (.defaultEncoding o) }
+      , defaultEncoding = C.unsafeShowEncoding (.defaultEncoding o) }
 
 
 type alias AppendOptions =
@@ -161,13 +163,13 @@ defaultAppendOptions : AppendOptions
 defaultAppendOptions =
   { flag     = A
   , mode     = 438 -- 0o666
-  , encoding = T.Binary }
+  , encoding = C.Binary }
 
 
 marshallAppendOptions : AppendOptions -> AppendOptionsRaw
 marshallAppendOptions o =
   { o | flag     = flagsToString   (.flag o)
-      , encoding = T.unsafeToNameE (.encoding o) }
+      , encoding = C.unsafeShowEncoding (.encoding o) }
 
 
 type alias Stat =
@@ -217,7 +219,8 @@ defaultWatchOptions =
   , recursive  = False }
 
 
-type FSWatcher = FSWatcher JSRaw
+type FSWatcher =
+  FSWatcher JSRaw
 
 
 type WatchEvent
@@ -233,7 +236,8 @@ watchEventFromString s =
     _ -> Nothing
 
 
-type WatchFileListener = WatchFileListener JSRaw
+type WatchFileListener =
+  WatchFileListener JSRaw
 
 
 type alias WatchFileOptions =
@@ -261,13 +265,13 @@ type alias WriteFileOptionsRaw =
 
 marshallWriteFileOptions : WriteFileOptions -> WriteFileOptionsRaw
 marshallWriteFileOptions {encoding, mode, flag} =
-  { encoding = T.toNameE encoding
+  { encoding = C.showEncoding encoding
   , mode     = mode
   , flag     = flagsToString flag }
 
 
 defaultWriteFileOptions : WriteFileOptions
 defaultWriteFileOptions =
-  { encoding = T.Utf8
+  { encoding = C.Utf8
   , mode     = 438 -- 0o666
   , flag     = W }

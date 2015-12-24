@@ -1,26 +1,16 @@
 module Http.Server where
 
-import Emitter exposing (..)
-import Foreign.Pattern exposing (..)
+
 import Task exposing (Task, succeed, andThen)
 import Signal exposing (Address, Mailbox, mailbox)
 import Json.Encode as Json
+
+
+import Foreign.Pattern exposing (..)
+
+
 import Native.Http.Server
-
--- HTTP
-
-type ServerEvent
-  = CheckContinue
-  | ClientError
-  | Close
-  | Connect
-  | Connection
-  | Request
-  | Upgrade
-
-toNameE : ServerEvent -> String
-toNameE se = case se of
-  CheckContinue -> "checkContinue"
+import Emitter exposing (..)
 
 
 -- Class: http.Server

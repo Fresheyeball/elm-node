@@ -9,13 +9,6 @@
         localRuntime.Native.Streams.values
         (set! localRuntime.Native.Streams.values {
 
-  :emptyBuffer (Buffer. [])
-
-  :marshallChunk (F3 (fn [Left Right chunk]
-    (if (== (typeof chunk) "string")
-        (Left chunk)
-        (Right chunk))))
-
   :withSignal (F2 (fn [signal f]
     (.asyncFunction Task (fn [callback]
       (do

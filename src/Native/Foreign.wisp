@@ -569,9 +569,12 @@
   :unsafeGet0 (F2 (fn [name x] (aget x name)))
 
   :getTime (fn [date] (.getTime date))
+
   :fromTime (fn [time] (Date. time))
 
   :truthy (fn [x] (if x true false))
+
+  :toString (fn [x] (.toString x))
 
   })))))
 

@@ -5,7 +5,7 @@ import Foreign.Pattern.Task.Get exposing (..)
 import Foreign.Marshall exposing (unsafeToString)
 import Emitter.Unsafe exposing (on0, on1)
 import Network.Types exposing (..)
-import Chunk exposing (Chunk)
+import Chunks exposing (Chunk)
 
 
 -- Class: net.Socket
@@ -24,7 +24,7 @@ onConnect =
 
 onData : Socket -> (Chunk -> Task x ()) -> Task x (Task x ())
 onData s f =
-    on1 "data" s (f << Chunk.marshall)
+    on1 "data" s (f << Chunks.marshall)
 
 
 onDrain : Socket -> Task x () -> Task x (Task x ())

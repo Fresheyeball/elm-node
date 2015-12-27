@@ -2,7 +2,7 @@ module FS.Types (..) where
 
 import Foreign.Types exposing (JSRaw, JSDate)
 import Native.FS
-import Chunk as C
+import Chunks as C
 import Time exposing (Time)
 
 

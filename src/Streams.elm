@@ -6,7 +6,7 @@ import Foreign.Marshall exposing (truthy)
 import Foreign.Pattern exposing (..)
 import Streams.Types exposing (..)
 import Emitter.Unsafe exposing (on1)
-import Chunk exposing (..)
+import Chunks exposing (..)
 import Native.Streams
 
 
@@ -30,7 +30,7 @@ pause =
 
 on : (Chunk -> Task x ()) -> ReadableEvent -> Readable -> Task x (Task x ())
 on f event readable =
-    on1 (toNameR event) readable (Chunk.marshall >> f)
+    on1 (toNameR event) readable (Chunks.marshall >> f)
 
 
 onString : ReadableEvent -> (String -> Task x ()) -> Readable -> Task x (Task x ())
@@ -106,7 +106,7 @@ read readable =
         |> Task.map
             (\raw ->
                 if truthy raw then
-                    Just (Chunk.marshall raw)
+                    Just (Chunks.marshall raw)
                 else
                     Nothing
             )
@@ -120,7 +120,7 @@ read' readable size =
         |> Task.map
             (\raw ->
                 if truthy raw then
-                    Just (Chunk.marshall raw)
+                    Just (Chunks.marshall raw)
                 else
                     Nothing
             )

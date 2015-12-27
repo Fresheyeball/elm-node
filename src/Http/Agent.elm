@@ -1,4 +1,4 @@
-module Http.Agent where
+module Http.Agent (..) where
 
 {-| write later
 
@@ -10,6 +10,9 @@ module Http.Agent where
 -- agent.maxFreeSockets
 -- agent.maxSockets
 -- agent.requests
--- agent.sockets -}
+-- agent.sockets
+-}
 
-foo = 1
+
+foo =
+    1

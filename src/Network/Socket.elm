@@ -18,8 +18,7 @@ import Chunk exposing (Chunk)
 
 
 onClose : Socket -> Task x () -> Task x (Task x ())
-onClose =
-  on0 "close"
+onClose = on0 "close"
 
 
 onConnect : Socket -> Task x () -> Task x (Task x ())
@@ -53,8 +52,7 @@ onTimeout =
 
 
 address : Socket -> Task x SocketAddress
-address =
-  get0 "address"
+address = get0 "address"
   >> Task.map marshallSocketAddress
 
 -- socket.bufferSize

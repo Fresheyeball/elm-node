@@ -5,7 +5,7 @@ import FS exposing (..)
 import FS.Streams exposing (..)
 import Streams exposing (..)
 import Streams.Types exposing (..)
-import Chunk exposing (..)
+import Chunks exposing (..)
 import Signal exposing (Signal, mailbox, Mailbox)
 import Task exposing (Task, andThen, succeed)
 import Debug

@@ -7,7 +7,7 @@ import Foreign.Pattern exposing (..)
 import Foreign.Types exposing (..)
 import Foreign.Marshall exposing (..)
 import FS.Types exposing (..)
-import Chunk exposing (unsafeShowEncoding, showEncoding, Buffer, Chunk, Encoding(Binary))
+import Chunks exposing (unsafeShowEncoding, showEncoding, Buffer, Chunk, Encoding(Binary))
 import Native.FS
 
 

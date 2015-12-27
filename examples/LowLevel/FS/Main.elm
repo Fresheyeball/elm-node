@@ -11,11 +11,6 @@ flow =
     S.mailbox Nothing
 
 
-(>|) : Task a b -> Task a c -> Task a c
-(>|) t t' =
-    t `andThen` always t'
-
-
 opts : WatchFileOptions
 opts =
     { defaultWatchFileOptions
@@ -33,6 +28,9 @@ port run =
     let
         logAs s =
             Task.map <| always () << Debug.log s
+
+        (>|) t t' =
+            t `andThen` always t'
     in
         writeFileString testFile "I feel like I'm being watched"
             >| watchFile' opts testFile (Just >> S.send (.address flow))

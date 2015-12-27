@@ -57,9 +57,8 @@ address =
   get0 "address"
   >> Task.map marshallSocketAddress
 
-
--- socket.address()
 -- socket.bufferSize
+
 -- socket.bytesRead
 -- socket.bytesWritten
 -- socket.connect(options[, connectListener])

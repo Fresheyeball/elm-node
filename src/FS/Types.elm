@@ -1,5 +1,4 @@
-module FS.Types where
-
+module FS.Types (..) where
 
 import Foreign.Types exposing (JSRaw, JSDate)
 import Native.FS
@@ -8,270 +7,347 @@ import Time exposing (Time)
 
 
 type alias Encoding =
-  C.Encoding
+    C.Encoding
+
 
 type alias FilePath =
-  String
+    String
+
 
 type alias Mode =
-  Int
+    Int
+
 
 type alias Offset =
-  Int
+    Int
+
 
 type alias Position =
-  Int
+    Int
+
 
 type alias Length =
-  Int
+    Int
+
 
 type alias GID =
-  Int
+    Int
+
 
 type alias UID =
-  Int
+    Int
 
 
-type FSError =
-  FSError String
+type FSError
+    = FSError String
 
 
-type FileDescriptor =
-  FileDescriptor JSRaw
+type FileDescriptor
+    = FileDescriptor JSRaw
 
 
 type Flags
-  = R
-  | Rplus
-  | RS
-  | RSplus
-  | W
-  | Wplus
-  | WX
-  | WXplus
-  | A
-  | AX
-  | Aplus
-  | AXplus
+    = R
+    | Rplus
+    | RS
+    | RSplus
+    | W
+    | Wplus
+    | WX
+    | WXplus
+    | A
+    | AX
+    | Aplus
+    | AXplus
 
 
 flagsToString : Flags -> String
 flagsToString f =
-  case f of
-    R      -> "r"
-    Rplus  -> "r+"
-    RS     -> "rs"
-    RSplus -> "rs+"
-    W      -> "w"
-    Wplus  -> "w+"
-    WX     -> "wx"
-    WXplus -> "wx+"
-    A      -> "a"
-    AX     -> "ax"
-    Aplus  -> "a+"
-    AXplus -> "ax+"
+    case f of
+        R ->
+            "r"
+
+        Rplus ->
+            "r+"
+
+        RS ->
+            "rs"
+
+        RSplus ->
+            "rs+"
+
+        W ->
+            "w"
+
+        Wplus ->
+            "w+"
+
+        WX ->
+            "wx"
+
+        WXplus ->
+            "wx+"
+
+        A ->
+            "a"
+
+        AX ->
+            "ax"
+
+        Aplus ->
+            "a+"
+
+        AXplus ->
+            "ax+"
 
 
 type alias ReadOptions =
-  { flags     : Flags
-  , encoding  : Encoding
-  , mode      : Mode
-  , autoClose : Bool }
+    { flags : Flags
+    , encoding : Encoding
+    , mode : Mode
+    , autoClose : Bool
+    }
 
 
 type alias ReadOptionsRaw =
-  { flags     : String
-  , encoding  : String
-  , mode      : Mode
-  , autoClose : Bool }
+    { flags : String
+    , encoding : String
+    , mode : Mode
+    , autoClose : Bool
+    }
 
 
 type alias ReadFileOptions =
-  { flag     : Flags
-  , encoding : Encoding }
+    { flag : Flags
+    , encoding : Encoding
+    }
 
 
 type alias ReadFileOptionsRaw =
-  { flag     : String
-  , encoding : String }
+    { flag : String
+    , encoding : String
+    }
 
 
 defaultReadFileOptions : ReadFileOptions
 defaultReadFileOptions =
-  { flag     = R
-  , encoding = C.Binary}
+    { flag = R
+    , encoding = C.Binary
+    }
 
 
 marshallReadFileOptions : ReadFileOptions -> ReadFileOptionsRaw
 marshallReadFileOptions o =
-  { o | flag     = flagsToString        (.flag o)
-      , encoding = C.unsafeShowEncoding (.encoding o) }
+    { o
+        | flag = flagsToString (.flag o)
+        , encoding = C.unsafeShowEncoding (.encoding o)
+    }
 
 
 defaultReadOptions : ReadOptions
 defaultReadOptions =
-  { flags          = R
-  , mode           = 438 -- 666
-  , autoClose      = True
-  , encoding       = C.Binary }
+    { flags = R
+    , mode =
+        438
+        -- 666
+    , autoClose = True
+    , encoding = C.Binary
+    }
 
 
 marshallReadOptions : ReadOptions -> ReadOptionsRaw
 marshallReadOptions o =
-  { o | flags    = flagsToString        (.flags o)
-      , encoding = C.unsafeShowEncoding (.encoding o) }
+    { o
+        | flags = flagsToString (.flags o)
+        , encoding = C.unsafeShowEncoding (.encoding o)
+    }
 
 
 type alias WriteOptions =
-  { flags           : Flags
-  , defaultEncoding : Encoding
-  , mode            : Mode }
+    { flags : Flags
+    , defaultEncoding : Encoding
+    , mode : Mode
+    }
 
 
 type alias WriteOptionsRaw =
-  { flags           : String
-  , defaultEncoding : String
-  , mode            : Mode }
+    { flags : String
+    , defaultEncoding : String
+    , mode : Mode
+    }
 
 
 defaultWriteOptions : WriteOptions
 defaultWriteOptions =
-  { flags           = W
-  , mode            = 438 -- 0o666
-  , defaultEncoding = C.Binary }
+    { flags = W
+    , mode =
+        438
+        -- 0o666
+    , defaultEncoding = C.Binary
+    }
 
 
 marshallWriteOptions : WriteOptions -> WriteOptionsRaw
 marshallWriteOptions o =
-  { o | flags           = flagsToString   (.flags o)
-      , defaultEncoding = C.unsafeShowEncoding (.defaultEncoding o) }
+    { o
+        | flags = flagsToString (.flags o)
+        , defaultEncoding = C.unsafeShowEncoding (.defaultEncoding o)
+    }
 
 
 type alias AppendOptions =
-  { flag     : Flags
-  , encoding : Encoding
-  , mode     : Mode }
+    { flag : Flags
+    , encoding : Encoding
+    , mode : Mode
+    }
 
 
 type alias AppendOptionsRaw =
-  { flag     : String
-  , encoding : String
-  , mode     : Mode }
+    { flag : String
+    , encoding : String
+    , mode : Mode
+    }
 
 
 defaultAppendOptions : AppendOptions
 defaultAppendOptions =
-  { flag     = A
-  , mode     = 438 -- 0o666
-  , encoding = C.Binary }
+    { flag = A
+    , mode =
+        438
+        -- 0o666
+    , encoding = C.Binary
+    }
 
 
 marshallAppendOptions : AppendOptions -> AppendOptionsRaw
 marshallAppendOptions o =
-  { o | flag     = flagsToString   (.flag o)
-      , encoding = C.unsafeShowEncoding (.encoding o) }
+    { o
+        | flag = flagsToString (.flag o)
+        , encoding = C.unsafeShowEncoding (.encoding o)
+    }
 
 
 type alias Stat =
-  { dev       : Int
-  , mode      : Int
-  , nlink     : Int
-  , uid       : Int
-  , gid       : Int
-  , rdev      : Int
-  , blksize   : Int
-  , ino       : Int
-  , size      : Int
-  , blocks    : Int
-  , atime     : Time
-  , mtime     : Time
-  , ctime     : Time
-  , birthtime : Time }
+    { dev : Int
+    , mode : Int
+    , nlink : Int
+    , uid : Int
+    , gid : Int
+    , rdev : Int
+    , blksize : Int
+    , ino : Int
+    , size : Int
+    , blocks : Int
+    , atime : Time
+    , mtime : Time
+    , ctime : Time
+    , birthtime : Time
+    }
 
 
 marshallStat : JSRaw -> Stat
 marshallStat =
-  Native.FS.marshallStat
+    Native.FS.marshallStat
 
 
 type SymType
-  = File
-  | Dir
-  | Junction
+    = File
+    | Dir
+    | Junction
 
 
 symTypeToString : SymType -> String
 symTypeToString t =
-  case t of
-    File -> "file"
-    Dir -> "dir"
-    Junction -> "junction"
+    case t of
+        File ->
+            "file"
+
+        Dir ->
+            "dir"
+
+        Junction ->
+            "junction"
 
 
 type alias WatchOptions =
-  { persistent : Bool
-  , recursive  : Bool }
+    { persistent : Bool
+    , recursive : Bool
+    }
 
 
 defaultWatchOptions : WatchOptions
 defaultWatchOptions =
-  { persistent = True
-  , recursive  = False }
+    { persistent = True
+    , recursive = False
+    }
 
 
-type FSWatcher =
-  FSWatcher JSRaw
+type FSWatcher
+    = FSWatcher JSRaw
 
 
 type WatchEvent
-  = Update
-  | WatchError
+    = Update
+    | WatchError
 
 
 watchEventFromString : String -> Maybe WatchEvent
 watchEventFromString s =
-  case s of
-    "update" -> Just Update
-    "error"  -> Just WatchError
-    _ -> Nothing
+    case s of
+        "update" ->
+            Just Update
+
+        "error" ->
+            Just WatchError
+
+        _ ->
+            Nothing
 
 
-type WatchFileListener =
-  WatchFileListener JSRaw
+type WatchFileListener
+    = WatchFileListener JSRaw
 
 
 type alias WatchFileOptions =
-  { persistent : Bool
-  , interval   : Time }
+    { persistent : Bool
+    , interval : Time
+    }
 
 
 defaultWatchFileOptions : WatchFileOptions
 defaultWatchFileOptions =
-  { persistent = True
-  , interval   = 5007 }
+    { persistent = True
+    , interval = 5007
+    }
 
 
 type alias WriteFileOptions =
-  { encoding : Encoding
-  , mode     : Mode
-  , flag     : Flags }
+    { encoding : Encoding
+    , mode : Mode
+    , flag : Flags
+    }
 
 
 type alias WriteFileOptionsRaw =
-  { encoding : String
-  , mode     : Mode
-  , flag     : String }
+    { encoding : String
+    , mode : Mode
+    , flag : String
+    }
 
 
 marshallWriteFileOptions : WriteFileOptions -> WriteFileOptionsRaw
-marshallWriteFileOptions {encoding, mode, flag} =
-  { encoding = C.showEncoding encoding
-  , mode     = mode
-  , flag     = flagsToString flag }
+marshallWriteFileOptions { encoding, mode, flag } =
+    { encoding = C.showEncoding encoding
+    , mode = mode
+    , flag = flagsToString flag
+    }
 
 
 defaultWriteFileOptions : WriteFileOptions
 defaultWriteFileOptions =
-  { encoding = C.Utf8
-  , mode     = 438 -- 0o666
-  , flag     = W }
+    { encoding = C.Utf8
+    , mode =
+        438
+        -- 0o666
+    , flag = W
+    }

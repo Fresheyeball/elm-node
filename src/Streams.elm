@@ -1,236 +1,293 @@
-module Streams where
-
+module Streams (..) where
 
 import Task exposing (Task)
 import Either exposing (..)
-
-
 import Foreign.Marshall exposing (truthy)
 import Foreign.Pattern exposing (..)
-
-
 import Streams.Types exposing (..)
 import Emitter.Unsafe exposing (on1)
 import Chunk exposing (..)
 import Native.Streams
 
 
-{-| readable.isPaused() -}
+{-| readable.isPaused()
+-}
 isPaused : Readable -> Task x Bool
 isPaused =
-  get0 "isPaused"
+    get0 "isPaused"
 
 
-{-| readable.pause() -}
+{-| readable.pause()
+-}
 pause : Readable -> Task x ()
 pause =
-  method0 "pause"
+    method0 "pause"
+
 
 
 -- Class: stream.Readable
 
 
 on : (Chunk -> Task x ()) -> ReadableEvent -> Readable -> Task x (Task x ())
-on f e readable =
-  on1 (toNameR e) readable (Chunk.marshall >> f)
+on f event readable =
+    on1 (toNameR event) readable (Chunk.marshall >> f)
 
 
 onString : ReadableEvent -> (String -> Task x ()) -> Readable -> Task x (Task x ())
-onString e f r =
-  on (\chunk -> case chunk of
-      Left s -> f s
-      Right _ -> Task.succeed ()
-    ) e r
+onString event f r =
+    on
+        (\chunk ->
+            case chunk of
+                Left s ->
+                    f s
+
+                Right _ ->
+                    Task.succeed ()
+        )
+        event
+        r
 
 
 onBuffer : ReadableEvent -> (Buffer -> Task x ()) -> Readable -> Task x (Task x ())
-onBuffer e f r =
-  on (\chunk -> case chunk of
-      Left _ -> Task.succeed ()
-      Right b -> f b
-    ) e r
+onBuffer event action readable =
+    on
+        (\chunk ->
+            case chunk of
+                Left _ ->
+                    Task.succeed ()
+
+                Right buffer ->
+                    action buffer
+        )
+        event
+        readable
 
 
-{-| readable.pipe(destination[, options]) -}
+{-| readable.pipe(destination[, options])
+-}
 pipe : Readable -> Writable -> Task x ()
 pipe =
-  method1 "pipe"
+    method1 "pipe"
 
 
-{-| readable.pipe(destination[, options]) -}
+{-| readable.pipe(destination[, options])
+-}
 pipe' : Readable -> Duplex -> Task x ()
-pipe' r (_,w) =
-  method1 "pipe" r w
+pipe' readable ( _, writable ) =
+    method1 "pipe" readable writable
 
 
-{-| readable.pipe(destination[, options]) -}
+{-| readable.pipe(destination[, options])
+-}
 pipe'' : Duplex -> Duplex -> Task x ()
-pipe'' (r,_) (_,w) =
-  method1 "pipe" r w
+pipe'' ( readable, _ ) ( _, writable ) =
+    method1 "pipe" readable writable
 
 
-{-| readable.unpipe([destination]) -}
+{-| readable.unpipe([destination])
+-}
 unpipe : Readable -> Writable -> Task x ()
 unpipe =
-  method1 "unpipe"
+    method1 "unpipe"
 
 
-{-| readable.unpipe([destination]) -}
+{-| readable.unpipe([destination])
+-}
 unpipeAll : Readable -> Task x ()
 unpipeAll =
-  method0 "unpipe"
+    method0 "unpipe"
 
 
-{-| readable.read([size]) -}
+{-| readable.read([size])
+-}
 read : Readable -> Task x (Maybe Chunk)
-read r =
-  get0 "read" r |> Task.map (\raw ->
-    if truthy raw
-    then Just (Chunk.marshall raw)
-    else Nothing)
+read readable =
+    get0 "read" readable
+        |> Task.map
+            (\raw ->
+                if truthy raw then
+                    Just (Chunk.marshall raw)
+                else
+                    Nothing
+            )
 
 
-{-| readable.read([size]) -}
+{-| readable.read([size])
+-}
 read' : Readable -> Int -> Task x (Maybe Chunk)
-read' r size =
-  get1 "read" r size |> Task.map (\raw ->
-    if truthy raw
-    then Just (Chunk.marshall raw)
-    else Nothing)
+read' readable size =
+    get1 "read" readable size
+        |> Task.map
+            (\raw ->
+                if truthy raw then
+                    Just (Chunk.marshall raw)
+                else
+                    Nothing
+            )
 
 
-{-| readable.resume() -}
+{-| readable.resume()
+-}
 resume : Readable -> Task x ()
 resume =
-  method0 "resume"
+    method0 "resume"
 
 
-{-| readable.setEncoding(encoding) -}
+{-| readable.setEncoding(encoding)
+-}
 setEncoding : Readable -> Encoding -> Task x ()
-setEncoding r e =
-  method1 "setEncoding" r (showEncoding e)
+setEncoding readable encoding =
+    method1 "setEncoding" readable (showEncoding encoding)
 
 
-{-| readable.unshift(chunk) -}
+{-| readable.unshift(chunk)
+-}
 unshiftString : Readable -> String -> Task x ()
 unshiftString =
-  method1 "unshift"
+    method1 "unshift"
 
 
-{-| readable.unshift(chunk) -}
+{-| readable.unshift(chunk)
+-}
 unshiftBuffer : Readable -> Buffer -> Task x ()
 unshiftBuffer =
-  method1 "unshift"
+    method1 "unshift"
 
 
-{-| readable.unshift(chunk) -}
+{-| readable.unshift(chunk)
+-}
 unshift : Readable -> Chunk -> Task x ()
-unshift r c = case c of
-  Left  s -> unshiftString r s
-  Right b -> unshiftBuffer r b
+unshift r c =
+    case c of
+        Left s ->
+            unshiftString r s
+
+        Right b ->
+            unshiftBuffer r b
+
 
 
 -- Class: stream.Writable
 
 
-{-| writable.cork() -}
+{-| writable.cork()
+-}
 cork : Writable -> Task x ()
 cork =
-  method0 "cork"
+    method0 "cork"
 
 
-{-| writable.uncork() -}
+{-| writable.uncork()
+-}
 uncork : Writable -> Task x ()
 uncork =
-  method0 "uncork"
+    method0 "uncork"
 
 
-{-| writable.end([chunk][, encoding][, callback]) -}
+{-| writable.end([chunk][, encoding][, callback])
+-}
 end : Writable -> Task x ()
 end =
-  method0 "end"
+    method0 "end"
 
 
-{-| writable.end([chunk][, encoding][, callback]) -}
+{-| writable.end([chunk][, encoding][, callback])
+-}
 endWithBuffer : Writable -> Buffer -> Task x ()
 endWithBuffer =
-  method1 "end"
+    method1 "end"
 
 
-{-| writable.end([chunk][, encoding][, callback]) -}
+{-| writable.end([chunk][, encoding][, callback])
+-}
 endWithString' : Writable -> Encoding -> String -> Task x ()
-endWithString' w e s =
-  method2 "end" w s (showEncoding e)
+endWithString' writable encoding string =
+    method2 "end" writable string (showEncoding encoding)
 
 
-{-| writable.end([chunk][, encoding][, callback]) -}
+{-| writable.end([chunk][, encoding][, callback])
+-}
 endWithString : Writable -> String -> Task x ()
-endWithString w s =
-  endWithString' w defaultEncoding s
+endWithString writable s =
+    endWithString' writable defaultEncoding s
 
 
-{-| writable.end([chunk][, encoding][, callback]) -}
+{-| writable.end([chunk][, encoding][, callback])
+-}
 endWith' : Writable -> Encoding -> Chunk -> Task x ()
-endWith' w e c =
-  case c of
-    Left s -> endWithString' w e s
-    Right b -> endWithBuffer w b
+endWith' writable encoding chunk =
+    case chunk of
+        Left string ->
+            endWithString' writable encoding string
+
+        Right buffer ->
+            endWithBuffer writable buffer
 
 
-{-| writable.end([chunk][, encoding][, callback]) -}
+{-| writable.end([chunk][, encoding][, callback])
+-}
 endWith : Writable -> Chunk -> Task x ()
-endWith w c =
-  endWith' w defaultEncoding c
+endWith writable c =
+    endWith' writable defaultEncoding c
 
 
-{-| writable.setDefaultEncoding(encoding) -}
+{-| writable.setDefaultEncoding(encoding)
+-}
 setDefaultEncoding : Writable -> Encoding -> Task x ()
-setDefaultEncoding w e =
-  method1 "setDefaultEncoding" w (showEncoding e)
+setDefaultEncoding writable encoding =
+    method1 "setDefaultEncoding" writable (showEncoding encoding)
 
 
-{-| writable.write(chunk[, encoding][, callback]) -}
+{-| writable.write(chunk[, encoding][, callback])
+-}
 writeString' : Writable -> Encoding -> String -> Task x ()
-writeString' w e s =
-  methodAsync2 "write" w s (showEncoding e)
+writeString' writable encoding string =
+    methodAsync2 "write" writable string (showEncoding encoding)
 
 
-{-| writable.write(chunk[, encoding][, callback]) -}
+{-| writable.write(chunk[, encoding][, callback])
+-}
 writeString : Writable -> String -> Task x ()
-writeString w s =
-  writeString' w defaultEncoding s
+writeString writable s =
+    writeString' writable defaultEncoding s
 
 
-{-| writable.write(chunk[, encoding][, callback]) -}
+{-| writable.write(chunk[, encoding][, callback])
+-}
 writeBuffer : Writable -> Buffer -> Task x ()
 writeBuffer =
-  methodAsync1 "write"
+    methodAsync1 "write"
 
 
-{-| writable.write(chunk[, encoding][, callback]) -}
+{-| writable.write(chunk[, encoding][, callback])
+-}
 write' : Writable -> Encoding -> Chunk -> Task x ()
-write' w e c =
-  case c of
-    Left  s -> writeString' w e s
-    Right b -> writeBuffer w b
+write' writable encoding c =
+    case c of
+        Left s ->
+            writeString' writable encoding s
+
+        Right b ->
+            writeBuffer writable b
 
 
-{-| writable.write(chunk[, encoding][, callback]) -}
+{-| writable.write(chunk[, encoding][, callback])
+-}
 write : Writable -> Chunk -> Task x ()
-write w c =
-  write' w defaultEncoding c
+write writable chunk =
+    write' writable defaultEncoding chunk
 
 
 bufferToString' : Encoding -> Buffer -> Task x String
-bufferToString' e b =
-  get1 "toString" b (showEncoding e)
+bufferToString' encoding buffer =
+    get1 "toString" buffer (showEncoding encoding)
 
 
 bufferToString : Buffer -> Task x String
 bufferToString =
-  bufferToString' defaultEncoding
+    bufferToString' defaultEncoding
 
 
 withSignal : Signal a -> (a -> Task x ()) -> Task x ()
 withSignal =
-  Native.Streams.withSignal
+    Native.Streams.withSignal

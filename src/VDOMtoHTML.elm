@@ -1,7 +1,10 @@
-module VDOMtoHTML where
+module VDOMtoHTML (toHTML) where
+
 
 import VirtualDom exposing (Node)
-import Foreign.Pattern exposing (..)
+import Foreign.Marshall exposing (unsafeRequire)
+
 
 toHTML : Node -> String
-toHTML = unsafeRequire "vdom-to-html"
+toHTML =
+    unsafeRequire "vdom-to-html"

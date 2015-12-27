@@ -1,29 +1,29 @@
-module Foreign.Types where
+module Foreign.Types (..) where
 
 
-type JSRaw =
-  JSRaw JSRaw
+type JSRaw
+    = JSRaw JSRaw
 
 
-type JSDate =
-  JSDate JSRaw
+type JSDate
+    = JSDate JSRaw
 
 
 type alias MethodName =
-  String
+    String
 
 
 type alias KeyName =
-  String
+    String
 
 
 type alias ErrorType x =
-  String -> x
+    String -> x
 
 
 type alias ListenName =
-  String
+    String
 
 
 type alias UnlistenName =
-  String
+    String

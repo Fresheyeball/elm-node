@@ -8,7 +8,7 @@
 
   :emptyBuffer (Buffer. [])
 
-  :marshallChunk (F3 (fn [Left Right chunk]
+  :marshall (F3 (fn [Left Right chunk]
     (if (== (typeof chunk) "string")
         (Left chunk)
         (Right chunk))))

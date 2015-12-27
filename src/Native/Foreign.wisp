@@ -560,6 +560,9 @@
         (set! (aget object name) (f (aget object name)))
         (callback (.success Task Tuple0)))))))
 
+  :read0 (F2 (fn [name x]
+    (.asyncFunction Task (fn [callback]
+      (aget x name)))))
 
   :unsafeRead0 (F2 (fn [name x] (aget x name)))
 
@@ -568,10 +571,6 @@
   :unsafeNull null
 
   :unsafeRequire (fn [module] (require module))
-
-  :getTime (fn [date] (.getTime date))
-
-  :fromTime (fn [time] (Date. time))
 
   :truthy (fn [x] (if x true false))
 

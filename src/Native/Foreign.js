@@ -722,6 +722,11 @@ var make = function make(localRuntime) {
                         })();
                     });
                 }),
+                'read0': F2(function (name, x) {
+                    return Taskø1.asyncFunction(function (callback) {
+                        return x[name];
+                    });
+                }),
                 'unsafeRead0': F2(function (name, x) {
                     return x[name];
                 }),
@@ -731,12 +736,6 @@ var make = function make(localRuntime) {
                 'unsafeNull': null,
                 'unsafeRequire': function (module) {
                     return require(module);
-                },
-                'getTime': function (date) {
-                    return date.getTime();
-                },
-                'fromTime': function (time) {
-                    return new Date(time);
                 },
                 'truthy': function (x) {
                     return x ? true : false;

@@ -1,4 +1,4 @@
-module Foreign.Pattern.Task.Listen (..) where
+module Foreign.Pattern.Listen (..) where
 
 import Task exposing (Task)
 import Foreign.Types exposing (..)

@@ -3,7 +3,7 @@ module FS.Streams (..) where
 import Task exposing (Task)
 import Foreign.Types exposing (JSRaw)
 import Foreign.Marshall exposing (unsafeRequire)
-import Foreign.Pattern.Task.Get exposing (get2)
+import Foreign.Pattern.Get exposing (get2)
 import Streams.Types exposing (..)
 import FS.Types exposing (..)
 

@@ -1,4 +1,4 @@
-module Foreign.Pattern.Task.Set (..) where
+module Foreign.Pattern.Set (..) where
 
 import Task exposing (Task)
 import Foreign.Types exposing (..)

@@ -1,9 +1,9 @@
 module Emitter.Unsafe (on0, on1, on2, listenerCount, removeAllListeners, removeAllListeners', setMaxListeners, emit1, emit2, emit3) where
 
 import Foreign.Types exposing (JSRaw)
-import Foreign.Pattern.Task.Listen exposing (listen1, listen1_1, listen1_2)
-import Foreign.Pattern.Task.Method exposing (..)
-import Foreign.Pattern.Task.Get exposing (get1)
+import Foreign.Pattern.Listen exposing (listen1, listen1_1, listen1_2)
+import Foreign.Pattern.Method exposing (..)
+import Foreign.Pattern.Get exposing (get1)
 import Task exposing (Task)
 
 

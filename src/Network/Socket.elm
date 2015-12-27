@@ -1,7 +1,7 @@
 module Network.Socket (..) where
 
 import Task exposing (Task)
-import Foreign.Pattern.Task.Get exposing (..)
+import Foreign.Pattern.Get exposing (..)
 import Foreign.Marshall exposing (unsafeToString)
 import Emitter.Unsafe exposing (on0, on1)
 import Network.Types exposing (..)

@@ -39,4 +39,5 @@ port read =
 port write : Task x ()
 port write =
     createWriteStream (testFile ++ "-clone")
-        `andThen` \stream -> flow.signal `withSignal` writeBuffer stream
+        `andThen` \stream ->
+                    flow.signal `withSignal` writeBuffer stream

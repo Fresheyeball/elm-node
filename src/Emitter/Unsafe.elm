@@ -1,7 +1,9 @@
 module Emitter.Unsafe (..) where
 
 import Foreign.Types exposing (JSRaw)
-import Foreign.Pattern exposing (..)
+import Foreign.Pattern.Task.Listen exposing (listen1, listen1_1, listen1_2)
+import Foreign.Pattern.Task.Method exposing (..)
+import Foreign.Pattern.Task.Get exposing (get1)
 import Task exposing (Task)
 
 

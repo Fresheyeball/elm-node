@@ -10,7 +10,7 @@
 
   :marshall (F3 (fn [Left Right chunk]
     (if (== (typeof chunk) "string")
-        (Left chunk)
+        (Left chunks)
         (Right chunk))))
 
   } ))))

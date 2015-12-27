@@ -3,7 +3,10 @@ module FS (dirname, f_ok, r_ok, w_ok, x_ok, access', access, appendFile, chmod, 
 import Task exposing (Task)
 import Time exposing (Time)
 import Either exposing (Either(..))
-import Foreign.Pattern exposing (..)
+import Foreign.Pattern.Task.Method exposing (..)
+import Foreign.Pattern.Task.Get exposing (..)
+import Foreign.Pattern.Task.Listen exposing (listen2_2)
+import Foreign.Pattern.Unsafe.Read exposing (..)
 import Foreign.Types exposing (..)
 import Foreign.Marshall exposing (..)
 import FS.Types exposing (..)
@@ -23,22 +26,22 @@ dirname =
 
 f_ok : Mode
 f_ok =
-    unsafeGet0 "F_OK" fs
+    unsafeRead0 "F_OK" fs
 
 
 r_ok : Mode
 r_ok =
-    unsafeGet0 "R_OK" fs
+    unsafeRead0 "R_OK" fs
 
 
 w_ok : Mode
 w_ok =
-    unsafeGet0 "W_OK" fs
+    unsafeRead0 "W_OK" fs
 
 
 x_ok : Mode
 x_ok =
-    unsafeGet0 "X_OK" fs
+    unsafeRead0 "X_OK" fs
 
 
 access' : FilePath -> Mode -> Task x Bool

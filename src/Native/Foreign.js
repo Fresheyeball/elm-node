@@ -722,6 +722,9 @@ var make = function make(localRuntime) {
                         })();
                     });
                 }),
+                'unsafeRead0': F2(function (name, x) {
+                    return x[name];
+                }),
                 'unsafeGetGlobalConstant': function (name) {
                     return window[name];
                 },
@@ -729,9 +732,6 @@ var make = function make(localRuntime) {
                 'unsafeRequire': function (module) {
                     return require(module);
                 },
-                'unsafeGet0': F2(function (name, x) {
-                    return x[name];
-                }),
                 'getTime': function (date) {
                     return date.getTime();
                 },

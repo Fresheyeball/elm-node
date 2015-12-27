@@ -4,7 +4,7 @@ var make = function make(localRuntime) {
         return localRuntime.Native.Chunks.values ? localRuntime.Native.Chunks.values : localRuntime.Native.Chunks.values = {
             'emptyBuffer': new Buffer([]),
             'marshall': F3(function (Left, Right, chunk) {
-                return typeof(chunk) == 'string' ? Left(chunk) : Right(chunk);
+                return typeof(chunk) == 'string' ? Left(chunks) : Right(chunk);
             })
         };
     })();

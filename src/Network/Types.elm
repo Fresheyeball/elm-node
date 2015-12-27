@@ -1,28 +1,28 @@
-module Network.Types where
-
+module Network.Types (..) where
 
 import Foreign.Types exposing (JSRaw)
 
 
 type Socket
-  = Socket JSRaw
+    = Socket JSRaw
 
 
-type alias Port
-  = Int
+type alias Port =
+    Int
 
 
 type Family
-  = IPv4
-  | IPv6
+    = IPv4
+    | IPv6
 
 
-type alias SocketAddress
-  = { port' : Port
+type alias SocketAddress =
+    { port' : Port
     , family : Family
-    , address : String }
+    , address : String
+    }
 
 
 marshallSocketAddress : JSRaw -> SocketAddress
 marshallSocketAddress =
-  Native.Network.marshallSocketAddress IPv4 IPv6 SocketAddress
+    Native.Network.marshallSocketAddress IPv4 IPv6 SocketAddress

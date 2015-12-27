@@ -560,13 +560,14 @@
         (set! (aget object name) (f (aget object name)))
         (callback (.success Task Tuple0)))))))
 
+
+  :unsafeRead0 (F2 (fn [name x] (aget x name)))
+
   :unsafeGetGlobalConstant (fn [name] (aget window name))
 
   :unsafeNull null
 
   :unsafeRequire (fn [module] (require module))
-
-  :unsafeGet0 (F2 (fn [name x] (aget x name)))
 
   :getTime (fn [date] (.getTime date))
 

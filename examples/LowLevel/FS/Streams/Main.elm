@@ -5,6 +5,8 @@ import FS.Types exposing (FilePath, FSError)
 import FS exposing (..)
 import FS.Streams exposing (..)
 import Streams exposing (..)
+import Streams.Types exposing (..)
+import Chunk exposing (..)
 
 
 import Signal exposing (Signal, mailbox, Mailbox)

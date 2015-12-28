@@ -8,7 +8,8 @@
         "examples/LowLevel/isomorphic-templating"
     ],
     "exposed-modules": [
-      "Network.Socket"
+      "Network.Socket",
+      "FS.Streams"
     ],
     "native-modules": true,
     "dependencies": {

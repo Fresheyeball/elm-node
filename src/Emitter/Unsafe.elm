@@ -1,4 +1,4 @@
-module Emitter.Unsafe (on0, on1, on2, listenerCount, removeAllListeners, removeAllListeners', setMaxListeners, emit1, emit2, emit3) where
+module Emitter.Unsafe (on0, on1, on2, listenerCount, removeAllListeners, removeAllListeners', setMaxListeners, emit1, emit2, emit3, EventName) where
 
 import Foreign.Types exposing (JSRaw)
 import Foreign.Pattern.Listen exposing (listen1, listen1_1, listen1_2)

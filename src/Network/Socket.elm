@@ -5,6 +5,9 @@ module Network.Socket (..) where
 # Events
 @docs onClose, onConnect, onData, onDrain, onEnd, onError, onTimeout
 
+# Event Emitter
+@docs listenerCount, removeAllListeners, removeAllListeners', setMaxListeners
+
 # Getters
 @docs address, bufferSize, bytesRead, bytesWritten
 
@@ -19,19 +22,50 @@ module Network.Socket (..) where
 -}
 
 import Task exposing (Task)
-import Foreign.Pattern.Get exposing (..)
-import Foreign.Pattern.Read exposing (..)
+import Foreign.Pattern.Get exposing (get0)
+import Foreign.Pattern.Read exposing (read)
 import Foreign.Pattern.Method as Method
 import Foreign.Marshall exposing (unsafeToString, truthy)
-import Emitter.Unsafe exposing (on0, on1)
+import Emitter.Unsafe as Emitter
 import Network.Types exposing (..)
 import Chunks exposing (Chunk)
 import Either
 import Time exposing (Time)
 
 
--- Class: net.Socket
--- new net.Socket([options])
+{-|
+Inherited from EventEmitter
+Returns the number of listners currently attached
+-}
+listenerCount : Emitter.EventName -> Socket -> Task x Int
+listenerCount =
+    Emitter.listenerCount
+
+
+{-|
+Inherited from EventEmitter
+Remove all listeners for a specific event
+-}
+removeAllListeners : Emitter.EventName -> Socket -> Task x ()
+removeAllListeners =
+    Emitter.removeAllListeners
+
+
+{-|
+Inherited from EventEmitter
+Remove all listeners for all events
+-}
+removeAllListeners' : Socket -> Task x ()
+removeAllListeners' =
+    Emitter.removeAllListeners'
+
+
+{-|
+Inherited from EventEmitter
+-}
+setMaxListeners : Int -> Socket -> Task x ()
+setMaxListeners =
+    Emitter.setMaxListeners
 
 
 {-|
@@ -41,7 +75,7 @@ Emitted once the socket is fully closed. The argument had_error is a boolean whi
 -}
 onClose : Socket -> Task x () -> Task x (Task x ())
 onClose =
-    on0 "close"
+    Emitter.on0 "close"
 
 
 {-|
@@ -51,7 +85,7 @@ Emitted when a socket connection is successfully established.
 -}
 onConnect : Socket -> Task x () -> Task x (Task x ())
 onConnect =
-    on0 "connect"
+    Emitter.on0 "connect"
 
 
 {-|
@@ -61,7 +95,7 @@ Emitted when data is received.
 -}
 onData : Socket -> (Chunk -> Task x ()) -> Task x (Task x ())
 onData s f =
-    on1 "data" s (f << Chunks.marshall)
+    Emitter.on1 "data" s (f << Chunks.marshall)
 
 
 {-|
@@ -71,7 +105,7 @@ Emitted when the write buffer becomes empty. Can be used to throttle uploads.
 -}
 onDrain : Socket -> Task x () -> Task x (Task x ())
 onDrain =
-    on0 "drain"
+    Emitter.on0 "drain"
 
 
 {-|
@@ -86,7 +120,7 @@ of data, with the caveat that the user is required to end() their side now.
 -}
 onEnd : Socket -> Task x () -> Task x (Task x ())
 onEnd =
-    on0 "end"
+    Emitter.on0 "end"
 
 
 {-|
@@ -97,7 +131,7 @@ The 'close' event will be called directly following this event.
 -}
 onError : Socket -> (String -> Task x ()) -> Task x (Task x ())
 onError s f =
-    on1 "error" s (f << unsafeToString)
+    Emitter.on1 "error" s (f << unsafeToString)
 
 
 {-|
@@ -109,7 +143,7 @@ The user must manually close the connection.
 -}
 onTimeout : Socket -> Task x () -> Task x (Task x ())
 onTimeout =
-    on0 "timeout"
+    Emitter.on0 "timeout"
 
 
 {-|

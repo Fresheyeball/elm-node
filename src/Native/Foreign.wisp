@@ -560,11 +560,11 @@
         (set! (aget object name) (f (aget object name)))
         (callback (.success Task Tuple0)))))))
 
-  :read0 (F2 (fn [name x]
+  :read (F2 (fn [name x]
     (.asyncFunction Task (fn [callback]
       (aget x name)))))
 
-  :unsafeRead0 (F2 (fn [name x] (aget x name)))
+  :unsafeRead (F2 (fn [name x] (aget x name)))
 
   :unsafeGetGlobalConstant (fn [name] (aget window name))
 

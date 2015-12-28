@@ -1,15 +1,15 @@
-module Foreign.Pattern.Unsafe.Read (..) where
+module Foreign.Pattern.Read (..) where
 
 import Task exposing (Task)
-import Foreign.Types exposing (MethodName)
+import Foreign.Types exposing (MemberName)
 import Native.Foreign
 
 
-unsafeRead0 : MethodName -> object -> a
-unsafeRead0 =
-    Native.Foreign.unsafeRead0
+unsafeRead : MemberName -> object -> a
+unsafeRead =
+    Native.Foreign.unsafeRead
 
 
-read0 : MethodName -> object -> Task x a
-read0 =
-    Native.Foreign.read0
+read : MemberName -> object -> Task x a
+read =
+    Native.Foreign.read

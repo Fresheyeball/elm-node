@@ -6,7 +6,7 @@ import Either exposing (Either(..))
 import Foreign.Pattern.Method exposing (..)
 import Foreign.Pattern.Get exposing (..)
 import Foreign.Pattern.Listen exposing (listen2_2)
-import Foreign.Pattern.Unsafe.Read exposing (..)
+import Foreign.Pattern.Read exposing (..)
 import Foreign.Types exposing (..)
 import Foreign.Marshall exposing (..)
 import FS.Types exposing (..)
@@ -26,22 +26,22 @@ dirname =
 
 f_ok : Mode
 f_ok =
-    unsafeRead0 "F_OK" fs
+    unsafeRead "F_OK" fs
 
 
 r_ok : Mode
 r_ok =
-    unsafeRead0 "R_OK" fs
+    unsafeRead "R_OK" fs
 
 
 w_ok : Mode
 w_ok =
-    unsafeRead0 "W_OK" fs
+    unsafeRead "W_OK" fs
 
 
 x_ok : Mode
 x_ok =
-    unsafeRead0 "X_OK" fs
+    unsafeRead "X_OK" fs
 
 
 access' : FilePath -> Mode -> Task x Bool

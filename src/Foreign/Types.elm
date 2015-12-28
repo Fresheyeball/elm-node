@@ -13,6 +13,10 @@ type alias MethodName =
     String
 
 
+type alias MemberName =
+    String
+
+
 type alias KeyName =
     String
 

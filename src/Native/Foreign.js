@@ -722,12 +722,12 @@ var make = function make(localRuntime) {
                         })();
                     });
                 }),
-                'read0': F2(function (name, x) {
+                'read': F2(function (name, x) {
                     return Taskø1.asyncFunction(function (callback) {
                         return x[name];
                     });
                 }),
-                'unsafeRead0': F2(function (name, x) {
+                'unsafeRead': F2(function (name, x) {
                     return x[name];
                 }),
                 'unsafeGetGlobalConstant': function (name) {

@@ -1,4 +1,3 @@
-
 module Network.Socket (..) where
 
 {-|
@@ -257,7 +256,9 @@ socket.remotePort
 The numeric representation of the remote port. For example, `80` or `21`.
 -}
 remotePort : Socket -> Task x Port
-remotePort = read "remotePort"
+remotePort =
+    read "remotePort"
+
 
 {-|
 socket.resume()
@@ -265,7 +266,9 @@ socket.resume()
 Resumes reading after a call to `pause()`.
 -}
 resume : Socket -> Task x ()
-resume = Method.method0 "resume"
+resume =
+    Method.method0 "resume"
+
 
 {-|
 socket.setEncoding([encoding])
@@ -276,6 +279,7 @@ setEncoding : Socket -> Chunks.Encoding -> Task x ()
 setEncoding socket encoding =
     Method.method1 "setEncoding" socket (Chunks.showEncoding encoding)
 
+
 {-|
 socket.setKeepAlive([enable][, initialDelay])
 
@@ -284,6 +288,7 @@ Enable/disable keep-alive functionality, enable defaults to false.
 setKeepAlive : Socket -> Bool -> Task x ()
 setKeepAlive =
     Method.method1 "setKeepAlive"
+
 
 {-|
 socket.setKeepAlive([enable][, initialDelay])
@@ -300,6 +305,7 @@ setKeepAlive' : Socket -> Bool -> Time -> Task x ()
 setKeepAlive' =
     Method.method2 "setKeepAlive"
 
+
 {-|
 socket.setNoDelay([noDelay])
 
@@ -310,6 +316,7 @@ fire off data each time `socket.write()` is called.
 setNoDelay : Socket -> Bool -> Task x ()
 setNoDelay =
     Method.method1 "setNoDelay"
+
 
 {-|
 socket.setTimeout(timeout[, callback])
@@ -326,6 +333,7 @@ setTimeout : Socket -> Time -> Task x ()
 setTimeout =
     Method.method1 "setTimeout"
 
+
 {-|
 socket.unref()
 
@@ -335,6 +343,7 @@ only active socket in the event system. If the socket is already unrefd calling 
 unref : Socket -> Task x ()
 unref =
     Method.method0 "unref"
+
 
 {-|
 socket.write(data[, encoding][, callback])
@@ -346,6 +355,7 @@ writeString : Socket -> String -> Task x ()
 writeString =
     Method.methodAsync1 "write"
 
+
 {-|
 socket.write(data[, encoding][, callback])
 
@@ -355,6 +365,7 @@ Sends data on the socket.
 writeString' : Socket -> String -> Chunks.Encoding -> Task x ()
 writeString' socket string encoding =
     Method.methodAsync2 "write" socket string (Chunks.showEncoding encoding)
+
 
 {-|
 socket.write(data[, encoding][, callback])
@@ -366,6 +377,7 @@ writeBuffer : Socket -> Chunks.Buffer -> Task x ()
 writeBuffer =
     Method.methodAsync1 "write"
 
+
 {-|
 socket.write(data[, encoding][, callback])
 
@@ -376,6 +388,7 @@ writeBuffer' : Socket -> Chunks.Buffer -> Chunks.Encoding -> Task x ()
 writeBuffer' socket buffer encoding =
     Method.methodAsync2 "write" socket buffer (Chunks.showEncoding encoding)
 
+
 {-|
 socket.write(data[, encoding][, callback])
 
@@ -385,8 +398,11 @@ Sends data on the socket. encoding will be UTF8 encoding.
 write : Socket -> Chunk -> Task x ()
 write socket chunk =
     case chunk of
-        Either.Left  string -> Method.methodAsync1 "write" socket string
-        Either.Right buffer -> Method.methodAsync1 "write" socket buffer
+        Either.Left string ->
+            Method.methodAsync1 "write" socket string
+
+        Either.Right buffer ->
+            Method.methodAsync1 "write" socket buffer
 
 
 {-|
@@ -396,8 +412,13 @@ Sends data on the socket.
 'drain' will be emitted when the buffer is again free.
 -}
 write' : Socket -> Chunk -> Chunks.Encoding -> Task x ()
-write' socket chunk encoding = let
-    encoding' = Chunks.showEncoding encoding
-    in case chunk of
-        Either.Left  string -> Method.methodAsync2 "write" socket string encoding'
-        Either.Right buffer -> Method.methodAsync2 "write" socket buffer encoding'
+write' socket chunk encoding =
+    let
+        encoding' = Chunks.showEncoding encoding
+    in
+        case chunk of
+            Either.Left string ->
+                Method.methodAsync2 "write" socket string encoding'
+
+            Either.Right buffer ->
+                Method.methodAsync2 "write" socket buffer encoding'

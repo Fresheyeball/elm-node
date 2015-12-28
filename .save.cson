@@ -1,2 +1,2 @@
 "**/*.wisp": "cat ${path} | wisp --no-map > ${dir}/${name}.js"
-# "**/*.elm": "elm-format ${path} --yes"
+"**/*.elm": "elm-format ${path} --yes"

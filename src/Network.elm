@@ -9,7 +9,7 @@ import Foreign.Pattern.Get as Get
 import Foreign.Pattern.Read exposing (unsafeRead)
 import Foreign.Marshall exposing (unsafeRequire)
 import Task exposing (Task)
-import Network.Types as Network
+import Network.Types exposing (..)
 
 
 net : JSRaw
@@ -20,14 +20,14 @@ net =
 {-|
 Tests if input is an IP address.
 -}
-isIP : String -> Maybe Network.Family
+isIP : String -> Maybe Family
 isIP couldBeIP =
     case unsafeRead "isIP" net couldBeIP of
         4 ->
-            Just Network.IPv4
+            Just IPv4
 
         6 ->
-            Just Network.IPv6
+            Just IPv6
 
         _ ->
             Nothing
@@ -43,21 +43,20 @@ The options are passed to both the net.Socket constructor and the socket.connect
 -- TODO: Test this sample code
 port foo : Task x ()
 port foo =
-    let
-        socket = connect { defaultConnection | port' = 8080 }
-    in
-        onConnect socket (Signal.send "Connection established on port 8080")
+    connect { defaultConnection | port' = 8080 }
+    `andThen` \socket ->
+        onConnect socket <| Signal.send "Connection established on port 8080"
 ```
 -}
-connect : Network.Connection -> Task x Network.Socket
+connect : Connection -> Task x Socket
 connect connection =
-    Get.get1 "connect" net (Network.marshallConnection connection)
+    Get.get1 "connect" net (marshallConnection connection)
 
 
 {-|
 connectOnPort port' = connect { defaultConnection | port' = port' }
 -}
-connectOnPort : Network.Port -> Task x Network.Socket
+connectOnPort : Port -> Task x Socket
 connectOnPort =
     Get.get1 "connect" net
 
@@ -67,7 +66,7 @@ connectOnPort path = connect { defaultConnection | path = path }
 This also makes the Socket a "local domain socket",
 learn more [here](https://nodejs.org/api/net.html#net_socket_connect_options_connectlistener)
 -}
-connectOnPath : String -> Task x Network.Socket
+connectOnPath : String -> Task x Socket
 connectOnPath =
     Get.get1 "connect" net
 

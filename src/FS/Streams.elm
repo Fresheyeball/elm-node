@@ -16,11 +16,7 @@ import Streams.Types exposing (..)
 import FS.Types exposing (..)
 
 
-type FileSystem
-    = FileSystem JSRaw
-
-
-fs : FileSystem
+fs : JSRaw
 fs =
     unsafeRequire "fs"
 

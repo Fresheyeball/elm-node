@@ -23,6 +23,25 @@ type alias SocketAddress =
     }
 
 
+type alias Connection =
+    { port' : Port
+    , host : String
+    , localAddress : String
+    , localPort : Port
+    , family : Family
+    }
+
+
+type alias LocalConnection =
+    { port' : Port
+    , host : String
+    , localAddress : String
+    , localPort : Port
+    , family : Family
+    , path : String
+    }
+
+
 marshallSocketAddress : JSRaw -> SocketAddress
 marshallSocketAddress =
     Native.Network.marshallSocketAddress IPv4 IPv6 SocketAddress

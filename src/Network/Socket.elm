@@ -15,7 +15,7 @@ module Network.Socket (..) where
 @docs destroy, end, pause, resume, setEncoding, setKeepAlive, setKeepAlive', setNoDelay, setTimeout, writeString, unref
 
 # Write Data
-@docs writeString, writeString', writeBuffer, writeBuffer', write, write'
+@docs writeString, writeStringWithEncoding, writeBuffer, writeBufferWithEncoding, write, writeWithEncoding
 
 # Member Variables
 @docs localAddress, localPort, remoteAddress, remoteFamily, remotePort
@@ -396,8 +396,8 @@ socket.write(data[, encoding][, callback])
 Sends data on the socket.
 'drain' will be emitted when the buffer is again free.
 -}
-writeString' : Socket -> String -> Chunks.Encoding -> Task x ()
-writeString' socket string encoding =
+writeStringWithEncoding : Socket -> String -> Chunks.Encoding -> Task x ()
+writeStringWithEncoding socket string encoding =
     Method.methodAsync2 "write" socket string (Chunks.showEncoding encoding)
 
 
@@ -418,8 +418,8 @@ socket.write(data[, encoding][, callback])
 Sends data on the socket.
 'drain' will be emitted when the buffer is again free.
 -}
-writeBuffer' : Socket -> Chunks.Buffer -> Chunks.Encoding -> Task x ()
-writeBuffer' socket buffer encoding =
+writeBufferWithEncoding : Socket -> Chunks.Buffer -> Chunks.Encoding -> Task x ()
+writeBufferWithEncoding socket buffer encoding =
     Method.methodAsync2 "write" socket buffer (Chunks.showEncoding encoding)
 
 
@@ -445,8 +445,8 @@ socket.write(data[, encoding][, callback])
 Sends data on the socket.
 'drain' will be emitted when the buffer is again free.
 -}
-write' : Socket -> Chunk -> Chunks.Encoding -> Task x ()
-write' socket chunk encoding =
+writeWithEncoding : Socket -> Chunk -> Chunks.Encoding -> Task x ()
+writeWithEncoding socket chunk encoding =
     let
         encoding' = Chunks.showEncoding encoding
     in

@@ -6,13 +6,13 @@
         localRuntime.Native.Network.values
         (set! localRuntime.Native.Network.values {
 
-  :marshallSocketAddress (F3 (fn [IPv4 IPv6 SocketAddress raw]
-    (SocketAddress
+  :marshallSocketAddress (F4 (fn [IPv4 IPv6 SocketAddress raw]
+    (A3 (SocketAddress
       raw.port
       (if (== "IPv6" raw.family)
         IPv4
         IPv6)
-      raw.address)))
+      raw.address))))
 
   } ))))
 

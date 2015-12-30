@@ -2,6 +2,7 @@ module Network.Types (..) where
 
 import Foreign.Types exposing (JSRaw)
 import Foreign.Marshall as Marshall
+import Native.Network
 
 
 type Socket

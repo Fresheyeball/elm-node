@@ -152,9 +152,9 @@ socket.address()
 Returns the bound address, the address family name and port of the socket as reported by the operating system.
 -}
 address : Socket -> Task x SocketAddress
-address =
-    get0 "address"
-        >> Task.map marshallSocketAddress
+address socket =
+    get0 "address" socket
+        |> Task.map marshallSocketAddress
 
 
 {-|

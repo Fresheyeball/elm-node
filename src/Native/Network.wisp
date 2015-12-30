@@ -8,11 +8,11 @@
 
   :marshallSocketAddress (F3 (fn [IPv4 IPv6 SocketAddress raw]
     (SocketAddress
-      (.port raw)
-      (if (== "IPv6" (.family raw))
+      raw.port
+      (if (== "IPv6" raw.family)
         IPv4
         IPv6)
-      (.address raw))))
+      raw.address)))
 
   } ))))
 

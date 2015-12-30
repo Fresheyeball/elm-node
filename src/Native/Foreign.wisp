@@ -570,6 +570,14 @@
 
   :unsafeNull null
 
+  :unsafeUndefined undefined
+
+  :portPrimeToPort (fn [x]
+      (do
+        (set! x.port (.port$ x))
+        (set! x.port$ undefined)
+        x))
+
   :unsafeRequire (fn [module] (require module))
 
   :truthy (fn [x] (if x true false))

@@ -5,9 +5,11 @@ module Network (isIP) where
 -}
 
 import Foreign.Types exposing (JSRaw)
+import Foreign.Pattern.Get as Get
 import Foreign.Pattern.Read exposing (unsafeRead)
 import Foreign.Marshall exposing (unsafeRequire)
-import Network.Types as N
+import Task exposing (Task)
+import Network.Types as Network
 
 
 net : JSRaw
@@ -18,14 +20,14 @@ net =
 {-|
 Tests if input is an IP address.
 -}
-isIP : String -> Maybe N.Family
+isIP : String -> Maybe Network.Family
 isIP couldBeIP =
     case unsafeRead "isIP" net couldBeIP of
         4 ->
-            Just N.IPv4
+            Just Network.IPv4
 
         6 ->
-            Just N.IPv6
+            Just Network.IPv6
 
         _ ->
             Nothing
@@ -37,34 +39,38 @@ A factory function, which returns a new net.Socket and automatically connects wi
 
 The options are passed to both the net.Socket constructor and the socket.connect method.
 
-The connectListener parameter will be added as a listener for the 'connect' event once.
-
-Here is an example of a client of the previously described echo server:
-
-var net = require('net');
-var client = net.connect({port: 8124},
-    function() { //'connect' listener
-  console.log('connected to server!');
-  client.write('world!\r\n');
-});
-client.on('data', function(data) {
-  console.log(data.toString());
-  client.end();
-});
-client.on('end', function() {
-  console.log('disconnected from server');
-});
-To connect on the socket /tmp/echo.sock the second line would just be changed to
-
-var client = net.connect({path: '/tmp/echo.sock'});
+```
+-- TODO: Test this sample code
+port foo : Task x ()
+port foo =
+    let
+        socket = connect { defaultConnection | port' = 8080 }
+    in
+        onConnect socket (Signal.send "Connection established on port 8080")
+```
 -}
+connect : Network.Connection -> Task x Network.Socket
+connect connection =
+    Get.get1 "connect" net (Network.marshallConnection connection)
+
+
+{-|
+connectOnPort port' = connect { defaultConnection | port' = port' }
+-}
+connectOnPort : Network.Port -> Task x Network.Socket
+connectOnPort =
+    Get.get1 "connect" net
+
+
+{-|
+connectOnPort path = connect { defaultConnection | path = path }
+This also makes the Socket a "local domain socket",
+learn more [here](https://nodejs.org/api/net.html#net_socket_connect_options_connectlistener)
+-}
+connectOnPath : String -> Task x Network.Socket
+connectOnPath =
+    Get.get1 "connect" net
 
 
 
--- net.connect(options[, connectListener])
--- net.connect(path[, connectListener])
--- net.connect(port[, host][, connectListener])
--- net.createConnection(options[, connectListener])
--- net.createConnection(path[, connectListener])
--- net.createConnection(port[, host][, connectListener])
--- net.createServer([options][, connectionListener])
+-- TODO: net.createServer([options][, connectionListener])

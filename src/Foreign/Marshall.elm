@@ -10,6 +10,11 @@ unsafeNull =
     Native.Foreign.unsafeNull
 
 
+unsafeUndefined : a
+unsafeUndefined =
+    Native.Foreign.unsafeUndefined
+
+
 unsafeRequire : String -> a
 unsafeRequire =
     Native.Foreign.unsafeRequire
@@ -33,3 +38,28 @@ unsafeTypeAsJson =
 unsafeToString : JSRaw -> String
 unsafeToString =
     Native.Foreign.toString
+
+
+portPrimeToPort : { a | port' : b } -> JSRaw
+portPrimeToPort =
+    Native.Foreign.portPrimeToPort
+
+
+unsafeNothingIsUndefined : Maybe a -> a
+unsafeNothingIsUndefined optional =
+    case optional of
+        Just value ->
+            value
+
+        Nothing ->
+            unsafeUndefined
+
+
+unsafeNothingIsNull : Maybe a -> a
+unsafeNothingIsNull optional =
+    case optional of
+        Just value ->
+            value
+
+        Nothing ->
+            unsafeNull

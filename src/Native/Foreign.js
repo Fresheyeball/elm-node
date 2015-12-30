@@ -734,6 +734,14 @@ var make = function make(localRuntime) {
                     return window[name];
                 },
                 'unsafeNull': null,
+                'unsafeUndefined': undefined,
+                'portPrimeToPort': function (x) {
+                    return (function () {
+                        x.port = x.port$();
+                        x.port$ = undefined;
+                        return x;
+                    })();
+                },
                 'unsafeRequire': function (module) {
                     return require(module);
                 },

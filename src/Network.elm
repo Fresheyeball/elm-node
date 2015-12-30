@@ -1,7 +1,10 @@
-module Network (isIP) where
+module Network (isIP, connect, connectOnPort, connectOnPath) where
 
 {-|
 @docs isIP
+
+# Socket Connection
+@docs connect, connectOnPath, connectOnPort
 -}
 
 import Foreign.Types exposing (JSRaw)

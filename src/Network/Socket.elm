@@ -309,8 +309,8 @@ socket.setEncoding([encoding])
 
 Set the encoding for the socket as a Readable Stream. See stream.setEncoding() for more information.
 -}
-setEncoding : Socket -> Chunks.Encoding -> Task x ()
-setEncoding socket encoding =
+setEncoding : Chunks.Encoding -> Socket -> Task x ()
+setEncoding encoding socket =
     Method.method1 "setEncoding" socket (Chunks.showEncoding encoding)
 
 
@@ -387,7 +387,7 @@ Sends data on the socket. encoding will be UTF8 encoding.
 -}
 writeString : Socket -> String -> Task x ()
 writeString =
-    Method.methodAsync1 "write"
+    writeStringWithEncoding Chunks.Utf8
 
 
 {-|
@@ -396,8 +396,8 @@ socket.write(data[, encoding][, callback])
 Sends data on the socket.
 'drain' will be emitted when the buffer is again free.
 -}
-writeStringWithEncoding : Socket -> String -> Chunks.Encoding -> Task x ()
-writeStringWithEncoding socket string encoding =
+writeStringWithEncoding : Chunks.Encoding -> Socket -> String -> Task x ()
+writeStringWithEncoding encoding socket string =
     Method.methodAsync2 "write" socket string (Chunks.showEncoding encoding)
 
 
@@ -409,7 +409,7 @@ Sends data on the socket. encoding will be UTF8 encoding.
 -}
 writeBuffer : Socket -> Chunks.Buffer -> Task x ()
 writeBuffer =
-    Method.methodAsync1 "write"
+    writeBufferWithEncoding Chunks.Utf8
 
 
 {-|
@@ -418,8 +418,8 @@ socket.write(data[, encoding][, callback])
 Sends data on the socket.
 'drain' will be emitted when the buffer is again free.
 -}
-writeBufferWithEncoding : Socket -> Chunks.Buffer -> Chunks.Encoding -> Task x ()
-writeBufferWithEncoding socket buffer encoding =
+writeBufferWithEncoding : Chunks.Encoding -> Socket -> Chunks.Buffer -> Task x ()
+writeBufferWithEncoding encoding socket buffer =
     Method.methodAsync2 "write" socket buffer (Chunks.showEncoding encoding)
 
 
@@ -430,13 +430,8 @@ Sends data on the socket. encoding will be UTF8 encoding.
 'drain' will be emitted when the buffer is again free.
 -}
 write : Socket -> Chunk -> Task x ()
-write socket chunk =
-    case chunk of
-        Either.Left string ->
-            Method.methodAsync1 "write" socket string
-
-        Either.Right buffer ->
-            Method.methodAsync1 "write" socket buffer
+write =
+    writeWithEncoding Chunks.Utf8
 
 
 {-|
@@ -445,8 +440,8 @@ socket.write(data[, encoding][, callback])
 Sends data on the socket.
 'drain' will be emitted when the buffer is again free.
 -}
-writeWithEncoding : Socket -> Chunk -> Chunks.Encoding -> Task x ()
-writeWithEncoding socket chunk encoding =
+writeWithEncoding : Chunks.Encoding -> Socket -> Chunk -> Task x ()
+writeWithEncoding encoding socket chunk =
     let
         encoding' = Chunks.showEncoding encoding
     in

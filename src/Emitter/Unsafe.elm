@@ -1,6 +1,5 @@
 module Emitter.Unsafe (on0, on1, on2, listenerCount, removeAllListeners, removeAllListeners', setMaxListeners, emit1, emit2, emit3, EventName) where
 
-import Foreign.Types exposing (JSRaw)
 import Foreign.Pattern.Listen exposing (listen1, listen1_1, listen1_2)
 import Foreign.Pattern.Method exposing (..)
 import Foreign.Pattern.Get exposing (get1)
@@ -21,12 +20,12 @@ on0 =
     on_ listen1
 
 
-on1 : EventName -> emitter -> (JSRaw -> Task x ()) -> Task x (Task x ())
+on1 : EventName -> emitter -> (a -> Task x ()) -> Task x (Task x ())
 on1 =
     on_ listen1_1
 
 
-on2 : EventName -> emitter -> (( JSRaw, JSRaw ) -> Task x ()) -> Task x (Task x ())
+on2 : EventName -> emitter -> (( a, b ) -> Task x ()) -> Task x (Task x ())
 on2 =
     on_ listen1_2
 

@@ -25,7 +25,7 @@ port echo =
 
         end = log "disconnected from server" ()
     in
-        Network.connectOnPath "/tmp/echo.sock"
+        Network.connectOnPort 8080
             `andThen` \socket ->
                         Socket.onConnect socket connected
                             >| Socket.onEnd socket end

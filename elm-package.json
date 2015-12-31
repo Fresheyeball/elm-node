@@ -10,7 +10,8 @@
     "exposed-modules": [
       "Network",
       "Network.Socket",
-      "FS.Streams"
+      "FS.Streams",
+      "Process"
     ],
     "native-modules": true,
     "dependencies": {

@@ -1,4 +1,4 @@
-module Process (onBeforeExit, onExit, onMessage, ExitCode(..), exitToInt, intToExit, SIGNAL(..), onSIGNAL, exitWithCode, abort, architecture, Architecture(..), argv, exit) where
+module Process (onBeforeExit, onExit, onMessage, exitToInt, intToExit, ExitCode(..), SIGNAL, onSIGNAL, argumentVector, architecture, Architecture(..), isConnected, abort, exit, exitWithCode, currentWorkingDirectory, changeCurrentWorkingDirectory, ChdirError(..), getEffectiveUserId, getEffectiveGroupId, getUserId, getGroups, getGroupId, disconnect, getHighResolutionTime, version, versions, uptime, ProcessNotFound(..), kill, killWithSIGNAL, getTitle, setTitle, modifyTitle) where
 
 {-|
 # Events
@@ -11,23 +11,37 @@ module Process (onBeforeExit, onExit, onMessage, ExitCode(..), exitToInt, intToE
 @docs SIGNAL, onSIGNAL
 
 # Process Info
-@docs argv, architecture, Architecture(..)
+@docs argumentVector, architecture, Architecture, isConnected, version, versions, uptime, getTitle, setTitle, modifyTitle
 
 # Exit Methods
-@docs abort, exit, exitWithCode
+@docs abort, exit, exitWithCode, disconnect, kill, killWithSIGNAL, ProcessNotFound
+
+# Working Directory
+@docs currentWorkingDirectory, changeCurrentWorkingDirectory, ChdirError
+
+# User Info
+@docs getEffectiveUserId, getEffectiveGroupId, getUserId, getGroupId, getGroups
+
+# Utils
+@docs getHighResolutionTime
 -}
 
 import Foreign.Types exposing (JSRaw)
 import Foreign.Pattern.Method as Method
 import Foreign.Pattern.Read as Read
-import Foreign.Marshall exposing (unsafeGetGlobalConstant)
+import Foreign.Pattern.Get as Get
+import Foreign.Pattern.Set as Set
+import Foreign.Marshall as Marshall
 import Emitter.Unsafe as Emitter
 import Task exposing (Task)
+import Json.Decode as Json
+import Time exposing (Time)
+import Streams.Types as Streams
 
 
 process : JSRaw
 process =
-    unsafeGetGlobalConstant "process"
+    Marshall.unsafeGetGlobalConstant "process"
 
 
 {-|
@@ -223,8 +237,6 @@ onSIGNAL sig =
     Emitter.on0 (toString sig) process
 
 
-
-
 {-|
 process.abort()
 This causes Node.js to emit an abort. This will cause Node.js to exit and generate a core file.
@@ -232,6 +244,7 @@ This causes Node.js to emit an abort. This will cause Node.js to exit and genera
 abort : Task x ()
 abort =
     Method.method0 "abort" process
+
 
 {-|
 Possible processor architectures
@@ -241,16 +254,26 @@ type Architecture
     | Ia32
     | X64
 
+
 {-|
 process.arch
 What processor architecture you're running on: 'arm', 'ia32', or 'x64'.
 -}
 architecture : Maybe Architecture
-architecture = case Read.unsafeRead "arch" process of
-    "arm" -> Just Arm
-    "ia32" -> Just Ia32
-    "x64" -> Just X64
-    _ -> Nothing
+architecture =
+    case Read.unsafeRead "arch" process of
+        "arm" ->
+            Just Arm
+
+        "ia32" ->
+            Just Ia32
+
+        "x64" ->
+            Just X64
+
+        _ ->
+            Nothing
+
 
 {-|
 process.argv
@@ -265,68 +288,65 @@ $ node process-2.js one two=three four
 will result in
 
 ```
-argv = ["node", "process-2.js", "one", "two=three", "four" ]
+argumentVector = [ "node", "process-2.js", "one", "two=three", "four" ]
 ```
-
 -}
-argv : List String
-argv = Read.unsafeRead "argv" process
+argumentVector : List String
+argumentVector =
+    Read.unsafeRead "argv" process
+
+
+{-| An error that changeCurrentWorkingDirectory may throw
+-}
+type ChdirError
+    = ChdirError String
+
 
 {-|
+process.chdir(directory)
+Changes the current working directory of the process or throws an
+exception if that fails.
+-}
+changeCurrentWorkingDirectory : String -> Task ChdirError ()
+changeCurrentWorkingDirectory =
+    Method.method1E ChdirError "chdir" process
 
-process.chdir(directory)#
-Changes the current working directory of the process or throws an exception if that fails.
 
-console.log('Starting directory: ' + process.cwd());
-try {
-  process.chdir('/tmp');
-  console.log('New directory: ' + process.cwd());
-}
-catch (err) {
-  console.log('chdir: ' + err);
-}
-process.config#
-An Object containing the JavaScript representation of the configure options that were used to compile the current Node.js executable. This is the same as the config.gypi file that was produced when running the ./configure script.
-
-An example of the possible output looks like:
-
-{ target_defaults:
-   { cflags: [],
-     default_configuration: 'Release',
-     defines: [],
-     include_dirs: [],
-     libraries: [] },
-  variables:
-   { host_arch: 'x64',
-     node_install_npm: 'true',
-     node_prefix: '',
-     node_shared_cares: 'false',
-     node_shared_http_parser: 'false',
-     node_shared_libuv: 'false',
-     node_shared_zlib: 'false',
-     node_use_dtrace: 'false',
-     node_use_openssl: 'true',
-     node_shared_openssl: 'false',
-     strict_aliasing: 'true',
-     target_arch: 'x64',
-     v8_use_snapshot: 'true' } }
-process.connected#
-
+{-|
+process.connected
 Boolean Set to false after process.disconnect() is called
 If process.connected is false, it is no longer possible to send messages.
+-}
+isConnected : Task x Bool
+isConnected =
+    Read.read "connected" process
 
-process.cwd()#
+
+{-|
+process.cwd()
 Returns the current working directory of the process.
+-}
+currentWorkingDirectory : Task x String
+currentWorkingDirectory =
+    Get.get0 "cwd" process
 
-console.log('Current directory: ' + process.cwd());
-process.disconnect()#
-Close the IPC channel to the parent process, allowing this child to exit gracefully once there are no other connections keeping it alive.
+
+{-|
+process.disconnect()
+Close the IPC channel to the parent process, allowing this child to exit
+gracefully once there are no other connections keeping it alive.
 
 Identical to the parent process's ChildProcess.disconnect().
 
 If Node.js was not spawned with an IPC channel, process.disconnect() will be undefined.
+-}
+disconnect : Task x ()
+disconnect =
+    Method.method0 "disconnect" process
 
-process.env#
+
+{-|
+process.env
 An object containing the user environment. See environ(7).
 
 An example of this object looks like:
@@ -341,13 +361,13 @@ An example of this object looks like:
   HOME: '/Users/maciej',
   LOGNAME: 'maciej',
   _: '/usr/local/bin/node' }
-You can write to this object, but changes won't be reflected outside of your process. That means that the following won't work:
+-}
+environment : Task x Json.Value
+environment =
+    Read.read "env" process
 
-$ node -e 'process.env.foo = "bar"' && echo $foo
-But this will:
 
-process.env.foo = 'bar';
-console.log(process.env.foo);
+{-|
 process.execArgv#
 This is the set of Node.js-specific command line options from the executable that started the process. These options do not show up in process.argv, and do not include the Node.js executable, the name of the script, or any options following the script name. These options are useful in order to spawn child processes with the same execution environment as the parent.
 
@@ -367,7 +387,6 @@ Example:
 
 /usr/local/bin/node
 -}
-
 {-|
 process.exit([code])
 Ends the process with the specified code.
@@ -382,8 +401,19 @@ exitWithCode code =
 exit : Task x ()
 exit =
     Method.method0 "exit" process
+
+
+getIfFunction : String -> Task x (Maybe a)
+getIfFunction methodName =
+    if Marshall.truthy (Read.unsafeRead methodName process) then
+        Get.get0 methodName process
+            |> Task.map Just
+    else
+        Task.succeed Nothing
+
+
 {-|
-process.getegid()#
+process.getegid()
 Note: this function is only available on POSIX platforms (i.e. not Windows, Android)
 
 Gets the effective group identity of the process. (See getegid(2).) This is the numerical group id, not the group name.
@@ -391,7 +421,14 @@ Gets the effective group identity of the process. (See getegid(2).) This is the 
 if (process.getegid) {
   console.log('Current gid: ' + process.getegid());
 }
-process.geteuid()#
+-}
+getEffectiveGroupId : Task x (Maybe Int)
+getEffectiveGroupId =
+    getIfFunction "getegid"
+
+
+{-|
+process.geteuid()
 Note: this function is only available on POSIX platforms (i.e. not Windows, Android)
 
 Gets the effective user identity of the process. (See geteuid(2).) This is the numerical userid, not the username.
@@ -399,7 +436,14 @@ Gets the effective user identity of the process. (See geteuid(2).) This is the n
 if (process.geteuid) {
   console.log('Current uid: ' + process.geteuid());
 }
-process.getgid()#
+-}
+getEffectiveUserId : Task x (Maybe Int)
+getEffectiveUserId =
+    getIfFunction "geteuid"
+
+
+{-|
+process.getgid()
 Note: this function is only available on POSIX platforms (i.e. not Windows, Android)
 
 Gets the group identity of the process. (See getgid(2).) This is the numerical group id, not the group name.
@@ -407,12 +451,25 @@ Gets the group identity of the process. (See getgid(2).) This is the numerical g
 if (process.getgid) {
   console.log('Current gid: ' + process.getgid());
 }
-process.getgroups()#
+-}
+getGroupId : Task x (Maybe Int)
+getGroupId =
+    getIfFunction "getgid"
+
+
+{-|
+process.getgroups()
 Note: this function is only available on POSIX platforms (i.e. not Windows, Android)
 
 Returns an array with the supplementary group IDs. POSIX leaves it unspecified if the effective group ID is included but Node.js ensures it always is.
+-}
+getGroups : Task x (Maybe (List Int))
+getGroups =
+    getIfFunction "getgroups"
 
-process.getuid()#
+
+{-|
+process.getuid()
 Note: this function is only available on POSIX platforms (i.e. not Windows, Android)
 
 Gets the user identity of the process. (See getuid(2).) This is the numerical userid, not the username.
@@ -420,22 +477,29 @@ Gets the user identity of the process. (See getuid(2).) This is the numerical us
 if (process.getuid) {
   console.log('Current uid: ' + process.getuid());
 }
-process.hrtime()#
-Returns the current high-resolution real time in a [seconds, nanoseconds] tuple Array. It is relative to an arbitrary time in the past. It is not related to the time of day and therefore not subject to clock drift. The primary use is for measuring performance between intervals.
+-}
+getUserId : Task x (Maybe Int)
+getUserId =
+    getIfFunction "getuid"
 
-You may pass in the result of a previous call to process.hrtime() to get a diff reading, useful for benchmarks and measuring intervals:
 
-var time = process.hrtime();
-// [ 1800216, 25 ]
+{-|
+process.hrtime()
+Returns the current high-resolution real time in a [seconds, nanoseconds] tuple Array.
+It is relative to an arbitrary time in the past. It is not related to the time of day
+and therefore not subject to clock drift. The primary use is for measuring performance between intervals.
+-}
+getHighResolutionTime : Task x (Maybe ( Time, Time ))
+getHighResolutionTime =
+    Get.get0 "hrtime" process
+        `Task.andThen` \rawTup ->
+                        Json.decodeValue (Json.tuple2 (,) Json.float Json.float) rawTup
+                            |> Task.fromResult
+                            |> Task.toMaybe
 
-setTimeout(function() {
-  var diff = process.hrtime(time);
-  // [ 1, 552 ]
 
-  console.log('benchmark took %d nanoseconds', diff[0] * 1e9 + diff[1]);
-  // benchmark took 1000000527 nanoseconds
-}, 1000);
-process.initgroups(user, extra_group)#
+{-|
+process.initgroups(user, extra_group)
 Note: this function is only available on POSIX platforms (i.e. not Windows, Android)
 
 Reads /etc/group and initializes the group access list, using all groups of which the user is a member. This is a privileged operation, meaning you need to be root or have the CAP_SETGID capability.
@@ -449,27 +513,49 @@ process.initgroups('bnoordhuis', 1000);   // switch user
 console.log(process.getgroups());         // [ 27, 30, 46, 1000, 0 ]
 process.setgid(1000);                     // drop root gid
 console.log(process.getgroups());         // [ 27, 30, 46, 1000 ]
-process.kill(pid[, signal])#
-Send a signal to a process. pid is the process id and signal is the string describing the signal to send. Signal names are strings like SIGINT or SIGHUP. If omitted, the signal will be SIGTERM. See Signal Events and kill(2) for more information.
+-}
+initGroups : Maybe (String -> Int -> Task x ())
+initGroups =
+    let
+        name = "initgroups"
+    in
+        if Marshall.truthy <| Read.unsafeRead name process then
+            Just <| Method.method2 name process
+        else
+            Nothing
 
-Will throw an error if target does not exist, and as a special case, a signal of 0 can be used to test for the existence of a process. Windows platforms will throw an error if the pid is used to kill a process group.
 
-Note that even though the name of this function is process.kill, it is really just a signal sender, like the kill system call. The signal sent may do something other than kill the target process.
+{-| Error that may be thrown by `kill`
+-}
+type ProcessNotFound
+    = ProcessNotFound String
 
-Example of sending a signal to yourself:
 
-process.on('SIGHUP', function() {
-  console.log('Got SIGHUP signal.');
-});
+{-|
+process.kill(pid[, signal])
+Send a signal to a process. pid is the process id and signal is the string describing the signal to send.
+Signal with be SIGTERM.
 
-setTimeout(function() {
-  console.log('Exiting.');
-  process.exit(0);
-}, 100);
+Will throw an error if target does not exist, and as a special case, a signal of 0 can be used
+to test for the existence of a process. Windows platforms will throw an error if the pid
+is used to kill a process group.
 
-process.kill(process.pid, 'SIGHUP');
-Note: When SIGUSR1 is received by Node.js it starts the debugger, see Signal Events.
+Note that even though the name of this function is process.kill, it is really just a signal sender,
+like the kill system call. The signal sent may do something other than kill the target process.
+-}
+kill : Int -> Task ProcessNotFound ()
+kill =
+    Method.method1E ProcessNotFound "kill" process
 
+
+{-| same as kill but with a specific SIGNAL
+-}
+killWithSIGNAL : Int -> SIGNAL -> Task ProcessNotFound ()
+killWithSIGNAL i sig =
+    Method.method2E ProcessNotFound "kill" process i (toString sig)
+
+
+{-|
 process.mainModule#
 Alternate way to retrieve require.main. The difference is that if the main module changes at runtime, require.main might still refer to the original main module in modules that were required before the change occurred. Generally it's safe to assume that the two refer to the same module.
 
@@ -651,77 +737,98 @@ process.stderr#
 A writable stream to stderr (on fd 2).
 
 process.stderr and process.stdout are unlike other streams in Node.js in that they cannot be closed (end() will throw), they never emit the finish event and that writes can block when output is redirected to a file (although disks are fast and operating systems normally employ write-back caching so it should be a very rare occurrence indeed.)
+-}
 
-process.stdin#
+{-|
+process.stdin
 A Readable Stream for stdin (on fd 0).
+-}
+standardIn : Streams.Readable
+standardIn =
+    Read.unsafeRead "stdin" process
 
-Example of opening standard input and listening for both events:
-
-process.stdin.setEncoding('utf8');
-
-process.stdin.on('readable', function() {
-  var chunk = process.stdin.read();
-  if (chunk !== null) {
-    process.stdout.write('data: ' + chunk);
-  }
-});
-
-process.stdin.on('end', function() {
-  process.stdout.write('end');
-});
-As a Stream, process.stdin can also be used in "old" mode that is compatible with scripts written for node.js prior to v0.10. For more information see Stream compatibility.
-
-In "old" Streams mode the stdin stream is paused by default, so one must call process.stdin.resume() to read from it. Note also that calling process.stdin.resume() itself would switch stream to "old" mode.
-
-If you are starting a new project you should prefer a more recent "new" Streams mode over "old" one.
-
-process.stdout#
+{-|
+process.stdout
 A Writable Stream to stdout (on fd 1).
 
-For example, a console.log equivalent could look like this:
+process.stderr and process.stdout are unlike other streams in Node.js in that they cannot be closed
+(end() will throw), they never emit the 'finish' event and that writes can block when output is
+redirected to a file (although disks are fast and operating systems normally employ
+write-back caching so it should be a very rare occurrence indeed.)
+-}
+standardOut : Streams.Writable
+standardOut =
+    Read.unsafeRead "stdout" process
 
-console.log = function(msg) {
-  process.stdout.write(msg + '\n');
-};
-process.stderr and process.stdout are unlike other streams in Node.js in that they cannot be closed (end() will throw), they never emit the 'finish' event and that writes can block when output is redirected to a file (although disks are fast and operating systems normally employ write-back caching so it should be a very rare occurrence indeed.)
 
-To check if Node.js is being run in a TTY context, read the isTTY property on process.stderr, process.stdout, or process.stdin:
+{-|
+process.title
+To set what is displayed in `ps`.
+-}
+getTitle : Task x String
+getTitle =
+    Read.read "title" process
 
-$ node -p "Boolean(process.stdin.isTTY)"
-true
-$ echo "foo" | node -p "Boolean(process.stdin.isTTY)"
-false
 
-$ node -p "Boolean(process.stdout.isTTY)"
-true
-$ node -p "Boolean(process.stdout.isTTY)" | cat
-false
-See the tty docs for more information.
-
-process.title#
-Getter/setter to set what is displayed in `ps.
-
-When used as a setter, the maximum length is platform-specific and probably short.
-
+{-| Sets the process title
+The maximum length is platform-specific and probably short.
 On Linux and OS X, it's limited to the size of the binary name plus the length of the command line arguments because it overwrites the argv memory.
+-}
+setTitle : String -> Task x ()
+setTitle =
+    Set.set "title" process
 
-v0.8 allowed for longer process title strings by also overwriting the environ memory but that was potentially insecure/confusing in some (rather obscure) cases.
 
-process.umask([mask])#
-Sets or reads the process's file mode creation mask. Child processes inherit the mask from the parent process. Returns the old mask if mask argument is given, otherwise returns the current mask.
+{-| Same as `setTitle` but lets you read the current title at the same time.
+-}
+modifyTitle : (String -> String) -> Task x ()
+modifyTitle =
+    Set.modify "title" process
 
-var oldmask, newmask = 0022;
 
-oldmask = process.umask(newmask);
-console.log('Changed umask from: ' + oldmask.toString(8) +
-            ' to ' + newmask.toString(8));
-process.uptime()#
+{-|
+process.umask([mask])
+Sets the process's file mode creation mask.
+Child processes inherit the mask from the parent process.
+Returns the old mask.
+-}
+unmask : Int -> Task x Int
+unmask =
+    Get.get1 "unmask" process
+
+
+{-|
+process.umask([mask])
+Reads the process's file mode creation mask.
+Child processes inherit the mask from the parent process.
+Returns the current mask.
+-}
+currentMask : Task x Int
+currentMask =
+    Get.get0 "unmask" process
+
+
+{-|
+process.uptime()
 Number of seconds Node.js has been running.
+-}
+uptime : Task x Time
+uptime =
+    Get.get0 "uptime" process
 
-process.version#
+
+{-|
+process.version
 A compiled-in property that exposes NODE_VERSION.
 
 console.log('Version: ' + process.version);
+-}
+version : String
+version =
+    Read.unsafeRead "version" process
+
+
+{-|
 process.versions#
 A property exposing version strings of Node.js and its dependencies.
 
@@ -738,3 +845,6 @@ Will print something like:
   icu: '55.1',
   openssl: '1.0.1k' }
 -}
+versions : Json.Value
+versions =
+    Read.unsafeRead "versions" process

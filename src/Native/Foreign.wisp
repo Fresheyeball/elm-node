@@ -63,6 +63,69 @@
         ((aget object name) a b c d e f)
         (callback (.succeed Task Tuple0)))))))
 
+  :method0E (F3 (fn [merr name object]
+    (.asyncFunction Task (fn [callback]
+      (try
+        (do
+          ((aget object name))
+          (callback (.succeed Task Tuple0)))
+        (catch error
+          (callback (.fail Task (merr (.toString error))))))))))
+
+  :method1E (F4 (fn [merr name object a]
+    (.asyncFunction Task (fn [callback]
+      (try
+        (do
+          ((aget object name) a)
+          (callback (.succeed Task Tuple0)))
+        (catch error
+          (callback (.fail Task (merr (.toString error))))))))))
+
+  :method2E (F5 (fn [merr name object a b]
+    (.asyncFunction Task (fn [callback]
+      (try
+        (do
+          ((aget object name) a b)
+          (callback (.succeed Task Tuple0)))
+        (catch error
+          (callback (.fail Task (merr (.toString error))))))))))
+
+  :method3E (F6 (fn [merr name object a b c]
+    (.asyncFunction Task (fn [callback]
+      (try
+        (do
+          ((aget object name) a b c)
+          (callback (.succeed Task Tuple0)))
+        (catch error
+          (callback (.fail Task (merr (.toString error))))))))))
+
+  :method4E (F7 (fn [merr name object a b c d]
+    (.asyncFunction Task (fn [callback]
+      (try
+        (do
+          ((aget object name) a b c d)
+          (callback (.succeed Task Tuple0)))
+        (catch error
+          (callback (.fail Task (merr (.toString error))))))))))
+
+  :method5E (F8 (fn [merr name object a b c d e]
+    (.asyncFunction Task (fn [callback]
+      (try
+        (do
+          ((aget object name) a b c d e)
+          (callback (.succeed Task Tuple0)))
+        (catch error
+          (callback (.fail Task (merr (.toString error))))))))))
+
+  :method6E (F9 (fn [merr name object a b c d e f]
+    (.asyncFunction Task (fn [callback]
+      (try
+        (do
+          ((aget object name) a b c d e f)
+          (callback (.succeed Task Tuple0)))
+        (catch error
+          (callback (.fail Task (merr (.toString error))))))))))
+
   :methodAsync0 (F2 (fn [name object]
     (.asyncFunction Task (fn [callback]
       ((aget object name) (fn []

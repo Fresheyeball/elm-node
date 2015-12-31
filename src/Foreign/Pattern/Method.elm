@@ -39,6 +39,33 @@ method6 : MethodName -> object -> a -> b -> c -> d -> e -> f -> Task x ()
 method6 =
     Native.Foreign.method6
 
+method0E : ErrorType x -> MethodName -> object -> Task x ()
+method0E =
+    Native.Foreign.method0E
+
+method1E : ErrorType x -> MethodName -> object -> a -> Task x ()
+method1E =
+    Native.Foreign.method1E
+
+method2E : ErrorType x -> MethodName -> object -> a -> b -> Task x ()
+method2E =
+    Native.Foreign.method2E
+
+method3E : ErrorType x -> MethodName -> object -> a -> b -> c -> Task x ()
+method3E =
+    Native.Foreign.method3E
+
+method4E : ErrorType x -> MethodName -> object -> a -> b -> c -> d -> Task x ()
+method4E =
+    Native.Foreign.method4E
+
+method5E : ErrorType x -> MethodName -> object -> a -> b -> c -> d -> e -> Task x ()
+method5E =
+    Native.Foreign.method5E
+
+method6E : ErrorType x -> MethodName -> object -> a -> b -> c -> d -> e -> f -> Task x ()
+method6E =
+    Native.Foreign.method6E
 
 methodAsync0 : MethodName -> object -> Task x ()
 methodAsync0 =

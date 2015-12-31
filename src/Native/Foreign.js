@@ -74,6 +74,104 @@ var make = function make(localRuntime) {
                         })();
                     });
                 }),
+                'method0E': F3(function (merr, name, object) {
+                    return Taskø1.asyncFunction(function (callback) {
+                        return (function () {
+                            try {
+                                return (function () {
+                                    object[name]();
+                                    return callback(Taskø1.succeed(Tuple0ø1));
+                                })();
+                            } catch (error) {
+                                return callback(Taskø1.fail(merr(error.toString())));
+                            }
+                        })();
+                    });
+                }),
+                'method1E': F4(function (merr, name, object, a) {
+                    return Taskø1.asyncFunction(function (callback) {
+                        return (function () {
+                            try {
+                                return (function () {
+                                    object[name](a);
+                                    return callback(Taskø1.succeed(Tuple0ø1));
+                                })();
+                            } catch (error) {
+                                return callback(Taskø1.fail(merr(error.toString())));
+                            }
+                        })();
+                    });
+                }),
+                'method2E': F5(function (merr, name, object, a, b) {
+                    return Taskø1.asyncFunction(function (callback) {
+                        return (function () {
+                            try {
+                                return (function () {
+                                    object[name](a, b);
+                                    return callback(Taskø1.succeed(Tuple0ø1));
+                                })();
+                            } catch (error) {
+                                return callback(Taskø1.fail(merr(error.toString())));
+                            }
+                        })();
+                    });
+                }),
+                'method3E': F6(function (merr, name, object, a, b, c) {
+                    return Taskø1.asyncFunction(function (callback) {
+                        return (function () {
+                            try {
+                                return (function () {
+                                    object[name](a, b, c);
+                                    return callback(Taskø1.succeed(Tuple0ø1));
+                                })();
+                            } catch (error) {
+                                return callback(Taskø1.fail(merr(error.toString())));
+                            }
+                        })();
+                    });
+                }),
+                'method4E': F7(function (merr, name, object, a, b, c, d) {
+                    return Taskø1.asyncFunction(function (callback) {
+                        return (function () {
+                            try {
+                                return (function () {
+                                    object[name](a, b, c, d);
+                                    return callback(Taskø1.succeed(Tuple0ø1));
+                                })();
+                            } catch (error) {
+                                return callback(Taskø1.fail(merr(error.toString())));
+                            }
+                        })();
+                    });
+                }),
+                'method5E': F8(function (merr, name, object, a, b, c, d, e) {
+                    return Taskø1.asyncFunction(function (callback) {
+                        return (function () {
+                            try {
+                                return (function () {
+                                    object[name](a, b, c, d, e);
+                                    return callback(Taskø1.succeed(Tuple0ø1));
+                                })();
+                            } catch (error) {
+                                return callback(Taskø1.fail(merr(error.toString())));
+                            }
+                        })();
+                    });
+                }),
+                'method6E': F9(function (merr, name, object, a, b, c, d, e, f) {
+                    return Taskø1.asyncFunction(function (callback) {
+                        return (function () {
+                            try {
+                                return (function () {
+                                    object[name](a, b, c, d, e, f);
+                                    return callback(Taskø1.succeed(Tuple0ø1));
+                                })();
+                            } catch (error) {
+                                return callback(Taskø1.fail(merr(error.toString())));
+                            }
+                        })();
+                    });
+                }),
                 'methodAsync0': F2(function (name, object) {
                     return Taskø1.asyncFunction(function (callback) {
                         return object[name](function () {

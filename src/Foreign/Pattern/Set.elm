@@ -5,7 +5,7 @@ import Foreign.Types exposing (..)
 import Native.Foreign
 
 
-modify : KeyName -> object -> (a -> b) -> Task x ()
+modify : KeyName -> object -> (a -> a) -> Task x ()
 modify =
     Native.Foreign.modify
 

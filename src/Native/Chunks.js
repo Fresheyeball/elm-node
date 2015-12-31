@@ -5,6 +5,9 @@ var make = function make(localRuntime) {
             'emptyBuffer': new Buffer([]),
             'marshall': F3(function (Left, Right, chunk) {
                 return typeof(chunk) == 'string' ? Left(chunks) : Right(chunk);
+            }),
+            'encodeBuffer': F2(function (buffer, encoding) {
+                return buffer.toString(encoding);
             })
         };
     })();

@@ -73,3 +73,16 @@ emptyBuffer =
 marshall : JSRaw -> Chunk
 marshall =
     Native.Chunks.marshall Left Right
+
+
+showBufferWithEncoding : Buffer -> Encoding -> String
+showBufferWithEncoding buffer encoding =
+    Native.Chunks.encodeBuffer buffer (showEncoding encoding)
+
+showBuffer : Buffer -> String
+showBuffer buffer =
+    showBufferWithEncoding buffer defaultEncoding
+
+showChunk : Chunk -> String
+showChunk =
+    Either.elim identity showBuffer

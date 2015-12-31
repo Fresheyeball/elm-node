@@ -2,8 +2,10 @@ module Main (..) where
 
 import Network.Socket as Socket
 import Network
+import Chunks
+import Process exposing (standardOut)
+import Streams
 import Task exposing (..)
-import Debug
 
 
 port echo : Task x ()
@@ -12,18 +14,17 @@ port echo =
         (>|) t t' =
             t `andThen` always t'
 
-        log message x =
-            Debug.log message x
-                |> always ()
-                |> succeed
+        log =
+            Streams.writeString standardOut
 
-        connected = Debug.log "connected" () |> succeed
+        connected =
+            log "connected"
 
         data socket chunk =
-            log "data" chunk
+            log ("data: " ++ Chunks.showChunk chunk)
                 >| Socket.end socket
 
-        end = log "disconnected from server" ()
+        end = log "disconnected from server"
     in
         Network.connectOnPort 8080
             `andThen` \socket ->

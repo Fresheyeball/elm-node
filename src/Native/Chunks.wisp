@@ -13,6 +13,9 @@
         (Left chunks)
         (Right chunk))))
 
+  :encodeBuffer (F2 (fn [buffer encoding]
+    (.toString buffer encoding)))
+
   } ))))
 
 (foreign.sanitize Elm :Native :Chunks)

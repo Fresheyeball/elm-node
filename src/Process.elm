@@ -371,26 +371,6 @@ environment =
 
 
 {-|
-process.execArgv#
-This is the set of Node.js-specific command line options from the executable that started the process. These options do not show up in process.argv, and do not include the Node.js executable, the name of the script, or any options following the script name. These options are useful in order to spawn child processes with the same execution environment as the parent.
-
-Example:
-
-$ node --harmony script.js --version
-results in process.execArgv:
-
-['--harmony']
-and process.argv:
-
-['/usr/local/bin/node', 'script.js', '--version']
-process.execPath#
-This is the absolute pathname of the executable that started the process.
-
-Example:
-
-/usr/local/bin/node
--}
-{-|
 process.exit([code])
 Ends the process with the specified code.
 -}
@@ -501,33 +481,6 @@ getHighResolutionTime =
                             |> Task.toMaybe
 
 
-{-|
-process.initgroups(user, extra_group)
-Note: this function is only available on POSIX platforms (i.e. not Windows, Android)
-
-Reads /etc/group and initializes the group access list, using all groups of which the user is a member. This is a privileged operation, meaning you need to be root or have the CAP_SETGID capability.
-
-user is a user name or user ID. extra_group is a group name or group ID.
-
-Some care needs to be taken when dropping privileges. Example:
-
-console.log(process.getgroups());         // [ 0 ]
-process.initgroups('bnoordhuis', 1000);   // switch user
-console.log(process.getgroups());         // [ 27, 30, 46, 1000, 0 ]
-process.setgid(1000);                     // drop root gid
-console.log(process.getgroups());         // [ 27, 30, 46, 1000 ]
--}
-initGroups : Maybe (String -> Int -> Task x ())
-initGroups =
-    let
-        name = "initgroups"
-    in
-        if Marshall.truthy <| Read.unsafeRead name process then
-            Just <| Method.method2 name process
-        else
-            Nothing
-
-
 {-| Error that may be thrown by `kill`
 -}
 type ProcessNotFound
@@ -558,189 +511,121 @@ killWithSIGNAL i sig =
     Method.method2E ProcessNotFound "kill" process i (toString sig)
 
 
+type alias MemoryUsage =
+    { rss : Int
+    , heapTotal : Int
+    , heapUsed : Int
+    }
+
 {-|
-process.mainModule#
-Alternate way to retrieve require.main. The difference is that if the main module changes at runtime, require.main might still refer to the original main module in modules that were required before the change occurred. Generally it's safe to assume that the two refer to the same module.
-
-As with require.main, it will be undefined if there was no entry script.
-
-process.memoryUsage()#
+process.memoryUsage()
 Returns an object describing the memory usage of the Node.js process measured in bytes.
-
-var util = require('util');
-
-console.log(util.inspect(process.memoryUsage()));
-This will generate:
-
-{ rss: 4935680,
-  heapTotal: 1826816,
-  heapUsed: 650472 }
 heapTotal and heapUsed refer to V8's memory usage.
+-}
+getMemoryUsage : Task x MemoryUsage
+getMemoryUsage =
+    Get.get0 "memoryUsage" process
 
-process.nextTick(callback[, arg][, ...])#
-callback Function
-Once the current event loop turn runs to completion, call the callback function.
 
-This is not a simple alias to setTimeout(fn, 0), it's much more efficient. It runs before any additional I/O events (including timers) fire in subsequent ticks of the event loop.
-
-console.log('start');
-process.nextTick(function() {
-  console.log('nextTick callback');
-});
-console.log('scheduled');
-// Output:
-// start
-// scheduled
-// nextTick callback
-This is important in developing APIs where you want to give the user the chance to assign event handlers after an object has been constructed, but before any I/O has occurred.
-
-function MyThing(options) {
-  this.setupOptions(options);
-
-  process.nextTick(function() {
-    this.startDoingStuff();
-  }.bind(this));
-}
-
-var thing = new MyThing();
-thing.getReadyForStuff();
-
-// thing.startDoingStuff() gets called now, not before.
-It is very important for APIs to be either 100% synchronous or 100% asynchronous. Consider this example:
-
-// WARNING!  DO NOT USE!  BAD UNSAFE HAZARD!
-function maybeSync(arg, cb) {
-  if (arg) {
-    cb();
-    return;
-  }
-
-  fs.stat('file', cb);
-}
-This API is hazardous. If you do this:
-
-maybeSync(true, function() {
-  foo();
-});
-bar();
-then it's not clear whether foo() or bar() will be called first.
-
-This approach is much better:
-
-function definitelyAsync(arg, cb) {
-  if (arg) {
-    process.nextTick(cb);
-    return;
-  }
-
-  fs.stat('file', cb);
-}
-Note: the nextTick queue is completely drained on each pass of the event loop before additional I/O is processed. As a result, recursively setting nextTick callbacks will block any I/O from happening, just like a while(true); loop.
-
-process.pid#
+{-|
+process.pid
 The PID of the process.
+-}
+processId : Int
+processId =
+    Read.unsafeRead "pid" process
 
-console.log('This process is pid ' + process.pid);
-process.platform#
+type Platform
+    = Darwin
+    | FreeBSD
+    | Linux
+    | SunOS
+    | Win32
+    | Unknown
+
+{-|
+process.platform
 What platform you're running on: 'darwin', 'freebsd', 'linux', 'sunos' or 'win32'
 
 console.log('This platform is ' + process.platform);
-process.release#
-An Object containing metadata related to the current release, including URLs for the source tarball and headers-only tarball.
+-}
+platform : Platform
+platform =
+    case Read.unsafeRead "platform" process of
+        "darwin" -> Darwin
+        "freebsd" -> FreeBSD
+        "linux" -> Linux
+        "sunos" -> SunOS
+        "win32" -> Win32
+        _ -> Unknown
 
-process.release contains the following properties:
 
-name: a string with a value that will always be 'node' for Node.js. For legacy io.js releases, this will be 'io.js'.
-sourceUrl: a complete URL pointing to a .tar.gz file containing the source of the current release.
-headersUrl: a complete URL pointing to a .tar.gz file containing only the header files for the current release. This file is significantly smaller than the full source file and can be used for compiling add-ons against Node.js.
-libUrl: a complete URL pointing to an node.lib file matching the architecture and version of the current release. This file is used for compiling add-ons against Node.js. This property is only present on Windows builds of Node.js and will be missing on all other platforms.
-e.g.
-
-{ name: 'node',
-  sourceUrl: 'https://nodejs.org/download/release/v4.0.0/node-v4.0.0.tar.gz',
-  headersUrl: 'https://nodejs.org/download/release/v4.0.0/node-v4.0.0-headers.tar.gz',
-  libUrl: 'https://nodejs.org/download/release/v4.0.0/win-x64/node.lib' }
-In custom builds from non-release versions of the source tree, only the name property may be present. The additional properties should not be relied upon to exist.
-
-process.send(message[, sendHandle][, callback])#
-message Object
-sendHandle Handle object
-When Node.js is spawned with an IPC channel attached, it can send messages to its parent process using process.send(). Each will be received as a 'message' event on the parent's ChildProcess object.
+{-|
+process.send(message[, sendHandle][, callback])
+When Node.js is spawned with an IPC channel attached, it can send messages to its parent process using
+process.send(). Each will be received as a 'message' event on the parent's ChildProcess object.
 
 If Node.js was not spawned with an IPC channel, process.send() will be undefined.
+-}
+send : Maybe (String -> Task x ())
+send =
+    method1IfFunction "send"
 
-process.setegid(id)#
+{-|
+process.setegid(id)
 Note: this function is only available on POSIX platforms (i.e. not Windows, Android)
+Sets the effective group identity of the process. (See setegid(2).)
+-}
+setEffectiveGroupId : Maybe (Int -> Task x ())
+setEffectiveGroupId =
+    method1IfFunction "setegid"
 
-Sets the effective group identity of the process. (See setegid(2).) This accepts either a numerical ID or a groupname string. If a groupname is specified, this method blocks while resolving it to a numerical ID.
-
-if (process.getegid && process.setegid) {
-  console.log('Current gid: ' + process.getegid());
-  try {
-    process.setegid(501);
-    console.log('New gid: ' + process.getegid());
-  }
-  catch (err) {
-    console.log('Failed to set gid: ' + err);
-  }
-}
-process.seteuid(id)#
+{-|
+process.seteuid(id)
 Note: this function is only available on POSIX platforms (i.e. not Windows, Android)
+Sets the effective user identity of the process. (See seteuid(2).)
+-}
+setEffectiveUserId : Maybe (Int -> Task x ())
+setEffectiveUserId =
+    method1IfFunction "seteuid"
 
-Sets the effective user identity of the process. (See seteuid(2).) This accepts either a numerical ID or a username string. If a username is specified, this method blocks while resolving it to a numerical ID.
-
-if (process.geteuid && process.seteuid) {
-  console.log('Current uid: ' + process.geteuid());
-  try {
-    process.seteuid(501);
-    console.log('New uid: ' + process.geteuid());
-  }
-  catch (err) {
-    console.log('Failed to set uid: ' + err);
-  }
-}
-process.setgid(id)#
+{-|
+process.setgid(id)
 Note: this function is only available on POSIX platforms (i.e. not Windows, Android)
+Sets the group identity of the process. (See setgid(2).)
+-}
+setGroupId : Maybe (Int -> Task x ())
+setGroupId =
+    method1IfFunction "setgid"
 
-Sets the group identity of the process. (See setgid(2).) This accepts either a numerical ID or a groupname string. If a groupname is specified, this method blocks while resolving it to a numerical ID.
-
-if (process.getgid && process.setgid) {
-  console.log('Current gid: ' + process.getgid());
-  try {
-    process.setgid(501);
-    console.log('New gid: ' + process.getgid());
-  }
-  catch (err) {
-    console.log('Failed to set gid: ' + err);
-  }
-}
-process.setgroups(groups)#
+{-|
+process.setuid(id)
 Note: this function is only available on POSIX platforms (i.e. not Windows, Android)
+Sets the user identity of the process. (See setuid(2).)
+-}
+setUserId : Maybe (Int -> Task x ())
+setUserId =
+    method1IfFunction "setuid"
 
-Sets the supplementary group IDs. This is a privileged operation, meaning you need to be root or have the CAP_SETGID capability.
+method1IfFunction : String -> Maybe (a -> Task x ())
+method1IfFunction name =
+    if Marshall.truthy <| Read.unsafeRead name process then
+        Just <| Method.method1 name process
+    else
+        Nothing
 
-The list can contain group IDs, group names or both.
-
-process.setuid(id)#
-Note: this function is only available on POSIX platforms (i.e. not Windows, Android)
-
-Sets the user identity of the process. (See setuid(2).) This accepts either a numerical ID or a username string. If a username is specified, this method blocks while resolving it to a numerical ID.
-
-if (process.getuid && process.setuid) {
-  console.log('Current uid: ' + process.getuid());
-  try {
-    process.setuid(501);
-    console.log('New uid: ' + process.getuid());
-  }
-  catch (err) {
-    console.log('Failed to set uid: ' + err);
-  }
-}
-process.stderr#
+{-|
+process.stderr
 A writable stream to stderr (on fd 2).
 
-process.stderr and process.stdout are unlike other streams in Node.js in that they cannot be closed (end() will throw), they never emit the finish event and that writes can block when output is redirected to a file (although disks are fast and operating systems normally employ write-back caching so it should be a very rare occurrence indeed.)
+process.stderr and process.stdout are unlike other streams in Node.js in that they
+cannot be closed (end() will throw), they never emit the finish event and that writes
+can block when output is redirected to a file (although disks are fast and operating
+systems normally employ write-back caching so it should be a very rare occurrence indeed.)
 -}
+standardError : Streams.Writable
+standardError =
+    Read.unsafeRead "stderr" process
 
 {-|
 process.stdin
@@ -832,7 +717,7 @@ version =
 
 
 {-|
-process.versions#
+process.versions
 A property exposing version strings of Node.js and its dependencies.
 
 console.log(process.versions);

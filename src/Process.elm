@@ -1,4 +1,4 @@
-module Process (onBeforeExit, onExit, onMessage, exitToInt, intToExit, ExitCode(..), SIGNAL, onSIGNAL, argumentVector, architecture, Architecture(..), isConnected, abort, exit, exitWithCode, currentWorkingDirectory, changeCurrentWorkingDirectory, ChdirError(..), getEffectiveUserId, getEffectiveGroupId, getUserId, getGroups, getGroupId, disconnect, getHighResolutionTime, version, versions, uptime, ProcessNotFound(..), kill, killWithSIGNAL, getTitle, setTitle, modifyTitle, standardIn, standardOut) where
+module Process (onBeforeExit, onExit, onMessage, exitToInt, intToExit, ExitCode(..), SIGNAL, onSIGNAL, argumentVector, architecture, Architecture(..), isConnected, abort, exit, exitWithCode, currentWorkingDirectory, changeCurrentWorkingDirectory, ChdirError(..), getEffectiveUserId, getEffectiveGroupId, getUserId, getGroups, getGroupId, disconnect, getHighResolutionTime, version, versions, uptime, ProcessNotFound(..), kill, killWithSIGNAL, getTitle, setTitle, modifyTitle, standardIn, standardOut, Platform, platform, processId, setUserId, setEffectiveUserId, setGroupId, setEffectiveGroupId, getMemoryUsage, MemoryUsage, standardError, send, unmask) where
 
 {-|
 # Events
@@ -11,7 +11,7 @@ module Process (onBeforeExit, onExit, onMessage, exitToInt, intToExit, ExitCode(
 @docs SIGNAL, onSIGNAL
 
 # Process Info
-@docs argumentVector, architecture, Architecture, isConnected, version, versions, uptime, getTitle, setTitle, modifyTitle
+@docs argumentVector, architecture, Architecture, isConnected, version, versions, uptime, getTitle, setTitle, modifyTitle, Platform, platform, processId
 
 # Exit Methods
 @docs abort, exit, exitWithCode, disconnect, kill, killWithSIGNAL, ProcessNotFound
@@ -19,14 +19,17 @@ module Process (onBeforeExit, onExit, onMessage, exitToInt, intToExit, ExitCode(
 # Working Directory
 @docs currentWorkingDirectory, changeCurrentWorkingDirectory, ChdirError
 
-# User Info
-@docs getEffectiveUserId, getEffectiveGroupId, getUserId, getGroupId, getGroups
+# User and Group
+@docs getEffectiveUserId, getEffectiveGroupId, getUserId, getGroupId, getGroups, setUserId, setEffectiveUserId, setGroupId, setEffectiveGroupId
 
 # Utils
-@docs getHighResolutionTime
+@docs getHighResolutionTime, getMemoryUsage, MemoryUsage
 
 # Streams
-@docs standardIn, standardOut
+@docs standardIn, standardOut, standardError
+
+# Misc
+@docs send, unmask
 -}
 
 import Foreign.Types exposing (JSRaw)
@@ -510,7 +513,9 @@ killWithSIGNAL : Int -> SIGNAL -> Task ProcessNotFound ()
 killWithSIGNAL i sig =
     Method.method2E ProcessNotFound "kill" process i (toString sig)
 
-
+{-|
+Type for memoryUsage's return
+-}
 type alias MemoryUsage =
     { rss : Int
     , heapTotal : Int
@@ -535,6 +540,9 @@ processId : Int
 processId =
     Read.unsafeRead "pid" process
 
+{-|
+Type to model the `platform`
+-}
 type Platform
     = Darwin
     | FreeBSD

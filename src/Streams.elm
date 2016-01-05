@@ -14,7 +14,12 @@ module Streams (..) where
 @docs write, write', writeBuffer, writeString, writeString'
 
 # Read
-@docs read, read'
+@docs read, readWithSize
+
+# Encoding
+@docs setDefaultEncoding, setEncoding, unshiftBuffer, unshiftString, unshift
+
+@docs withSignal
 -}
 
 import Task exposing (Task)
@@ -139,8 +144,8 @@ read readable =
 
 {-| readable.read([size])
 -}
-read' : Readable -> Int -> Task x (Maybe Chunk)
-read' readable size =
+readWithSize : Readable -> Int -> Task x (Maybe Chunk)
+readWithSize readable size =
     get1 "read" readable size
         |> Task.map
             (\raw ->
@@ -237,17 +242,20 @@ writeString writable s =
     writeString' writable defaultEncoding s
 
 
-{-| writable.write(chunk[, encoding][, callback])
--}
-writeBuffer : Writable -> Buffer -> Task x ()
-writeBuffer =
-    methodAsync1 "write"
+{-|
+writable.write(chunk[, encoding][, callback])
+This method writes some data to the underlying system, and calls the supplied
+callback once the data has been fully handled.
 
+The return value indicates if you should continue writing right now. If the data had
+to be buffered internally, then it will return false. Otherwise, it will return true.
 
-{-| writable.write(chunk[, encoding][, callback])
+This return value is strictly advisory. You MAY continue to write, even if it
+returnsfalse. However, writes will be buffered in memory, so it is best not to do
+this excessively. Instead, wait for the 'drain' event before writing more data.
 -}
-write' : Writable -> Encoding -> Chunk -> Task x ()
-write' writable encoding c =
+writeWithEncoding : Encoding -> Writable -> Chunk -> Task x ()
+writeWithEncoding encoding writable c =
     case c of
         Left s ->
             writeString' writable encoding s
@@ -256,21 +264,20 @@ write' writable encoding c =
             writeBuffer writable b
 
 
-{-| writable.write(chunk[, encoding][, callback])
+{-|
+writable.write(chunk[, encoding][, callback])
+Same as `writeWithEncoding`, defaulting to Utf8
 -}
 write : Writable -> Chunk -> Task x ()
-write writable chunk =
-    write' writable defaultEncoding chunk
+write =
+    writeWithEncoding defaultEncoding
 
 
-encodeWith : Encoding -> Buffer -> Task x String
-encodeWith encoding buffer =
-    get1 "toString" buffer (showEncoding encoding)
-
-
-encode : Buffer -> Task x String
-encode =
-    bufferToString' defaultEncoding
+{-| writable.write(chunk[, encoding][, callback])
+-}
+writeBuffer : Writable -> Buffer -> Task x ()
+writeBuffer =
+    methodAsync1 "write"
 
 
 withSignal : Signal a -> (a -> Task x ()) -> Task x ()

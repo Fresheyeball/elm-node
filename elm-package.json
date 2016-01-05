@@ -11,6 +11,7 @@
       "Network",
       "Network.Socket",
       "Streams",
+      "Streams.Types",
       "FS.Streams",
       "Process"
     ],

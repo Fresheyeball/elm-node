@@ -513,6 +513,7 @@ killWithSIGNAL : Int -> SIGNAL -> Task ProcessNotFound ()
 killWithSIGNAL i sig =
     Method.method2E ProcessNotFound "kill" process i (toString sig)
 
+
 {-|
 Type for memoryUsage's return
 -}
@@ -521,6 +522,7 @@ type alias MemoryUsage =
     , heapTotal : Int
     , heapUsed : Int
     }
+
 
 {-|
 process.memoryUsage()
@@ -540,6 +542,7 @@ processId : Int
 processId =
     Read.unsafeRead "pid" process
 
+
 {-|
 Type to model the `platform`
 -}
@@ -551,21 +554,31 @@ type Platform
     | Win32
     | Unknown
 
+
 {-|
 process.platform
 What platform you're running on: 'darwin', 'freebsd', 'linux', 'sunos' or 'win32'
-
-console.log('This platform is ' + process.platform);
 -}
 platform : Platform
 platform =
     case Read.unsafeRead "platform" process of
-        "darwin" -> Darwin
-        "freebsd" -> FreeBSD
-        "linux" -> Linux
-        "sunos" -> SunOS
-        "win32" -> Win32
-        _ -> Unknown
+        "darwin" ->
+            Darwin
+
+        "freebsd" ->
+            FreeBSD
+
+        "linux" ->
+            Linux
+
+        "sunos" ->
+            SunOS
+
+        "win32" ->
+            Win32
+
+        _ ->
+            Unknown
 
 
 {-|
@@ -579,6 +592,7 @@ send : Maybe (String -> Task x ())
 send =
     method1IfFunction "send"
 
+
 {-|
 process.setegid(id)
 Note: this function is only available on POSIX platforms (i.e. not Windows, Android)
@@ -587,6 +601,7 @@ Sets the effective group identity of the process. (See setegid(2).)
 setEffectiveGroupId : Maybe (Int -> Task x ())
 setEffectiveGroupId =
     method1IfFunction "setegid"
+
 
 {-|
 process.seteuid(id)
@@ -597,6 +612,7 @@ setEffectiveUserId : Maybe (Int -> Task x ())
 setEffectiveUserId =
     method1IfFunction "seteuid"
 
+
 {-|
 process.setgid(id)
 Note: this function is only available on POSIX platforms (i.e. not Windows, Android)
@@ -605,6 +621,7 @@ Sets the group identity of the process. (See setgid(2).)
 setGroupId : Maybe (Int -> Task x ())
 setGroupId =
     method1IfFunction "setgid"
+
 
 {-|
 process.setuid(id)
@@ -615,12 +632,14 @@ setUserId : Maybe (Int -> Task x ())
 setUserId =
     method1IfFunction "setuid"
 
+
 method1IfFunction : String -> Maybe (a -> Task x ())
 method1IfFunction name =
     if Marshall.truthy <| Read.unsafeRead name process then
         Just <| Method.method1 name process
     else
         Nothing
+
 
 {-|
 process.stderr
@@ -635,6 +654,7 @@ standardError : Streams.Writable
 standardError =
     Read.unsafeRead "stderr" process
 
+
 {-|
 process.stdin
 A Readable Stream for stdin (on fd 0).
@@ -642,6 +662,7 @@ A Readable Stream for stdin (on fd 0).
 standardIn : Streams.Readable
 standardIn =
     Read.unsafeRead "stdin" process
+
 
 {-|
 process.stdout

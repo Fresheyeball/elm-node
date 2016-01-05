@@ -10,6 +10,7 @@
     "exposed-modules": [
       "Network",
       "Network.Socket",
+      "Streams",
       "FS.Streams",
       "Process"
     ],

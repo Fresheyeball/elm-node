@@ -1,24 +1,48 @@
 module Streams (..) where
 
+{-|
+# Methods
+@docs isPaused, pause, resume, cork, uncork, end
+
+# Listeners
+@docs on, onString, onBuffer
+
+# Piping
+@docs pipe, pipe', pipe'', unpipe, unpipeAll
+
+# Write
+@docs write, write', writeBuffer, writeString, writeString'
+
+# Read
+@docs read, read'
+-}
+
 import Task exposing (Task)
 import Either exposing (..)
 import Foreign.Marshall exposing (truthy)
 import Foreign.Pattern.Get exposing (..)
 import Foreign.Pattern.Method exposing (..)
 import Streams.Types exposing (..)
+import Streams.Marshall exposing (..)
 import Emitter.Unsafe exposing (on1)
 import Chunks exposing (..)
 import Native.Streams
 
 
-{-| readable.isPaused()
+{-|
+readable.isPaused()
+This method returns whether or not the readable has been explicitly paused by client
+code (using readable.pause() without a corresponding readable.resume()).
 -}
 isPaused : Readable -> Task x Bool
 isPaused =
     get0 "isPaused"
 
 
-{-| readable.pause()
+{-|
+readable.pause()
+This method will cause a stream in flowing mode to stop emitting 'data' events, switching out of
+flowing mode. Any data that becomes available will remain in the internal buffer.
 -}
 pause : Readable -> Task x ()
 pause =
@@ -35,18 +59,18 @@ on f event readable =
 
 
 onString : ReadableEvent -> (String -> Task x ()) -> Readable -> Task x (Task x ())
-onString event f r =
+onString event action readable =
     on
         (\chunk ->
             case chunk of
-                Left s ->
-                    f s
+                Left string ->
+                    action string
 
                 Right _ ->
                     Task.succeed ()
         )
         event
-        r
+        readable
 
 
 onBuffer : ReadableEvent -> (Buffer -> Task x ()) -> Readable -> Task x (Task x ())
@@ -192,46 +216,6 @@ end =
     method0 "end"
 
 
-{-| writable.end([chunk][, encoding][, callback])
--}
-endWithBuffer : Writable -> Buffer -> Task x ()
-endWithBuffer =
-    method1 "end"
-
-
-{-| writable.end([chunk][, encoding][, callback])
--}
-endWithString' : Writable -> Encoding -> String -> Task x ()
-endWithString' writable encoding string =
-    method2 "end" writable string (showEncoding encoding)
-
-
-{-| writable.end([chunk][, encoding][, callback])
--}
-endWithString : Writable -> String -> Task x ()
-endWithString writable s =
-    endWithString' writable defaultEncoding s
-
-
-{-| writable.end([chunk][, encoding][, callback])
--}
-endWith' : Writable -> Encoding -> Chunk -> Task x ()
-endWith' writable encoding chunk =
-    case chunk of
-        Left string ->
-            endWithString' writable encoding string
-
-        Right buffer ->
-            endWithBuffer writable buffer
-
-
-{-| writable.end([chunk][, encoding][, callback])
--}
-endWith : Writable -> Chunk -> Task x ()
-endWith writable c =
-    endWith' writable defaultEncoding c
-
-
 {-| writable.setDefaultEncoding(encoding)
 -}
 setDefaultEncoding : Writable -> Encoding -> Task x ()
@@ -279,13 +263,13 @@ write writable chunk =
     write' writable defaultEncoding chunk
 
 
-bufferToString' : Encoding -> Buffer -> Task x String
-bufferToString' encoding buffer =
+encodeWith : Encoding -> Buffer -> Task x String
+encodeWith encoding buffer =
     get1 "toString" buffer (showEncoding encoding)
 
 
-bufferToString : Buffer -> Task x String
-bufferToString =
+encode : Buffer -> Task x String
+encode =
     bufferToString' defaultEncoding
 
 

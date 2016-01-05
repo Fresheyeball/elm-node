@@ -75,14 +75,21 @@ marshall =
     Native.Chunks.marshall Left Right
 
 
-showBufferWithEncoding : Buffer -> Encoding -> String
-showBufferWithEncoding buffer encoding =
+encodeBufferWith : Buffer -> Encoding -> String
+encodeBufferWith buffer encoding =
     Native.Chunks.encodeBuffer buffer (showEncoding encoding)
 
-showBuffer : Buffer -> String
-showBuffer buffer =
-    showBufferWithEncoding buffer defaultEncoding
 
-showChunk : Chunk -> String
-showChunk =
-    Either.elim identity showBuffer
+encodeBuffer : Buffer -> String
+encodeBuffer buffer =
+    encodeBufferWith buffer defaultEncoding
+
+
+encodeChunkWith : Chunk -> Encoding -> String
+encodeChunkWith chunk encoding =
+    Either.elim identity (flip encodeBufferWith encoding) chunk
+
+
+encodeChunk : Chunk -> String
+encodeChunk =
+    Either.elim identity encodeBuffer

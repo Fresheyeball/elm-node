@@ -424,6 +424,7 @@ Will print something like:
   icu: '55.1',
   openssl: '1.0.1k' }
 -}
-versions : Json.Value
+versions : Dict.Dict String String
 versions =
     Read.unsafeRead "versions" process
+        |> Marshall.unsafeObjectToDict

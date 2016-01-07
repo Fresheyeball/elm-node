@@ -1,7 +1,7 @@
 var make = function make(localRuntime) {
     return (function () {
-        foreign.sanitize(localRuntime, 'Native', 'FS');
-        return localRuntime.Native.FS.values ? localRuntime.Native.FS.values : localRuntime.Native.FS.values = {
+        foreign.sanitize(localRuntime, 'Native', 'FileSystem');
+        return localRuntime.Native.FileSystem.values ? localRuntime.Native.FileSystem.values : localRuntime.Native.FileSystem.values = {
             'dirname': __dirname,
             'marshallStat': function (stat) {
                 return (function () {
@@ -15,5 +15,5 @@ var make = function make(localRuntime) {
         };
     })();
 };
-foreign.sanitize(Elm, 'Native', 'FS');
-Elm.Native.FS.make = make;
+foreign.sanitize(Elm, 'Native', 'FileSystem');
+Elm.Native.FileSystem.make = make;

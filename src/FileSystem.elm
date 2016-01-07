@@ -1,4 +1,4 @@
-module FS (dirname, f_ok, r_ok, w_ok, x_ok, access', access, appendFile, chmod, fchmod, chown, fchown, stat, fstat, fsync, ftruncate, truncate, link, unlink, mkdir', mkdir, open', open, read, readFile', readFile, readdir, readlink, rename, rmdir, symlink, watchFile', watchFile, watch', watch, writeFileFromString', writeFileFromString, writeFileFromBuffer', writeFileFromBuffer, writeFileString', writeFileString, writeFileBuffer', writeFileBuffer, writeFile', writeFile, close, utimes) where
+module FileSystem (dirname, f_ok, r_ok, w_ok, x_ok, access', access, appendFile, chmod, fchmod, chown, fchown, stat, fstat, fsync, ftruncate, truncate, link, unlink, mkdir', mkdir, open', open, read, readFile', readFile, readdir, readlink, rename, rmdir, symlink, watchFile', watchFile, watch', watch, writeFileFromString', writeFileFromString, writeFileFromBuffer', writeFileFromBuffer, writeFileString', writeFileString, writeFileBuffer', writeFileBuffer, writeFile', writeFile, close, utimes) where
 
 import Task exposing (Task)
 import Time exposing (Time)
@@ -9,9 +9,9 @@ import Foreign.Pattern.Listen exposing (listen2_2)
 import Foreign.Pattern.Read exposing (..)
 import Foreign.Types exposing (..)
 import Foreign.Marshall exposing (..)
-import FS.Types exposing (..)
+import FileSystem.Types exposing (..)
 import Chunks exposing (unsafeShowEncoding, showEncoding, Buffer, Chunk, Encoding(Binary))
-import Native.FS
+import Native.FileSystem
 
 
 fs : JSRaw
@@ -21,7 +21,7 @@ fs =
 
 dirname : FilePath
 dirname =
-    Native.FS.dirname
+    Native.FileSystem.dirname
 
 
 f_ok : Mode
@@ -57,85 +57,85 @@ access path =
 
 {-| fs.appendFile(file, data[, options], callback)
 -}
-appendFile : FilePath -> String -> Task FSError ()
+appendFile : FilePath -> String -> Task FileSystemError ()
 appendFile =
-    methodAsync2E FSError "appendFile" fs
+    methodAsync2E FileSystemError "appendFile" fs
 
 
 {-| fs.chmod(path, mode, callback)
 -}
-chmod : FilePath -> Mode -> Task FSError ()
+chmod : FilePath -> Mode -> Task FileSystemError ()
 chmod =
-    methodAsync2E FSError "chmod" fs
+    methodAsync2E FileSystemError "chmod" fs
 
 
 {-| fs.chown(path, uid, gid, callback)
 -}
-chown : FilePath -> UID -> GID -> Task FSError ()
+chown : FilePath -> UID -> GID -> Task FileSystemError ()
 chown =
-    methodAsync3E FSError "chown" fs
+    methodAsync3E FileSystemError "chown" fs
 
 
 {-| fs.close(fd, callback)
 -}
-close : FileDescriptor -> Task FSError ()
+close : FileDescriptor -> Task FileSystemError ()
 close =
-    methodAsync1E FSError "close" fs
+    methodAsync1E FileSystemError "close" fs
 
 
 {-| fs.fchmod(fd, mode, callback)
 -}
-fchmod : FileDescriptor -> Mode -> Task FSError ()
+fchmod : FileDescriptor -> Mode -> Task FileSystemError ()
 fchmod =
-    methodAsync2E FSError "fchmod" fs
+    methodAsync2E FileSystemError "fchmod" fs
 
 
 {-| fs.fchown(fd, uid, gid, callback)
 -}
-fchown : FileDescriptor -> UID -> GID -> Task FSError ()
+fchown : FileDescriptor -> UID -> GID -> Task FileSystemError ()
 fchown =
-    methodAsync3E FSError "fchown" fs
+    methodAsync3E FileSystemError "fchown" fs
 
 
 {-| fs.fstat(fd, callback)
 -}
-fstat : FileDescriptor -> Task FSError Stat
+fstat : FileDescriptor -> Task FileSystemError Stat
 fstat =
-    getAsync1E FSError "fstat" fs
+    getAsync1E FileSystemError "fstat" fs
         >> Task.map marshallStat
 
 
 {-| fs.fsync(fd, callback)
 -}
-fsync : FileDescriptor -> Task FSError ()
+fsync : FileDescriptor -> Task FileSystemError ()
 fsync =
-    getAsync1E FSError "fsync" fs
+    getAsync1E FileSystemError "fsync" fs
 
 
 {-| fs.ftruncate(fd, len, callback)
 -}
-ftruncate : Length -> FileDescriptor -> Task FSError ()
+ftruncate : Length -> FileDescriptor -> Task FileSystemError ()
 ftruncate len fd =
-    getAsync2E FSError "ftruncate" fs fd len
+    getAsync2E FileSystemError "ftruncate" fs fd len
 
 
 {-| fs.link(srcpath, dstpath, callback)
 -}
-link : FilePath -> FilePath -> Task FSError ()
+link : FilePath -> FilePath -> Task FileSystemError ()
 link srcpath dstpath =
-    methodAsync2E FSError "link" fs srcpath dstpath
+    methodAsync2E FileSystemError "link" fs srcpath dstpath
 
 
 {-| fs.mkdir(path[, mode], callback)
 -}
-mkdir' : FilePath -> Mode -> Task FSError ()
+mkdir' : FilePath -> Mode -> Task FileSystemError ()
 mkdir' =
-    methodAsync2E FSError "mkdir" fs
+    methodAsync2E FileSystemError "mkdir" fs
 
 
 {-| fs.mkdir(path[, mode], callback)
 -}
-mkdir : FilePath -> Task FSError ()
+mkdir : FilePath -> Task FileSystemError ()
 mkdir path =
     mkdir'
         path
@@ -148,14 +148,14 @@ mkdir path =
 
 {-| fs.open(path, flags[, mode], callback)
 -}
-open' : FilePath -> Flags -> Mode -> Task FSError FileDescriptor
+open' : FilePath -> Flags -> Mode -> Task FileSystemError FileDescriptor
 open' path flags mode =
-    getAsync3E FSError "open" fs path (flagsToString flags) mode
+    getAsync3E FileSystemError "open" fs path (flagsToString flags) mode
 
 
 {-| fs.open(path, flags[, mode], callback)
 -}
-open : FilePath -> Flags -> Task FSError FileDescriptor
+open : FilePath -> Flags -> Task FileSystemError FileDescriptor
 open path flags =
     open'
         path
@@ -169,79 +169,79 @@ open path flags =
 
 {-| fs.read(fd, buffer, offset, length, position, callback)
 -}
-read : FileDescriptor -> Buffer -> Offset -> Length -> Position -> Task FSError ( String, Buffer )
+read : FileDescriptor -> Buffer -> Offset -> Length -> Position -> Task FileSystemError ( String, Buffer )
 read =
-    getAsync5_2E FSError "read" fs
+    getAsync5_2E FileSystemError "read" fs
 
 
 {-| fs.readFile(file[, options], callback)
 -}
-readFile' : ReadFileOptions -> FilePath -> Task FSError String
+readFile' : ReadFileOptions -> FilePath -> Task FileSystemError String
 readFile' opts path =
-    getAsync2E FSError "readFile" fs path (marshallReadFileOptions opts)
+    getAsync2E FileSystemError "readFile" fs path (marshallReadFileOptions opts)
 
 
 {-| fs.readFile(file[, options], callback)
 -}
-readFile : FilePath -> Task FSError String
+readFile : FilePath -> Task FileSystemError String
 readFile =
     readFile' defaultReadFileOptions
 
 
 {-| fs.readdir(path, callback)
 -}
-readdir : FilePath -> Task FSError (List FilePath)
+readdir : FilePath -> Task FileSystemError (List FilePath)
 readdir =
-    getAsync1E FSError "readdir" fs
+    getAsync1E FileSystemError "readdir" fs
 
 
 {-| fs.readlink(path, callback)
 -}
-readlink : FilePath -> Task FSError String
+readlink : FilePath -> Task FileSystemError String
 readlink =
-    getAsync1E FSError "readLink" fs
+    getAsync1E FileSystemError "readLink" fs
 
 
 {-| fs.rename(oldPath, newPath, callback)
 -}
-rename : FilePath -> FilePath -> Task FSError ()
+rename : FilePath -> FilePath -> Task FileSystemError ()
 rename oldPath newPath =
-    methodAsync2E FSError "rename" fs oldPath newPath
+    methodAsync2E FileSystemError "rename" fs oldPath newPath
 
 
 {-| fs.rmdir(path, callback)
 -}
-rmdir : FilePath -> Task FSError ()
+rmdir : FilePath -> Task FileSystemError ()
 rmdir =
-    methodAsync1E FSError "rmdir" fs
+    methodAsync1E FileSystemError "rmdir" fs
 
 
 {-| fs.stat(path, callback)
 -}
-stat : FilePath -> Task FSError Stat
+stat : FilePath -> Task FileSystemError Stat
 stat =
-    Task.map marshallStat << getAsync1E FSError "stat" fs
+    Task.map marshallStat << getAsync1E FileSystemError "stat" fs
 
 
 {-| fs.symlink(destination, path[, type], callback)
 -}
-symlink : FilePath -> FilePath -> SymType -> Task FSError ()
+symlink : FilePath -> FilePath -> SymType -> Task FileSystemError ()
 symlink destination path t =
-    methodAsync3E FSError "symlink" fs destination path (symTypeToString t)
+    methodAsync3E FileSystemError "symlink" fs destination path (symTypeToString t)
 
 
 {-| fs.truncate(path, len, callback)
 -}
-truncate : Length -> FilePath -> Task FSError ()
+truncate : Length -> FilePath -> Task FileSystemError ()
 truncate len path =
-    methodAsync2E FSError "truncate" fs path len
+    methodAsync2E FileSystemError "truncate" fs path len
 
 
 {-| fs.unlink(path, callback)
 -}
-unlink : FilePath -> Task FSError ()
+unlink : FilePath -> Task FileSystemError ()
 unlink =
-    methodAsync1E FSError "unlink" fs
+    methodAsync1E FileSystemError "unlink" fs
 
 
 {-| fs.watchFile(filename[, options], listener
@@ -294,38 +294,38 @@ utimes =
 
 {-| fs.write(fd, data[, position[, encoding]], callback)
 -}
-writeFileFromString' : FS.Types.Encoding -> FileDescriptor -> String -> Position -> Task FSError ( Int, String )
+writeFileFromString' : FileSystem.Types.Encoding -> FileDescriptor -> String -> Position -> Task FileSystemError ( Int, String )
 writeFileFromString' encoding fd data position =
-    getAsync4_2E FSError "write" fs fd data position (showEncoding encoding)
+    getAsync4_2E FileSystemError "write" fs fd data position (showEncoding encoding)
 
 
 {-| fs.write(fd, data[, position[, encoding]], callback)
 -}
-writeFileFromString : FS.Types.Encoding -> FileDescriptor -> String -> Task FSError ( Int, String )
+writeFileFromString : FileSystem.Types.Encoding -> FileDescriptor -> String -> Task FileSystemError ( Int, String )
 writeFileFromString encoding fd data =
-    getAsync3_2E FSError "write" fs fd data (showEncoding encoding)
+    getAsync3_2E FileSystemError "write" fs fd data (showEncoding encoding)
 
 
 {-| fs.write(fd, buffer, offset, length[, position], callback)
 -}
-writeFileFromBuffer' : FileDescriptor -> Buffer -> Offset -> Length -> Position -> Task FSError ( Int, Buffer )
+writeFileFromBuffer' : FileDescriptor -> Buffer -> Offset -> Length -> Position -> Task FileSystemError ( Int, Buffer )
 writeFileFromBuffer' =
-    getAsync5_2E FSError "write" fs
+    getAsync5_2E FileSystemError "write" fs
 
 
 {-| fs.write(fd, buffer, offset, length[, position], callback)
 -}
-writeFileFromBuffer : FileDescriptor -> Buffer -> Offset -> Length -> Task FSError ( Int, Buffer )
+writeFileFromBuffer : FileDescriptor -> Buffer -> Offset -> Length -> Task FileSystemError ( Int, Buffer )
 writeFileFromBuffer =
-    getAsync4_2E FSError "write" fs
+    getAsync4_2E FileSystemError "write" fs
 
 
 {-| fs.writeFile(file, data[, options], callback)
 -}
-writeFileString' : WriteFileOptions -> FilePath -> String -> Task FSError ()
+writeFileString' : WriteFileOptions -> FilePath -> String -> Task FileSystemError ()
 writeFileString' options path data =
     methodAsync3E
-        FSError
+        FileSystemError
         "writeFile"
         fs
         path
@@ -335,17 +335,17 @@ writeFileString' options path data =
 
 {-| fs.writeFile(file, data[, options], callback)
 -}
-writeFileString : FilePath -> String -> Task FSError ()
+writeFileString : FilePath -> String -> Task FileSystemError ()
 writeFileString =
     writeFileString' defaultWriteFileOptions
 
 
 {-| fs.writeFile(file, data[, options], callback)
 -}
-writeFileBuffer' : WriteFileOptions -> FilePath -> Buffer -> Task FSError ()
+writeFileBuffer' : WriteFileOptions -> FilePath -> Buffer -> Task FileSystemError ()
 writeFileBuffer' options path data =
     methodAsync3E
-        FSError
+        FileSystemError
         "writeFile"
         fs
         path
@@ -355,14 +355,14 @@ writeFileBuffer' options path data =
 
 {-| fs.writeFile(file, data[, options], callback)
 -}
-writeFileBuffer : FilePath -> Buffer -> Task FSError ()
+writeFileBuffer : FilePath -> Buffer -> Task FileSystemError ()
 writeFileBuffer =
     writeFileBuffer' defaultWriteFileOptions
 
 
 {-| fs.writeFile(file, data[, options], callback)
 -}
-writeFile' : WriteFileOptions -> FilePath -> Chunk -> Task FSError ()
+writeFile' : WriteFileOptions -> FilePath -> Chunk -> Task FileSystemError ()
 writeFile' options path chunk =
     case chunk of
         Left s ->
@@ -374,6 +374,6 @@ writeFile' options path chunk =
 
 {-| fs.writeFile(file, data[, options], callback)
 -}
-writeFile : FilePath -> Chunk -> Task FSError ()
+writeFile : FilePath -> Chunk -> Task FileSystemError ()
 writeFile =
     writeFile' defaultWriteFileOptions

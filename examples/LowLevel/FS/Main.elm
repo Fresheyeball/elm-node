@@ -2,8 +2,8 @@ module Main (..) where
 
 import Task exposing (Task, andThen)
 import Signal as S
-import FS.Types exposing (..)
-import FS exposing (..)
+import FileSystem.Types exposing (..)
+import FileSystem exposing (..)
 
 
 flow : S.Mailbox (Maybe ( Stat, Stat ))
@@ -23,7 +23,7 @@ testFile =
     "testFile"
 
 
-port run : Task FSError ()
+port run : Task FileSystemError ()
 port run =
     let
         logAs s =

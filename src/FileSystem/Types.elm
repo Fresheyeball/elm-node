@@ -1,7 +1,7 @@
-module FS.Types (..) where
+module FileSystem.Types (..) where
 
 import Foreign.Types exposing (JSRaw, JSDate)
-import Native.FS
+import Native.FileSystem
 import Chunks as C
 import Time exposing (Time)
 
@@ -38,8 +38,8 @@ type alias UID =
     Int
 
 
-type FSError
-    = FSError String
+type FileSystemError
+    = FileSystemError String
 
 
 type FileDescriptor
@@ -247,7 +247,7 @@ type alias Stat =
 
 marshallStat : JSRaw -> Stat
 marshallStat =
-    Native.FS.marshallStat
+    Native.FileSystem.marshallStat
 
 
 type SymType
@@ -282,8 +282,8 @@ defaultWatchOptions =
     }
 
 
-type FSWatcher
-    = FSWatcher JSRaw
+type FileSystemWatcher
+    = FileSystemWatcher JSRaw
 
 
 type WatchEvent

@@ -1,10 +1,10 @@
 (defn- make
   [localRuntime]
   (do
-    (foreign.sanitize localRuntime :Native :FS)
-    (if localRuntime.Native.FS.values
-        localRuntime.Native.FS.values
-        (set! localRuntime.Native.FS.values {
+    (foreign.sanitize localRuntime :Native :FileSystem)
+    (if localRuntime.Native.FileSystem.values
+        localRuntime.Native.FileSystem.values
+        (set! localRuntime.Native.FileSystem.values {
 
   :dirname __dirname
 
@@ -17,5 +17,5 @@
 
   } ))))
 
-(foreign.sanitize Elm :Native :FS)
-(set! Elm.Native.FS.make make)
+(foreign.sanitize Elm :Native :FileSystem)
+(set! Elm.Native.FileSystem.make make)

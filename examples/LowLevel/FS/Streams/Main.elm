@@ -1,8 +1,8 @@
 module Main (..) where
 
-import FS.Types exposing (FilePath, FSError)
-import FS exposing (..)
-import FS.Streams exposing (..)
+import FileSystem.Types exposing (FilePath, FileSystemError)
+import FileSystem exposing (..)
+import FileSystem.Streams exposing (..)
 import Streams exposing (..)
 import Streams.Types exposing (..)
 import Chunks exposing (..)
@@ -28,7 +28,7 @@ port log =
         flow.signal
 
 
-port read : Task FSError ()
+port read : Task FileSystemError ()
 port read =
     writeFileString testFile "success"
         `andThen` always (createReadStream testFile)

@@ -52,3 +52,25 @@ Listen to an event on a Readable Stream
 on : ReadableEvent -> (Chunk -> Task x ()) -> Readable -> Task x (Task x ())
 on =
     S.on
+
+
+{-|
+readable.unshift(chunk)
+This is useful in certain cases where a stream is being consumed by a parser, which needs to "un-consume"
+some data that it has optimistically pulled out of the source, so that the stream can be passed on to some
+other party.
+
+Note that stream.unshift(chunk) cannot be called after the 'end' event has been triggered; a runtime
+error will be raised.
+
+If you find that you must often call stream.unshift(chunk) in your programs, consider implementing a
+Transform stream instead. (See API for Stream Implementors, below.)
+-}
+unshift : Readable a -> Chunk -> Task x ()
+unshift readable chunk =
+    case chunk of
+        Left string ->
+            String.unshift readable string
+
+        Right buffer ->
+            Buffer.unshift readable buffer

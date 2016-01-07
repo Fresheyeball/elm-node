@@ -1,6 +1,6 @@
 module Streams.Marshall (..) where
 
-import Streams.Types exposing (ReadableEvent(..), WritableEvent(..))
+import Streams.Types exposing (..)
 
 
 toNameR : ReadableEvent -> String
@@ -39,3 +39,20 @@ toNameW e =
 
         WriteError ->
             "error"
+
+
+marshallWritable : WritableRaw -> Writable {}
+marshallWritable raw =
+    { writable = raw }
+
+
+marshallReadable : ReadableRaw -> Readable {}
+marshallReadable raw =
+    { readable = raw }
+
+
+marshallDuplex : ReadableRaw -> WritableRaw -> Duplex {}
+marshallDuplex readable writable =
+    { readable = readable
+    , writable = writable
+    }

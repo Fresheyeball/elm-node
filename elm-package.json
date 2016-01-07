@@ -16,7 +16,10 @@
       "Streams.Chunk",
       "Streams",
       "FS.Streams",
-      "Process"
+      "Process",
+      "Process.Types",
+      "Process.User",
+      "Prcoess.Streams"
     ],
     "native-modules": true,
     "dependencies": {

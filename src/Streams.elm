@@ -1,29 +1,19 @@
 module Streams (..) where
 
 {-|
-# Methods
-@docs isPaused, pause, resume, cork, uncork, end
+# Writable Streams
+@docs cork, uncork, end
 
-# Listeners
-@docs on
-
-# Piping
-@docs pipe, pipe', pipe'', unpipe, unpipeAll
-
-# Read
-@docs read, readWithSize
-
-# Encoding
-@docs setEncoding, unshiftBuffer, unshiftString, unshift
+# Readable Streams
+@docs on, pipe, unpipe, unpipeAll, read, readWithSize, resume, pause, isPaused
 
 @docs withSignal
 -}
 
 import Task exposing (Task)
-import Either exposing (..)
 import Foreign.Marshall exposing (truthy)
 import Foreign.Pattern.Get exposing (..)
-import Foreign.Pattern.Method exposing (..)
+import Foreign.Pattern.Method as Method
 import Streams.Types exposing (..)
 import Streams.Marshall exposing (..)
 import Emitter.Unsafe exposing (on1)
@@ -36,9 +26,9 @@ readable.isPaused()
 This method returns whether or not the readable has been explicitly paused by client
 code (using readable.pause() without a corresponding readable.resume()).
 -}
-isPaused : Readable -> Task x Bool
-isPaused =
-    get0 "isPaused"
+isPaused : Readable a -> Task x Bool
+isPaused { readable } =
+    get0 "isPaused" readable
 
 
 {-|
@@ -46,62 +36,60 @@ readable.pause()
 This method will cause a stream in flowing mode to stop emitting 'data' events, switching out of
 flowing mode. Any data that becomes available will remain in the internal buffer.
 -}
-pause : Readable -> Task x ()
-pause =
-    method0 "pause"
-
-
-
--- Class: stream.Readable
+pause : Readable a -> Task x ()
+pause { readable } =
+    Method.method0 "pause" readable
 
 
 {-|
 Listen to an event on a Readable Stream
 -}
-on : ReadableEvent -> (Chunk -> Task x ()) -> Readable -> Task x (Task x ())
-on event f readable =
+on : ReadableEvent -> (Chunk -> Task x ()) -> Readable a -> Task x (Task x ())
+on event f { readable } =
     on1 (toNameR event) readable (Chunks.marshall >> f)
 
 
 {-| readable.pipe(destination[, options])
+This is emitted whenever the pipe() method is called on a readable stream, adding this
+writable to its set of destinations.
 -}
-pipe : Readable -> Writable -> Task x ()
-pipe =
-    method1 "pipe"
+pipe : Readable a -> Writable a -> Task x ()
+pipe { readable } { writable } =
+    Method.method1 "pipe" readable writable
 
 
-{-| readable.pipe(destination[, options])
+{-|
+readable.unpipe([destination])
+This method will remove the hooks set up for a previous pipe() call.
+If no pipe is set up for it, then this is a no-op.
 -}
-pipe' : Readable -> Duplex -> Task x ()
-pipe' readable ( _, writable ) =
-    method1 "pipe" readable writable
+unpipe : Readable a -> Writable a -> Task x ()
+unpipe { readable } { writable } =
+    Method.method1 "unpipe" readable writable
 
 
-{-| readable.pipe(destination[, options])
+{-|
+readable.unpipe([destination])
+All pipes are removed.
 -}
-pipe'' : Duplex -> Duplex -> Task x ()
-pipe'' ( readable, _ ) ( _, writable ) =
-    method1 "pipe" readable writable
+unpipeAll : Readable a -> Task x ()
+unpipeAll { readable } =
+    Method.method0 "unpipe" readable
 
 
-{-| readable.unpipe([destination])
+{-|
+readable.read([size])
+There are some cases where you want to trigger a refresh of the underlying readable stream mechanisms, without
+actually consuming any data. In that case, you can call stream.read(0), which will always return null.
+
+If the internal read buffer is below the highWaterMark, and the stream is not currently reading, then calling
+read(0) will trigger a low-level _read call.
+
+There is almost never a need to do this. However, you will see some cases in Node.js's internals where this is
+done, particularly in the Readable stream class internals.
 -}
-unpipe : Readable -> Writable -> Task x ()
-unpipe =
-    method1 "unpipe"
-
-
-{-| readable.unpipe([destination])
--}
-unpipeAll : Readable -> Task x ()
-unpipeAll =
-    method0 "unpipe"
-
-
-{-| readable.read([size])
--}
-read : Readable -> Task x (Maybe Chunk)
-read readable =
+read : Readable a -> Task x (Maybe Chunk)
+read { readable } =
     get0 "read" readable
         |> Task.map
             (\raw ->
@@ -113,9 +101,10 @@ read readable =
 
 
 {-| readable.read([size])
+Same as `read` but with size argument
 -}
-readWithSize : Readable -> Int -> Task x (Maybe Chunk)
-readWithSize readable size =
+readWithSize : Readable a -> Int -> Task x (Maybe Chunk)
+readWithSize { readable } size =
     get1 "read" readable size
         |> Task.map
             (\raw ->
@@ -126,69 +115,44 @@ readWithSize readable size =
             )
 
 
-{-| readable.resume()
+{-|
+readable.resume()
+This method will cause the readable stream to resume emitting data events.
+This method will switch the stream into flowing mode. If you do not want to consume the data from a stream,
+but you do want to get to its 'end' event, you can call readable.resume() to open the flow of data.
 -}
-resume : Readable -> Task x ()
-resume =
-    method0 "resume"
+resume : Readable a -> Task x ()
+resume { readable } =
+    Method.method0 "resume" readable
 
 
-{-| readable.setEncoding(encoding)
+{-|
+writable.cork()
+Forces buffering of all writes.
+Buffered data will be flushed either at .uncork() or at .end() call.
 -}
-setEncoding : Readable -> Encoding -> Task x ()
-setEncoding readable encoding =
-    method1 "setEncoding" readable (showEncoding encoding)
+cork : Writable a -> Task x ()
+cork { writable } =
+    Method.method0 "cork" writable
 
 
-{-| readable.unshift(chunk)
+{-|
+writable.uncork()
+Flush all data, buffered since .cork() call.
 -}
-unshiftString : Readable -> String -> Task x ()
-unshiftString =
-    method1 "unshift"
+uncork : Writable a -> Task x ()
+uncork { writable } =
+    Method.method0 "uncork" writable
 
 
-{-| readable.unshift(chunk)
+{-|
+writable.end([chunk][, encoding][, callback])
+Call this method when no more data will be written to the stream.
+If supplied, the callback is attached as a listener on the 'finish' event.
 -}
-unshiftBuffer : Readable -> Buffer -> Task x ()
-unshiftBuffer =
-    method1 "unshift"
-
-
-{-| readable.unshift(chunk)
--}
-unshift : Readable -> Chunk -> Task x ()
-unshift r c =
-    case c of
-        Left s ->
-            unshiftString r s
-
-        Right b ->
-            unshiftBuffer r b
-
-
-
--- Class: stream.Writable
-
-
-{-| writable.cork()
--}
-cork : Writable -> Task x ()
-cork =
-    method0 "cork"
-
-
-{-| writable.uncork()
--}
-uncork : Writable -> Task x ()
-uncork =
-    method0 "uncork"
-
-
-{-| writable.end([chunk][, encoding][, callback])
--}
-end : Writable -> Task x ()
-end =
-    method0 "end"
+end : Writable a -> Task StreamError ()
+end { writable } =
+    Method.method0E StreamError "end" writable
 
 
 {-|

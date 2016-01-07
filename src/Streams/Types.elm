@@ -1,11 +1,18 @@
 module Streams.Types (..) where
 
 {-|
-@docs ReadableEvent, WritableEvent, Readable, Writable, Duplex
+@docs ReadableEvent, WritableEvent, Readable, Writable, Duplex, ReadableRaw, WritableRaw, StreamError
 
 -}
 
 import Foreign.Types exposing (JSRaw)
+
+
+{-|
+A Runtime Error thrown by a Stream
+-}
+type StreamError
+    = StreamError String
 
 
 {-|
@@ -28,6 +35,20 @@ type WritableEvent
     | Unpipe
     | Finish
     | WriteError
+
+
+{-|
+Raw instance of Node's Readable Stream class
+-}
+type ReadableRaw
+    = ReadableRaw JSRaw
+
+
+{-|
+Raw instance of Node's Writable Stream class
+-}
+type WritableRaw
+    = WritableRaw JSRaw
 
 
 {-|
@@ -60,8 +81,8 @@ automatically pause the stream. Also, if there are piped destinations, then call
 will not guarantee that the stream will remain paused once those destinations drain and ask
 for more data.
 -}
-type Readable
-    = Readable JSRaw
+type alias Readable a =
+    { a | readable : ReadableRaw }
 
 
 {-|
@@ -69,13 +90,16 @@ stream.Writable is an abstract class designed to be extended with an underlying 
 
 Please see above under API for Stream Consumers for how to consume writable streams in your programs. What follows is an explanation of how to implement Writable streams in your programs
 -}
-type Writable
-    = Writable JSRaw
+type alias Writable a =
+    { a | writable : WritableRaw }
 
 
 {-|
 A stream both readable and writable. In reality the `Readable` and `Writable` half of
 the `Duplex` Tuple may reffer to the same Node.js Stream.
 -}
-type alias Duplex =
-    ( Readable, Writable )
+type alias Duplex a =
+    { a
+        | writable : WritableRaw
+        , readable : ReadableRaw
+    }

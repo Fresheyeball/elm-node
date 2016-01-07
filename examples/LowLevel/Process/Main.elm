@@ -6,12 +6,19 @@ import Streams.String exposing (write)
 import Task exposing (..)
 
 
-port out : Task x ()
-port out =
-    getEnvironment
-        `andThen` (toString >> write standardOut)
+(>|) : Task a b -> Task a c -> Task a c
+(>|) f f' =
+    f `andThen` always f'
 
 
-port murf : Task x ()
-port murf =
-    write standardOut "wowzerss"
+out : a -> Task x ()
+out =
+    toString >> write standardOut
+
+
+port info : Task x ()
+port info =
+    out "environment"
+        >| (getEnvironment `andThen` out)
+        >| out "architecture"
+        >| out architecture

@@ -201,7 +201,7 @@ An example of this object looks like:
 -}
 getEnvironment : Task x (Dict.Dict String String)
 getEnvironment =
-    Marshall.unsafeToDict `Task.map` Read.read "env" process
+    Marshall.unsafeObjectToDict `Task.map` Read.read "env" process
 
 
 {-|

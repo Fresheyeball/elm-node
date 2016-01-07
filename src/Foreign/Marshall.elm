@@ -66,11 +66,6 @@ unsafeNothingIsNull optional =
             unsafeNull
 
 
-unsafeToDict : JSRaw -> Dict.Dict String a
-unsafeToDict =
+unsafeObjectToDict : JSRaw -> Dict.Dict String a
+unsafeObjectToDict =
     Native.Foreign.unsafeToDict
-
-
-log : a -> a
-log =
-    Native.Foreign.log

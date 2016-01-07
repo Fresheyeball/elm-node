@@ -1,51 +1,113 @@
 module FileSystem.Types (..) where
 
+{-|
+@docs Encoding, Buffer, Chunk, FilePath, Mode, Offset, Position, Length, GroupID, UserID
+
+@docs Stat, SymbolicLinkType
+
+@docs ReadOptions, ReadFileOptions, defaultReadOptions, defaultReadFileOptions
+
+@docs WatchEvent, FileSystemWatcher, WatchFileListener
+
+@docs WriteFileOptions, WriteOptions, defaultWriteOptions, defaultWriteFileOptions
+
+@docs AppendOptions, defaultAppendOptions
+
+@docs FileSystemError, FileDescriptor, Flags
+-}
+
 import Foreign.Types exposing (JSRaw, JSDate)
-import Native.FileSystem
-import Chunks as C
+import Chunk.Types as Chunk
 import Time exposing (Time)
 
 
+{-|
+Re-export of `Encoding` from `Chunk`
+-}
 type alias Encoding =
-    C.Encoding
+    Chunk.Encoding
 
 
+{-|
+Re-export of `Buffer` from `Chunk`
+-}
+type alias Buffer =
+    Chunk.Buffer
+
+
+{-|
+Re-export of `Chunk` from `Chunk`
+-}
+type alias Chunk =
+    Chunk.Chunk
+
+
+{-|
+The path to a file
+-}
 type alias FilePath =
     String
 
 
+{-|
+File mode
+-}
 type alias Mode =
     Int
 
 
+{-|
+Offset within a file
+-}
 type alias Offset =
     Int
 
 
+{-|
+Position within a file
+-}
 type alias Position =
     Int
 
 
+{-|
+Length of a file
+-}
 type alias Length =
     Int
 
 
-type alias GID =
+{-|
+Unix style gid
+-}
+type alias GroupID =
     Int
 
 
-type alias UID =
+{-|
+Unix style uid
+-}
+type alias UserID =
     Int
 
 
+{-|
+A runtime error thrown by the file system
+-}
 type FileSystemError
     = FileSystemError String
 
 
+{-|
+Raw node FileDescriptor
+-}
 type FileDescriptor
     = FileDescriptor JSRaw
 
 
+{-|
+Unix style file system Flags
+-}
 type Flags
     = R
     | Rplus
@@ -61,46 +123,9 @@ type Flags
     | AXplus
 
 
-flagsToString : Flags -> String
-flagsToString f =
-    case f of
-        R ->
-            "r"
-
-        Rplus ->
-            "r+"
-
-        RS ->
-            "rs"
-
-        RSplus ->
-            "rs+"
-
-        W ->
-            "w"
-
-        Wplus ->
-            "w+"
-
-        WX ->
-            "wx"
-
-        WXplus ->
-            "wx+"
-
-        A ->
-            "a"
-
-        AX ->
-            "ax"
-
-        Aplus ->
-            "a+"
-
-        AXplus ->
-            "ax+"
-
-
+{-|
+Read options
+-}
 type alias ReadOptions =
     { flags : Flags
     , encoding : Encoding
@@ -109,41 +134,28 @@ type alias ReadOptions =
     }
 
 
-type alias ReadOptionsRaw =
-    { flags : String
-    , encoding : String
-    , mode : Mode
-    , autoClose : Bool
-    }
-
-
+{-|
+Read file options
+-}
 type alias ReadFileOptions =
     { flag : Flags
     , encoding : Encoding
     }
 
 
-type alias ReadFileOptionsRaw =
-    { flag : String
-    , encoding : String
-    }
-
-
+{-|
+Read file options default as specified by Node
+-}
 defaultReadFileOptions : ReadFileOptions
 defaultReadFileOptions =
     { flag = R
-    , encoding = C.Binary
+    , encoding = Chunk.Binary
     }
 
 
-marshallReadFileOptions : ReadFileOptions -> ReadFileOptionsRaw
-marshallReadFileOptions o =
-    { o
-        | flag = flagsToString (.flag o)
-        , encoding = C.unsafeShowEncoding (.encoding o)
-    }
-
-
+{-|
+Read options default as specified by Node
+-}
 defaultReadOptions : ReadOptions
 defaultReadOptions =
     { flags = R
@@ -151,18 +163,13 @@ defaultReadOptions =
         438
         -- 666
     , autoClose = True
-    , encoding = C.Binary
+    , encoding = Chunk.Binary
     }
 
 
-marshallReadOptions : ReadOptions -> ReadOptionsRaw
-marshallReadOptions o =
-    { o
-        | flags = flagsToString (.flags o)
-        , encoding = C.unsafeShowEncoding (.encoding o)
-    }
-
-
+{-|
+Wrtie options
+-}
 type alias WriteOptions =
     { flags : Flags
     , defaultEncoding : Encoding
@@ -170,31 +177,22 @@ type alias WriteOptions =
     }
 
 
-type alias WriteOptionsRaw =
-    { flags : String
-    , defaultEncoding : String
-    , mode : Mode
-    }
-
-
+{-|
+Write options default as specified by Node
+-}
 defaultWriteOptions : WriteOptions
 defaultWriteOptions =
     { flags = W
     , mode =
         438
         -- 0o666
-    , defaultEncoding = C.Binary
+    , defaultEncoding = Chunk.Binary
     }
 
 
-marshallWriteOptions : WriteOptions -> WriteOptionsRaw
-marshallWriteOptions o =
-    { o
-        | flags = flagsToString (.flags o)
-        , defaultEncoding = C.unsafeShowEncoding (.defaultEncoding o)
-    }
-
-
+{-|
+Append options
+-}
 type alias AppendOptions =
     { flag : Flags
     , encoding : Encoding
@@ -202,31 +200,22 @@ type alias AppendOptions =
     }
 
 
-type alias AppendOptionsRaw =
-    { flag : String
-    , encoding : String
-    , mode : Mode
-    }
-
-
+{-|
+Append options default as specified by Node
+-}
 defaultAppendOptions : AppendOptions
 defaultAppendOptions =
     { flag = A
     , mode =
         438
         -- 0o666
-    , encoding = C.Binary
+    , encoding = Chunk.Binary
     }
 
 
-marshallAppendOptions : AppendOptions -> AppendOptionsRaw
-marshallAppendOptions o =
-    { o
-        | flag = flagsToString (.flag o)
-        , encoding = C.unsafeShowEncoding (.encoding o)
-    }
-
-
+{-|
+File status object
+-}
 type alias Stat =
     { dev : Int
     , mode : Int
@@ -245,82 +234,41 @@ type alias Stat =
     }
 
 
-marshallStat : JSRaw -> Stat
-marshallStat =
-    Native.FileSystem.marshallStat
-
-
-type SymType
+{-|
+Types of symbolic links
+[learn more](https://nodejs.org/api/fs.html#fs_fs_symlink_target_path_type_callback)
+-}
+type SymbolicLinkType
     = File
     | Dir
     | Junction
 
 
-symTypeToString : SymType -> String
-symTypeToString t =
-    case t of
-        File ->
-            "file"
-
-        Dir ->
-            "dir"
-
-        Junction ->
-            "junction"
-
-
-type alias WatchOptions =
-    { persistent : Bool
-    , recursive : Bool
-    }
-
-
-defaultWatchOptions : WatchOptions
-defaultWatchOptions =
-    { persistent = True
-    , recursive = False
-    }
-
-
+{-|
+Raw Node filesystem watcher object
+-}
 type FileSystemWatcher
     = FileSystemWatcher JSRaw
 
 
+{-|
+Listenable watch events
+-}
 type WatchEvent
     = Update
     | WatchError
 
 
-watchEventFromString : String -> Maybe WatchEvent
-watchEventFromString s =
-    case s of
-        "update" ->
-            Just Update
-
-        "error" ->
-            Just WatchError
-
-        _ ->
-            Nothing
-
-
+{-|
+This represents a JavaScript closure that can be used to `unlisten`
+-}
 type WatchFileListener
     = WatchFileListener JSRaw
 
 
-type alias WatchFileOptions =
-    { persistent : Bool
-    , interval : Time
-    }
-
-
-defaultWatchFileOptions : WatchFileOptions
-defaultWatchFileOptions =
-    { persistent = True
-    , interval = 5007
-    }
-
-
+{-|
+Write file options
+-}
 type alias WriteFileOptions =
     { encoding : Encoding
     , mode : Mode
@@ -328,24 +276,12 @@ type alias WriteFileOptions =
     }
 
 
-type alias WriteFileOptionsRaw =
-    { encoding : String
-    , mode : Mode
-    , flag : String
-    }
-
-
-marshallWriteFileOptions : WriteFileOptions -> WriteFileOptionsRaw
-marshallWriteFileOptions { encoding, mode, flag } =
-    { encoding = C.showEncoding encoding
-    , mode = mode
-    , flag = flagsToString flag
-    }
-
-
+{-|
+Default write file options as specified by Node
+-}
 defaultWriteFileOptions : WriteFileOptions
 defaultWriteFileOptions =
-    { encoding = C.Utf8
+    { encoding = Chunk.Utf8
     , mode =
         438
         -- 0o666

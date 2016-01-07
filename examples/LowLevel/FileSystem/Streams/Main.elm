@@ -4,18 +4,20 @@ import FileSystem.Types exposing (FilePath, FileSystemError)
 import FileSystem exposing (..)
 import FileSystem.Streams.Read as Read
 import FileSystem.Streams.Write as Write
-import Streams exposing (..)
+import FileSystem.Write.String as S
+import Streams exposing (withSignal)
 import Streams.Buffer as Buffer
 import Streams.Types exposing (..)
 import Process.Streams exposing (standardOut)
-import Chunks exposing (..)
+import Chunk.Types exposing (..)
+import Chunk exposing (emptyBuffer)
 import Signal exposing (Signal, mailbox, Mailbox)
 import Task exposing (Task, andThen, succeed)
 
 
 testFile : FilePath
 testFile =
-    dirname ++ "/testfile"
+    currentDirectory ++ "/testfile"
 
 
 flow : Mailbox Buffer
@@ -36,7 +38,7 @@ port read =
         sendBuffer =
             Maybe.withDefault emptyBuffer >> Signal.send flow.address
     in
-        writeFileString testFile "success"
+        S.writeFile testFile "success"
             `andThen` always (Read.create testFile)
             `andThen` Buffer.on Data sendBuffer
             `andThen` always (succeed ())

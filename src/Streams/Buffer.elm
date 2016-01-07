@@ -6,7 +6,7 @@ Stream helpers oriented around `Buffer`s. Rarely in practices is code about stre
 @docs write, on, unshift
 -}
 
-import Chunks exposing (..)
+import Chunk.Types exposing (..)
 import Streams.Types exposing (..)
 import Streams as S
 import Either exposing (Either(..))

@@ -3,6 +3,8 @@ module Main (..) where
 import Task exposing (Task, andThen)
 import Signal as S
 import FileSystem.Types exposing (..)
+import FileSystem.Write.String exposing (..)
+import FileSystem.Watch exposing (..)
 import FileSystem exposing (..)
 
 
@@ -32,11 +34,11 @@ port run =
         (>|) f f' =
             f `andThen` always f'
     in
-        writeFileString testFile "I feel like I'm being watched"
-            >| watchFile' opts testFile (Just >> S.send (.address flow))
+        writeFile testFile "I feel like I'm being watched"
+            >| watchFileWith opts testFile (curry (Just >> S.send (.address flow)))
             >| appendFile testFile ". Wait who are you?"
             >| logAs "stat" (stat testFile)
-            >| logAs "access" (access testFile)
+            >| logAs "access" (canAccess testFile)
             >| unlink testFile
             >| Task.succeed ()
 

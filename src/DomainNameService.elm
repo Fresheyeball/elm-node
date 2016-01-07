@@ -1,6 +1,10 @@
-module DNS (lookup) where
+module DomainNameService (lookup) where
 
-import Foreign.Patterns.Method as Method
+{-|
+@docs lookup
+-}
+
+import Foreign.Pattern.Method as Method
 import Foreign.Marshall exposing (unsafeRequire)
 import Foreign.Types exposing (JSRaw)
 import Task exposing (Task)

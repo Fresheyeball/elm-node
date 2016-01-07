@@ -20,7 +20,19 @@
       "Process.User",
       "Prcoess.Streams",
       "FileSystem.Streams.Read",
-      "FileSystem.Streams.Write"
+      "FileSystem.Streams.Write",
+      "FileSystem.Types",
+      "FileSystem.Write.String",
+      "FileSystem.Write.String.Descriptor",
+      "FileSystem.Write.Buffer",
+      "FileSystem.Write.Buffer.Descriptor",
+      "FileSystem.Write.Chunk",
+      "FileSystem.Descriptor",
+      "FileSystem.Watch",
+      "FileSystem.Read",
+      "FileSystem",
+      "DomainNameService",
+      "Chunk"
     ],
     "native-modules": true,
     "dependencies": {

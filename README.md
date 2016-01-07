@@ -2,12 +2,21 @@
 
 This project is a temporary monolith. Ideally getting broken into multiple packages. But for the sake of progress development its a cluster.
 
+## Currently Complete Low Level Bindings
+
+- Streams
+- File System
+- Process
+
+## Bindings in Process 
+
+- Network 
+- Http 
+
 ## Goals
 
 ### Low level bindings to node things
 
-- Streams
-- File System
 - Request Response
 - Isomorphic templating
 - Type Safe messaging

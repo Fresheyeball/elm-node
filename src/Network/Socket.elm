@@ -28,7 +28,8 @@ import Foreign.Pattern.Method as Method
 import Foreign.Marshall exposing (unsafeToString, truthy)
 import Emitter.Unsafe as Emitter
 import Network.Types exposing (..)
-import Chunks exposing (Chunk)
+import Chunk.Types as Chunk
+import Chunk.Marshall exposing (marshallChunk, showEncoding)
 import Either
 import Time exposing (Time)
 
@@ -93,9 +94,9 @@ Event: 'data'
 
 Emitted when data is received.
 -}
-onData : Socket -> (Chunk -> Task x ()) -> Task x (Task x ())
+onData : Socket -> (Chunk.Chunk -> Task x ()) -> Task x (Task x ())
 onData s f =
-    Emitter.on1 "data" s (f << Chunks.marshall)
+    Emitter.on1 "data" s (f << marshallChunk)
 
 
 {-|
@@ -309,9 +310,9 @@ socket.setEncoding([encoding])
 
 Set the encoding for the socket as a Readable Stream. See stream.setEncoding() for more information.
 -}
-setEncoding : Chunks.Encoding -> Socket -> Task x ()
+setEncoding : Chunk.Encoding -> Socket -> Task x ()
 setEncoding encoding socket =
-    Method.method1 "setEncoding" socket (Chunks.showEncoding encoding)
+    Method.method1 "setEncoding" socket (showEncoding encoding)
 
 
 {-|
@@ -387,7 +388,7 @@ Sends data on the socket. encoding will be UTF8 encoding.
 -}
 writeString : Socket -> String -> Task x ()
 writeString =
-    writeStringWithEncoding Chunks.Utf8
+    writeStringWithEncoding Chunk.Utf8
 
 
 {-|
@@ -396,9 +397,9 @@ socket.write(data[, encoding][, callback])
 Sends data on the socket.
 'drain' will be emitted when the buffer is again free.
 -}
-writeStringWithEncoding : Chunks.Encoding -> Socket -> String -> Task x ()
+writeStringWithEncoding : Chunk.Encoding -> Socket -> String -> Task x ()
 writeStringWithEncoding encoding socket string =
-    Method.methodAsync2 "write" socket string (Chunks.showEncoding encoding)
+    Method.methodAsync2 "write" socket string (showEncoding encoding)
 
 
 {-|
@@ -407,9 +408,9 @@ socket.write(data[, encoding][, callback])
 Sends data on the socket. encoding will be UTF8 encoding.
 'drain' will be emitted when the buffer is again free.
 -}
-writeBuffer : Socket -> Chunks.Buffer -> Task x ()
+writeBuffer : Socket -> Chunk.Buffer -> Task x ()
 writeBuffer =
-    writeBufferWithEncoding Chunks.Utf8
+    writeBufferWithEncoding Chunk.Utf8
 
 
 {-|
@@ -418,9 +419,9 @@ socket.write(data[, encoding][, callback])
 Sends data on the socket.
 'drain' will be emitted when the buffer is again free.
 -}
-writeBufferWithEncoding : Chunks.Encoding -> Socket -> Chunks.Buffer -> Task x ()
+writeBufferWithEncoding : Chunk.Encoding -> Socket -> Chunk.Buffer -> Task x ()
 writeBufferWithEncoding encoding socket buffer =
-    Method.methodAsync2 "write" socket buffer (Chunks.showEncoding encoding)
+    Method.methodAsync2 "write" socket buffer (showEncoding encoding)
 
 
 {-|
@@ -429,9 +430,9 @@ socket.write(data[, encoding][, callback])
 Sends data on the socket. encoding will be UTF8 encoding.
 'drain' will be emitted when the buffer is again free.
 -}
-write : Socket -> Chunk -> Task x ()
+write : Socket -> Chunk.Chunk -> Task x ()
 write =
-    writeWithEncoding Chunks.Utf8
+    writeWithEncoding Chunk.Utf8
 
 
 {-|
@@ -440,10 +441,10 @@ socket.write(data[, encoding][, callback])
 Sends data on the socket.
 'drain' will be emitted when the buffer is again free.
 -}
-writeWithEncoding : Chunks.Encoding -> Socket -> Chunk -> Task x ()
+writeWithEncoding : Chunk.Encoding -> Socket -> Chunk.Chunk -> Task x ()
 writeWithEncoding encoding socket chunk =
     let
-        encoding' = Chunks.showEncoding encoding
+        encoding' = showEncoding encoding
     in
         case chunk of
             Either.Left string ->

@@ -1,25 +1,55 @@
-# elm-node
+# Elm Node
 
 This project is a temporary monolith. Ideally getting broken into multiple packages. But for the sake of progress development its a cluster.
 
-## Currently Complete Low Level Bindings
+This project is split into 2 halves, Low Level for Native bindings, and High Level for framework API's.
+
+## Completed Low Level Bindings
 
 - Streams
 - File System
 - Process
 
-## Bindings in Process 
+### In Progress
 
-- Network 
-- Http 
+- Network
+- Http
+- DNS
+
+See more about current status of Native bindings [here]()
+
+## Exposed Modules
+
+Currently exposed modules you can try out right now:
+
+"Network",
+"Network.Socket",
+"Streams.Types",
+"Streams.String",
+"Streams.Buffer",
+"Streams.Chunk",
+"Streams",
+"Process",
+"Process.Types",
+"Process.User",
+"Process.Streams",
+"FileSystem.Streams.Read",
+"FileSystem.Streams.Write",
+"FileSystem.Types",
+"FileSystem.Write.String",
+"FileSystem.Write.String.Descriptor",
+"FileSystem.Write.Buffer",
+"FileSystem.Write.Buffer.Descriptor",
+"FileSystem.Write.Chunk",
+"FileSystem.Descriptor",
+"FileSystem.Watch",
+"FileSystem.Read",
+"FileSystem",
+"DomainNameService",
+"Chunk",
+"Chunk.Types"
 
 ## Goals
-
-### Low level bindings to node things
-
-- Request Response
-- Isomorphic templating
-- Type Safe messaging
 
 ### High Level API to node things
 
@@ -37,7 +67,7 @@ This project is a temporary monolith. Ideally getting broken into multiple packa
   - Sinatra style routing abstraction
     - `param` capture
   - `Elm` as a `Response` constructor
-- Shared `Mailbox` between the client and server backed with websockets.
+- Shared `Mailbox` between the client and server backed with web-sockets.
 
 ### Not on the table right now (but maybe later)
 

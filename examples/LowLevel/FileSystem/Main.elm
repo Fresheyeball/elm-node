@@ -29,8 +29,8 @@ port run =
         logAs s =
             Task.map <| always () << Debug.log s
 
-        (>|) t t' =
-            t `andThen` always t'
+        (>|) f f' =
+            f `andThen` always f'
     in
         writeFileString testFile "I feel like I'm being watched"
             >| watchFile' opts testFile (Just >> S.send (.address flow))

@@ -2,13 +2,15 @@ module Main (..) where
 
 import FileSystem.Types exposing (FilePath, FileSystemError)
 import FileSystem exposing (..)
-import FileSystem.Streams exposing (..)
+import FileSystem.Streams.Read as Read
+import FileSystem.Streams.Write as Write
 import Streams exposing (..)
+import Streams.Buffer as Buffer
 import Streams.Types exposing (..)
+import Process.Streams exposing (standardOut)
 import Chunks exposing (..)
 import Signal exposing (Signal, mailbox, Mailbox)
 import Task exposing (Task, andThen, succeed)
-import Debug
 
 
 testFile : FilePath
@@ -24,20 +26,24 @@ flow =
 port log : Signal (Task x ())
 port log =
     Signal.map
-        (bufferToString >> Task.map (Debug.log "flow" >> always ()))
+        (Buffer.write standardOut)
         flow.signal
 
 
 port read : Task FileSystemError ()
 port read =
-    writeFileString testFile "success"
-        `andThen` always (createReadStream testFile)
-        `andThen` onBuffer Data (Signal.send flow.address)
-        `andThen` always (succeed ())
+    let
+        sendBuffer =
+            Maybe.withDefault emptyBuffer >> Signal.send flow.address
+    in
+        writeFileString testFile "success"
+            `andThen` always (Read.create testFile)
+            `andThen` Buffer.on Data sendBuffer
+            `andThen` always (succeed ())
 
 
 port write : Task x ()
 port write =
-    createWriteStream (testFile ++ "-clone")
+    Write.create (testFile ++ "-clone")
         `andThen` \stream ->
-                    flow.signal `withSignal` writeBuffer stream
+                    flow.signal `withSignal` Buffer.write stream

@@ -19,7 +19,8 @@
       "Process.Types",
       "Process.User",
       "Prcoess.Streams",
-      "FS.Streams"
+      "FileSystem.Streams.Read",
+      "FileSystem.Streams.Write"
     ],
     "native-modules": true,
     "dependencies": {

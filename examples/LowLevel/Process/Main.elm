@@ -10,3 +10,9 @@ port out : Task x ()
 port out =
     getEnvironment
         `andThen` (toString >> write standardOut)
+
+
+
+-- port murf : Task x ()
+-- port murf =
+--     write standardOut "wowzerss"

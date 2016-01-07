@@ -824,7 +824,7 @@ var make = function make(localRuntime) {
                 }),
                 'read': F2(function (name, x) {
                     return Taskø1.asyncFunction(function (callback) {
-                        return x[name];
+                        return callback(Taskø1.success(x[name]));
                     });
                 }),
                 'unsafeRead': F2(function (name, x) {

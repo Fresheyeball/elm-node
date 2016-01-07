@@ -627,7 +627,7 @@
 
   :read (F2 (fn [name x]
     (.asyncFunction Task (fn [callback]
-      (aget x name)))))
+      (callback (.success Task (aget x name)))))))
 
   :unsafeRead (F2 (fn [name x] (aget x name)))
 
@@ -659,7 +659,7 @@
     (do
         (.log console x)
         x))
-        
+
   })))))
 
 (if (== (typeof window) :undefined) (set! window global))

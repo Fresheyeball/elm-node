@@ -1,4 +1,4 @@
-module FileSystem.Streams.Write (create, createWithOptions) where
+module FileSystem.Streams.Write (create, createWithOptions, defaultOptions) where
 
 {-|
 # Create Writable Streams
@@ -12,6 +12,7 @@ import Foreign.Pattern.Get exposing (get2)
 import Streams.Types exposing (..)
 import Streams.Marshall exposing (marshallWritable, marshallReadable)
 import FileSystem.Types exposing (..)
+import FileSystem.Marshall exposing (..)
 
 
 fs : JSRaw

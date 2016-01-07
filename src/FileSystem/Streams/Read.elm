@@ -12,6 +12,7 @@ import Streams.Marshall exposing (marshallReadable)
 import Foreign.Pattern.Get exposing (get2)
 import Streams.Types exposing (..)
 import FileSystem.Types exposing (..)
+import FileSystem.Marshall exposing (..)
 
 
 fs : JSRaw

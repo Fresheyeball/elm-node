@@ -1,4 +1,4 @@
-module Process (onBeforeExit, onExit, onMessage, exitToInt, intToExit, ExitCode(..), SIGNAL, onSIGNAL, argumentVector, architecture, Architecture(..), isConnected, abort, exit, exitWithCode, currentWorkingDirectory, changeCurrentWorkingDirectory, ChdirError(..), getEffectiveUserId, getEffectiveGroupId, getUserId, getGroups, getGroupId, disconnect, getHighResolutionTime, version, versions, uptime, ProcessNotFound(..), kill, killWithSIGNAL, getTitle, setTitle, modifyTitle, standardIn, standardOut, Platform, platform, processId, setUserId, setEffectiveUserId, setGroupId, setEffectiveGroupId, getMemoryUsage, MemoryUsage, standardError, send, unmask) where
+module Process (onBeforeExit, onExit, onMessage, exitToInt, intToExit, ExitCode(..), SIGNAL, onSIGNAL, argumentVector, architecture, Architecture(..), isConnected, abort, exit, exitWithCode, currentWorkingDirectory, changeCurrentWorkingDirectory, ChdirError(..), getEffectiveUserId, getEffectiveGroupId, getUserId, getGroups, getGroupId, disconnect, getHighResolutionTime, version, versions, uptime, ProcessNotFound(..), kill, killWithSIGNAL, getTitle, setTitle, modifyTitle, standardIn, standardOut, Platform, platform, processId, setUserId, setEffectiveUserId, setGroupId, setEffectiveGroupId, getMemoryUsage, MemoryUsage, standardError, send, unmask, getEnvironment) where
 
 {-|
 # Events
@@ -11,7 +11,7 @@ module Process (onBeforeExit, onExit, onMessage, exitToInt, intToExit, ExitCode(
 @docs SIGNAL, onSIGNAL
 
 # Process Info
-@docs argumentVector, architecture, Architecture, isConnected, version, versions, uptime, getTitle, setTitle, modifyTitle, Platform, platform, processId
+@docs argumentVector, architecture, Architecture, isConnected, version, versions, uptime, getTitle, setTitle, modifyTitle, Platform, platform, processId, getEnvironment
 
 # Exit Methods
 @docs abort, exit, exitWithCode, disconnect, kill, killWithSIGNAL, ProcessNotFound
@@ -43,6 +43,7 @@ import Task exposing (Task)
 import Json.Decode as Json
 import Time exposing (Time)
 import Streams.Types as Streams
+import Dict
 
 
 process : JSRaw
@@ -368,9 +369,9 @@ An example of this object looks like:
   LOGNAME: 'maciej',
   _: '/usr/local/bin/node' }
 -}
-environment : Task x Json.Value
-environment =
-    Read.read "env" process
+getEnvironment : Task x (Dict.Dict String String)
+getEnvironment =
+    Marshall.unsafeToDict `Task.map` Read.read "env" process
 
 
 {-|

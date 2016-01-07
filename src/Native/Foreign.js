@@ -13,6 +13,8 @@ var make = function make(localRuntime) {
     return function () {
         var Taskø1 = Elm.Native.Task.make(localRuntime);
         var Utilsø1 = Elm.Native.Utils.make(localRuntime);
+        var Listø1 = Elm.Native.List.make(localRuntime);
+        var Dictø1 = Elm.Dict.make(localRuntime);
         var Tuple0ø1 = (Utilsø1 || 0)['Tuple0'];
         var Tuple2ø1 = (Utilsø1 || 0)['Tuple2'];
         return (function () {
@@ -829,7 +831,7 @@ var make = function make(localRuntime) {
                     return x[name];
                 }),
                 'unsafeGetGlobalConstant': function (name) {
-                    return window[name];
+                    return global[name];
                 },
                 'unsafeNull': null,
                 'unsafeUndefined': undefined,
@@ -840,6 +842,15 @@ var make = function make(localRuntime) {
                         return x;
                     })();
                 },
+                'unsafeToDict': function (obj) {
+                    return function () {
+                        var keysø1 = Object.keys(obj);
+                        var keyPairø1 = keysø1.map(function (key) {
+                            return Tuple2ø1(key, obj[key]);
+                        });
+                        return Dictø1.fromList(Listø1.toList(keyPairø1));
+                    }.call(this);
+                },
                 'unsafeRequire': function (module) {
                     return require(module);
                 },
@@ -848,6 +859,12 @@ var make = function make(localRuntime) {
                 },
                 'toString': function (x) {
                     return x.toString();
+                },
+                'log': function (x) {
+                    return (function () {
+                        console.log(x);
+                        return x;
+                    })();
                 }
             };
         })();

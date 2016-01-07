@@ -13,6 +13,8 @@
   [localRuntime] (let
   [Task   (Elm.Native.Task.make   localRuntime)
    Utils  (Elm.Native.Utils.make  localRuntime)
+   List   (Elm.Native.List.make   localRuntime)
+   Dict   (Elm.Dict.make          localRuntime)
    Tuple0 (:Tuple0 Utils)
    Tuple2 (:Tuple2 Utils)]
    (do
@@ -629,7 +631,7 @@
 
   :unsafeRead (F2 (fn [name x] (aget x name)))
 
-  :unsafeGetGlobalConstant (fn [name] (aget window name))
+  :unsafeGetGlobalConstant (fn [name] (aget global name))
 
   :unsafeNull null
 
@@ -641,12 +643,23 @@
         (set! x.port$ undefined)
         x))
 
+  :unsafeToDict (fn [obj]
+    (let [ keys (.keys Object obj)
+         , keyPair (.map keys (fn [key]
+             (Tuple2 key, (aget obj key)))) ]
+      (.fromList Dict (.toList List keyPair))))
+
   :unsafeRequire (fn [module] (require module))
 
   :truthy (fn [x] (if x true false))
 
   :toString (fn [x] (.toString x))
 
+  :log (fn [x]
+    (do
+        (.log console x)
+        x))
+        
   })))))
 
 (if (== (typeof window) :undefined) (set! window global))

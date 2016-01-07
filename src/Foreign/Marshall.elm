@@ -3,6 +3,7 @@ module Foreign.Marshall (..) where
 import Json.Decode as Json
 import Foreign.Types exposing (JSRaw)
 import Native.Foreign
+import Dict
 
 
 unsafeNull : a
@@ -63,3 +64,13 @@ unsafeNothingIsNull optional =
 
         Nothing ->
             unsafeNull
+
+
+unsafeToDict : JSRaw -> Dict.Dict String a
+unsafeToDict =
+    Native.Foreign.unsafeToDict
+
+
+log : a -> a
+log =
+    Native.Foreign.log

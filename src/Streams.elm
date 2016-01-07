@@ -5,19 +5,16 @@ module Streams (..) where
 @docs isPaused, pause, resume, cork, uncork, end
 
 # Listeners
-@docs on, onString, onBuffer
+@docs on
 
 # Piping
 @docs pipe, pipe', pipe'', unpipe, unpipeAll
-
-# Write
-@docs write, write', writeBuffer, writeString, writeString'
 
 # Read
 @docs read, readWithSize
 
 # Encoding
-@docs setDefaultEncoding, setEncoding, unshiftBuffer, unshiftString, unshift
+@docs setEncoding, unshiftBuffer, unshiftString, unshift
 
 @docs withSignal
 -}
@@ -58,39 +55,12 @@ pause =
 -- Class: stream.Readable
 
 
-on : (Chunk -> Task x ()) -> ReadableEvent -> Readable -> Task x (Task x ())
-on f event readable =
+{-|
+Listen to an event on a Readable Stream
+-}
+on : ReadableEvent -> (Chunk -> Task x ()) -> Readable -> Task x (Task x ())
+on event f readable =
     on1 (toNameR event) readable (Chunks.marshall >> f)
-
-
-onString : ReadableEvent -> (String -> Task x ()) -> Readable -> Task x (Task x ())
-onString event action readable =
-    on
-        (\chunk ->
-            case chunk of
-                Left string ->
-                    action string
-
-                Right _ ->
-                    Task.succeed ()
-        )
-        event
-        readable
-
-
-onBuffer : ReadableEvent -> (Buffer -> Task x ()) -> Readable -> Task x (Task x ())
-onBuffer event action readable =
-    on
-        (\chunk ->
-            case chunk of
-                Left _ ->
-                    Task.succeed ()
-
-                Right buffer ->
-                    action buffer
-        )
-        event
-        readable
 
 
 {-| readable.pipe(destination[, options])
@@ -221,65 +191,9 @@ end =
     method0 "end"
 
 
-{-| writable.setDefaultEncoding(encoding)
--}
-setDefaultEncoding : Writable -> Encoding -> Task x ()
-setDefaultEncoding writable encoding =
-    method1 "setDefaultEncoding" writable (showEncoding encoding)
-
-
-{-| writable.write(chunk[, encoding][, callback])
--}
-writeString' : Writable -> Encoding -> String -> Task x ()
-writeString' writable encoding string =
-    methodAsync2 "write" writable string (showEncoding encoding)
-
-
-{-| writable.write(chunk[, encoding][, callback])
--}
-writeString : Writable -> String -> Task x ()
-writeString writable s =
-    writeString' writable defaultEncoding s
-
-
 {-|
-writable.write(chunk[, encoding][, callback])
-This method writes some data to the underlying system, and calls the supplied
-callback once the data has been fully handled.
-
-The return value indicates if you should continue writing right now. If the data had
-to be buffered internally, then it will return false. Otherwise, it will return true.
-
-This return value is strictly advisory. You MAY continue to write, even if it
-returnsfalse. However, writes will be buffered in memory, so it is best not to do
-this excessively. Instead, wait for the 'drain' event before writing more data.
+withSignal
 -}
-writeWithEncoding : Encoding -> Writable -> Chunk -> Task x ()
-writeWithEncoding encoding writable c =
-    case c of
-        Left s ->
-            writeString' writable encoding s
-
-        Right b ->
-            writeBuffer writable b
-
-
-{-|
-writable.write(chunk[, encoding][, callback])
-Same as `writeWithEncoding`, defaulting to Utf8
--}
-write : Writable -> Chunk -> Task x ()
-write =
-    writeWithEncoding defaultEncoding
-
-
-{-| writable.write(chunk[, encoding][, callback])
--}
-writeBuffer : Writable -> Buffer -> Task x ()
-writeBuffer =
-    methodAsync1 "write"
-
-
 withSignal : Signal a -> (a -> Task x ()) -> Task x ()
 withSignal =
     Native.Streams.withSignal

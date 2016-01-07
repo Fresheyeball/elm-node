@@ -10,8 +10,11 @@
     "exposed-modules": [
       "Network",
       "Network.Socket",
-      "Streams",
       "Streams.Types",
+      "Streams.String",
+      "Streams.Buffer",
+      "Streams.Chunk",
+      "Streams",
       "FS.Streams",
       "Process"
     ],

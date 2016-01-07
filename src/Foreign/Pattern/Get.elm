@@ -5,11 +5,6 @@ import Foreign.Types exposing (..)
 import Native.Foreign
 
 
-get : KeyName -> object -> Task x a
-get =
-    Native.Foreign.get
-
-
 get0 : MethodName -> object -> Task x a
 get0 =
     Native.Foreign.get0

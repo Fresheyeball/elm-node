@@ -12,7 +12,6 @@ port out =
         `andThen` (toString >> write standardOut)
 
 
-
--- port murf : Task x ()
--- port murf =
---     write standardOut "wowzerss"
+port murf : Task x ()
+port murf =
+    write standardOut "wowzerss"

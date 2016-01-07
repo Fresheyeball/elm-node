@@ -615,19 +615,15 @@
           (.fail Task (merr (.toString err)))
           (.succeed Task (Tuple2 x y))))))))))
 
-  :get (F2 (fn [name object]
-    (.asyncFunction Task (fn [callback]
-      (callback (.success Task (aget object name)))))))
-
   :modify (F3 (fn [name object f]
     (.asyncFunction Task (fn [callback]
       (do
         (set! (aget object name) (f (aget object name)))
-        (callback (.success Task Tuple0)))))))
+        (callback (.succeed Task Tuple0)))))))
 
   :read (F2 (fn [name x]
     (.asyncFunction Task (fn [callback]
-      (callback (.success Task (aget x name)))))))
+      (callback (.succeed Task (aget x name)))))))
 
   :unsafeRead (F2 (fn [name x] (aget x name)))
 
@@ -647,7 +643,7 @@
     (let [ keys (.keys Object obj)
          , keyPair (.map keys (fn [key]
              (Tuple2 key, (aget obj key)))) ]
-      (.fromList Dict (.toList List keyPair))))
+      (.fromList Dict (.fromArray List keyPair))))
 
   :unsafeRequire (fn [module] (require module))
 

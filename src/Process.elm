@@ -204,10 +204,6 @@ getEnvironment =
     Marshall.unsafeToDict `Task.map` Read.read "env" process
 
 
-
--- Marshall.unsafeToDict `Task.map` Read.read "env" process
-
-
 {-|
 process.exit([code])
 Ends the process with the specified code.

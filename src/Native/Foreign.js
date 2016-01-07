@@ -809,22 +809,17 @@ var make = function make(localRuntime) {
                         });
                     });
                 }),
-                'get': F2(function (name, object) {
-                    return Taskø1.asyncFunction(function (callback) {
-                        return callback(Taskø1.success(object[name]));
-                    });
-                }),
                 'modify': F3(function (name, object, f) {
                     return Taskø1.asyncFunction(function (callback) {
                         return (function () {
                             object[name] = f(object[name]);
-                            return callback(Taskø1.success(Tuple0ø1));
+                            return callback(Taskø1.succeed(Tuple0ø1));
                         })();
                     });
                 }),
                 'read': F2(function (name, x) {
                     return Taskø1.asyncFunction(function (callback) {
-                        return callback(Taskø1.success(x[name]));
+                        return callback(Taskø1.succeed(x[name]));
                     });
                 }),
                 'unsafeRead': F2(function (name, x) {
@@ -848,7 +843,7 @@ var make = function make(localRuntime) {
                         var keyPairø1 = keysø1.map(function (key) {
                             return Tuple2ø1(key, obj[key]);
                         });
-                        return Dictø1.fromList(Listø1.toList(keyPairø1));
+                        return Dictø1.fromList(Listø1.fromArray(keyPairø1));
                     }.call(this);
                 },
                 'unsafeRequire': function (module) {

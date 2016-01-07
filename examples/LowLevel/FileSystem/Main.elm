@@ -35,7 +35,7 @@ port run =
             f `andThen` always f'
     in
         writeFile testFile "I feel like I'm being watched"
-            >| watchFileWith opts testFile (Just >> S.send (.address flow))
+            >| watchFileWith opts testFile (curry (Just >> S.send (.address flow)))
             >| appendFile testFile ". Wait who are you?"
             >| logAs "stat" (stat testFile)
             >| logAs "access" (canAccess testFile)

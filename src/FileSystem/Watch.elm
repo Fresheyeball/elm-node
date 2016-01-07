@@ -1,13 +1,13 @@
-module FileSystem.Watch (watchFileWithOptions, watchFile, watchWithOptions, watch, defaultWatchFileOptions, defaultWatchOptionsv) where
+module FileSystem.Watch (watchFileWith, watchFile, watchWith, watch, defaultWatchFileOptions, defaultWatchOptions, WatchFileOptions, WatchOptions) where
 
 {-|
 # Watch File
 A watch flavor that is more efficient but only works for files
-@docs watchFile, WatchFileOptions, watchFileWithOptions, defaultWatchFileOptions
+@docs watchFile, watchFileWith, defaultWatchFileOptions, WatchFileOptions
 
 # Watch
 A watch flavor that works for both files and directories but is less efficient
-@docs watch, WatchOptions, watchWithOptions, defaultWatchOptions
+@docs watch, watchWith, defaultWatchOptions, WatchOptions
 -}
 
 import Task exposing (Task)
@@ -16,11 +16,31 @@ import Foreign.Types exposing (..)
 import Foreign.Marshall exposing (..)
 import FileSystem.Types exposing (..)
 import FileSystem.Marshall exposing (..)
+import Time exposing (Time)
 
 
 fs : JSRaw
 fs =
     unsafeRequire "fs"
+
+
+{-|
+type for options passed to `watch`
+-}
+type alias WatchOptions =
+    { persistent : Bool
+    , recursive : Bool
+    }
+
+
+{-|
+default watch options as specified by Node
+-}
+defaultWatchOptions : WatchOptions
+defaultWatchOptions =
+    { persistent = True
+    , recursive = False
+    }
 
 
 {-|
@@ -53,8 +73,8 @@ boolean named persistent that indicates whether the process should continue to r
 watched. The options object may specify an interval property indicating how often the target should be polled
 in milliseconds. The default is { persistent: true, interval: 5007 }.
 -}
-watchFileWithOptions : WatchFileOptions -> FilePath -> (Stat -> Stat -> Task x ()) -> Task x (Task x ())
-watchFileWithOptions opts path handler =
+watchFileWith : WatchFileOptions -> FilePath -> (Stat -> Stat -> Task x ()) -> Task x (Task x ())
+watchFileWith opts path handler =
     listen2_2 "watchFile" "unwatchFile" fs path opts
         <| \( sraw, sraw' ) ->
             handler
@@ -63,11 +83,11 @@ watchFileWithOptions opts path handler =
 
 
 {-| fs.watchFile(filename[, options], listener
-Same as `watchFileWithOptions` but with defaults filled in
+Same as `watchFileWith` but with defaults filled in
 -}
 watchFile : FilePath -> (Stat -> Stat -> Task x ()) -> Task x (Task x ())
 watchFile =
-    watchFileWithOptions defaultWatchFileOptions
+    watchFileWith defaultWatchFileOptions
 
 
 {-|
@@ -80,8 +100,8 @@ persistent and recursive. persistent indicates whether the process should contin
 being watched. recursive indicates whether all subdirectories should be watched, or only the current directory.
 This applies when a directory is specified, and only on supported platforms (See Caveats below).
 -}
-watchWithOptions : WatchOptions -> FilePath -> (WatchEvent -> FilePath -> Task x ()) -> Task x (Task x ())
-watchWithOptions opts path handler =
+watchWith : WatchOptions -> FilePath -> (WatchEvent -> FilePath -> Task x ()) -> Task x (Task x ())
+watchWith opts path handler =
     listen2_2 "watch" "unwatch" fs path opts
         <| \( weRaw, path' ) ->
             case watchEventFromString weRaw of
@@ -98,4 +118,4 @@ Same as `watchWithOptions` but with defaults filled in
 -}
 watch : FilePath -> (WatchEvent -> FilePath -> Task x ()) -> Task x (Task x ())
 watch =
-    watchWithOptions defaultWatchOptions
+    watchWith defaultWatchOptions

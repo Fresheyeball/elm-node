@@ -2,7 +2,7 @@ module Main (..) where
 
 import Network.Socket as Socket
 import Network
-import Chunks
+import Chunk
 import Process exposing (standardOut)
 import Streams
 import Task exposing (..)

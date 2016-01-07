@@ -16,7 +16,7 @@ This project is split into 2 halves, Low Level for Native bindings, and High Lev
 - Http
 - DNS
 
-See more about current status of Native bindings [here](/Fresheyeball/elm-node/blob/master/NodeNamespace.md)
+See more about current status of Native bindings [here](/NodeNamespace.md)
 
 ## Exposed Modules
 

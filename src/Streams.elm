@@ -17,7 +17,8 @@ import Foreign.Pattern.Method as Method
 import Streams.Types exposing (..)
 import Streams.Marshall exposing (..)
 import Emitter.Unsafe exposing (on1)
-import Chunks exposing (..)
+import Chunk.Types exposing (Chunk)
+import Chunk.Marshall exposing (marshallChunk)
 import Native.Streams
 
 
@@ -46,7 +47,7 @@ Listen to an event on a Readable Stream
 -}
 on : ReadableEvent -> (Chunk -> Task x ()) -> Readable a -> Task x (Task x ())
 on event f { readable } =
-    on1 (toNameR event) readable (Chunks.marshall >> f)
+    on1 (toNameR event) readable (marshallChunk >> f)
 
 
 {-| readable.pipe(destination[, options])
@@ -94,7 +95,7 @@ read { readable } =
         |> Task.map
             (\raw ->
                 if truthy raw then
-                    Just (Chunks.marshall raw)
+                    Just (marshallChunk raw)
                 else
                     Nothing
             )
@@ -109,7 +110,7 @@ readWithSize { readable } size =
         |> Task.map
             (\raw ->
                 if truthy raw then
-                    Just (Chunks.marshall raw)
+                    Just (marshallChunk raw)
                 else
                     Nothing
             )

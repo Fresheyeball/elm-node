@@ -1,10 +1,27 @@
-module FileSystem (currentDirectory, f_ok, r_ok, w_ok, x_ok, accessWithMode, access, appendFile, stat, fstat, fsync, ftruncate, truncate, link, unlink, mkdirWithMode, mkdir, openWithMode, open, rename, rmdir, symlink, close, utimes) where
+module FileSystem (currentDirectory, existsOK, readOK, writeOK, executeOK, canAccessWithMode, canAccess, appendFile, stat, truncate, link, unlink, makeDirectoryWithMode, makeDirectory, openWithMode, open, rename, removeDirectory, symbolicLink, close, utimes, remove, changeMode, changeOwner) where
+
+{-|
+# Test
+@docs existsOK, readOK, writeOK, executeOK, canAccessWithMode, canAccess, stat, utimes, currentDirectory
+
+# Create
+@docs makeDirectoryWithMode, makeDirectory
+
+# Open
+@docs openWithMode, open, close
+
+# Modify
+@docs changeMode, changeOwner, appendFile, truncate, link, rename, symbolicLink
+
+# Remove
+@docs unlink, remove, removeDirectory
+-}
 
 import Task exposing (Task)
 import Time exposing (Time)
-import Foreign.Pattern.Method exposing (..)
-import Foreign.Pattern.Get exposing (..)
-import Foreign.Pattern.Read exposing (..)
+import Foreign.Pattern.Method as Method
+import Foreign.Pattern.Get as Get
+import Foreign.Pattern.Read as Read
 import Foreign.Types exposing (..)
 import Foreign.Marshall exposing (..)
 import FileSystem.Types exposing (..)
@@ -17,97 +34,96 @@ fs =
     unsafeRequire "fs"
 
 
+{-|
+Current directory of process execution. `__dirname` in Node speak
+-}
 currentDirectory : FilePath
 currentDirectory =
     Native.FileSystem.dirname
 
 
-f_ok : Mode
-f_ok =
-    unsafeRead "F_OK" fs
+{-|
+Bitwise Int for testing existence a la f_ok
+-}
+existsOK : Mode
+existsOK =
+    Read.unsafeRead "F_OK" fs
 
 
-r_ok : Mode
-r_ok =
-    unsafeRead "R_OK" fs
+{-|
+Bitwise Int for testing readability a la r_ok
+-}
+readOK : Mode
+readOK =
+    Read.unsafeRead "R_OK" fs
 
 
-w_ok : Mode
-w_ok =
-    unsafeRead "W_OK" fs
+{-|
+Bitwise Int for testing writability a la w_ok
+-}
+writeOK : Mode
+writeOK =
+    Read.unsafeRead "W_OK" fs
 
 
-x_ok : Mode
-x_ok =
-    unsafeRead "X_OK" fs
+{-|
+Bitwise Int for testing excutability a la x_ok
+-}
+executeOK : Mode
+executeOK =
+    Read.unsafeRead "X_OK" fs
 
 
-accessWithMode : FilePath -> Mode -> Task x Bool
-accessWithMode path mode =
-    getAsync2 "access" fs path mode
+{-|
+Can we access a given file with a specific `Mode`?
+-}
+canAccessWithMode : FilePath -> Mode -> Task x Bool
+canAccessWithMode path mode =
+    Get.getAsync2 "access" fs path mode
         |> Task.map truthy
 
 
-access : FilePath -> Task x Bool
-access path =
-    accessWithMode path f_ok
+{-|
+Can we access a given file?
+-}
+canAccess : FilePath -> Task x Bool
+canAccess path =
+    canAccessWithMode path existsOK
 
 
 {-| fs.appendFile(file, data[, options], callback)
 -}
 appendFile : FilePath -> String -> Task FileSystemError ()
 appendFile =
-    methodAsync2E FileSystemError "appendFile" fs
+    Method.methodAsync2E FileSystemError "appendFile" fs
 
 
 {-| fs.close(fd, callback)
 -}
 close : FileDescriptor -> Task FileSystemError ()
 close =
-    methodAsync1E FileSystemError "close" fs
-
-
-{-| fs.fstat(fd, callback)
--}
-fstat : FileDescriptor -> Task FileSystemError Stat
-fstat =
-    getAsync1E FileSystemError "fstat" fs
-        >> Task.map marshallStat
-
-
-{-| fs.fsync(fd, callback)
--}
-fsync : FileDescriptor -> Task FileSystemError ()
-fsync =
-    getAsync1E FileSystemError "fsync" fs
-
-
-{-| fs.ftruncate(fd, len, callback)
--}
-ftruncate : Length -> FileDescriptor -> Task FileSystemError ()
-ftruncate len fd =
-    getAsync2E FileSystemError "ftruncate" fs fd len
+    Method.methodAsync1E FileSystemError "close" fs
 
 
 {-| fs.link(srcpath, dstpath, callback)
 -}
 link : FilePath -> FilePath -> Task FileSystemError ()
 link srcpath dstpath =
-    methodAsync2E FileSystemError "link" fs srcpath dstpath
+    Method.methodAsync2E FileSystemError "link" fs srcpath dstpath
 
 
 {-| fs.mkdir(path[, mode], callback)
 -}
-mkdirWithMode : FilePath -> Mode -> Task FileSystemError ()
-mkdirWithMode =
-    methodAsync2E FileSystemError "mkdir" fs
+makeDirectoryWithMode : FilePath -> Mode -> Task FileSystemError ()
+makeDirectoryWithMode =
+    Method.methodAsync2E FileSystemError "mkdir" fs
 
 
 {-| fs.mkdir(path[, mode], callback)
 -}
-mkdir : FilePath -> Task FileSystemError ()
-mkdir path =
-    mkdirWithMode
+makeDirectory : FilePath -> Task FileSystemError ()
+makeDirectory path =
+    makeDirectoryWithMode
         path
         511
 
@@ -120,7 +136,7 @@ mkdir path =
 -}
 openWithMode : FilePath -> Flags -> Mode -> Task FileSystemError FileDescriptor
 openWithMode path flags mode =
-    getAsync3E FileSystemError "open" fs path (flagsToString flags) mode
+    Get.getAsync3E FileSystemError "open" fs path (flagsToString flags) mode
 
 
 {-| fs.open(path, flags[, mode], callback)
@@ -141,46 +157,68 @@ open path flags =
 -}
 rename : FilePath -> FilePath -> Task FileSystemError ()
 rename oldPath newPath =
-    methodAsync2E FileSystemError "rename" fs oldPath newPath
+    Method.methodAsync2E FileSystemError "rename" fs oldPath newPath
 
 
 {-| fs.rmdir(path, callback)
 -}
-rmdir : FilePath -> Task FileSystemError ()
-rmdir =
-    methodAsync1E FileSystemError "rmdir" fs
+removeDirectory : FilePath -> Task FileSystemError ()
+removeDirectory =
+    Method.methodAsync1E FileSystemError "rmdir" fs
 
 
 {-| fs.stat(path, callback)
 -}
 stat : FilePath -> Task FileSystemError Stat
 stat =
-    Task.map marshallStat << getAsync1E FileSystemError "stat" fs
+    Task.map marshallStat << Get.getAsync1E FileSystemError "stat" fs
 
 
 {-| fs.symlink(destination, path[, type], callback)
 -}
-symlink : FilePath -> FilePath -> SymbolicLinkType -> Task FileSystemError ()
-symlink destination path t =
-    methodAsync3E FileSystemError "symlink" fs destination path (symTypeToString t)
+symbolicLink : FilePath -> FilePath -> SymbolicLinkType -> Task FileSystemError ()
+symbolicLink destination path t =
+    Method.methodAsync3E FileSystemError "symlink" fs destination path (symTypeToString t)
 
 
 {-| fs.truncate(path, len, callback)
 -}
 truncate : Length -> FilePath -> Task FileSystemError ()
 truncate len path =
-    methodAsync2E FileSystemError "truncate" fs path len
+    Method.methodAsync2E FileSystemError "truncate" fs path len
 
 
 {-| fs.unlink(path, callback)
 -}
 unlink : FilePath -> Task FileSystemError ()
 unlink =
-    methodAsync1E FileSystemError "unlink" fs
+    Method.methodAsync1E FileSystemError "unlink" fs
+
+
+{-|
+Alais for unlink, it will remove a file.
+-}
+remove : FilePath -> Task FileSystemError ()
+remove =
+    unlink
 
 
 {-| fs.utimes(path, atime, mtime, callback)
 -}
 utimes : FilePath -> Time -> Time -> Task x ()
 utimes =
-    methodAsync3 "utimes" fs
+    Method.methodAsync3 "utimes" fs
+
+
+{-| fs.chmod(path, mode, callback)
+-}
+changeMode : FilePath -> Mode -> Task FileSystemError ()
+changeMode =
+    Method.methodAsync2E FileSystemError "chmod" fs
+
+
+{-| fs.chown(path, uid, gid, callback)
+-}
+changeOwner : FilePath -> UserID -> GroupID -> Task FileSystemError ()
+changeOwner =
+    Method.methodAsync3E FileSystemError "chown" fs

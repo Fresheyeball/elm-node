@@ -1,5 +1,11 @@
 module Chunk.Marshall (..) where
 
+import Chunk.Types exposing (..)
+import Foreign.Types exposing (JSRaw)
+import Foreign.Marshall exposing (unsafeNull)
+import Either exposing (Either(..))
+import Native.Chunks
+
 
 showEncoding : Encoding -> String
 showEncoding e =
@@ -36,6 +42,6 @@ unsafeShowEncoding e =
 {-| Chunks from Node can be either a string or a buffer
     the type is checked on the native side and marshalled into an `Either`
 -}
-marshall : JSRaw -> Chunk
-marshall =
+marshallChunk : JSRaw -> Chunk
+marshallChunk =
     Native.Chunks.marshall Left Right

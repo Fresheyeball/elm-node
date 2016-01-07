@@ -1,13 +1,13 @@
 module FileSystem.Types (..) where
 
 {-|
-@docs Encoding, FilePath, Mode, Offset, Position, Length, GroupID, UserID
+@docs Encoding, Buffer, Chunk, FilePath, Mode, Offset, Position, Length, GroupID, UserID
 
 @docs Stat, SymbolicLinkType
 
 @docs ReadOptions, ReadFileOptions, defaultReadOptions, defaultReadFileOptions
 
-@docs WatchEvent, FileSystemWatcher, WatchFileListener, WatchFileOptions, WatchOptions, defaultWatchOptions, defaultWatchFileOptions
+@docs WatchEvent, FileSystemWatcher, WatchFileListener
 
 @docs WriteFileOptions, WriteOptions, defaultWriteOptions, defaultWriteFileOptions
 
@@ -17,15 +17,29 @@ module FileSystem.Types (..) where
 -}
 
 import Foreign.Types exposing (JSRaw, JSDate)
-import Chunks as C
+import Chunk.Types as Chunk
 import Time exposing (Time)
 
 
 {-|
-Re-export of `Encoding` from `Chunks`
+Re-export of `Encoding` from `Chunk`
 -}
 type alias Encoding =
-    C.Encoding
+    Chunk.Encoding
+
+
+{-|
+Re-export of `Buffer` from `Chunk`
+-}
+type alias Buffer =
+    Chunk.Buffer
+
+
+{-|
+Re-export of `Chunk` from `Chunk`
+-}
+type alias Chunk =
+    Chunk.Chunk
 
 
 {-|
@@ -135,7 +149,7 @@ Read file options default as specified by Node
 defaultReadFileOptions : ReadFileOptions
 defaultReadFileOptions =
     { flag = R
-    , encoding = C.Binary
+    , encoding = Chunk.Binary
     }
 
 
@@ -149,7 +163,7 @@ defaultReadOptions =
         438
         -- 666
     , autoClose = True
-    , encoding = C.Binary
+    , encoding = Chunk.Binary
     }
 
 
@@ -172,7 +186,7 @@ defaultWriteOptions =
     , mode =
         438
         -- 0o666
-    , defaultEncoding = C.Binary
+    , defaultEncoding = Chunk.Binary
     }
 
 
@@ -195,7 +209,7 @@ defaultAppendOptions =
     , mode =
         438
         -- 0o666
-    , encoding = C.Binary
+    , encoding = Chunk.Binary
     }
 
 
@@ -231,25 +245,6 @@ type SymbolicLinkType
 
 
 {-|
-Watch options
--}
-type alias WatchOptions =
-    { persistent : Bool
-    , recursive : Bool
-    }
-
-
-{-|
-Watch options default as specified by Node
--}
-defaultWatchOptions : WatchOptions
-defaultWatchOptions =
-    { persistent = True
-    , recursive = False
-    }
-
-
-{-|
 Raw Node filesystem watcher object
 -}
 type FileSystemWatcher
@@ -272,25 +267,6 @@ type WatchFileListener
 
 
 {-|
-Watch file options
--}
-type alias WatchFileOptions =
-    { persistent : Bool
-    , interval : Time
-    }
-
-
-{-|
-Default watch file options as specified by Node
--}
-defaultWatchFileOptions : WatchFileOptions
-defaultWatchFileOptions =
-    { persistent = True
-    , interval = 5007
-    }
-
-
-{-|
 Write file options
 -}
 type alias WriteFileOptions =
@@ -305,7 +281,7 @@ Default write file options as specified by Node
 -}
 defaultWriteFileOptions : WriteFileOptions
 defaultWriteFileOptions =
-    { encoding = C.Utf8
+    { encoding = Chunk.Utf8
     , mode =
         438
         -- 0o666

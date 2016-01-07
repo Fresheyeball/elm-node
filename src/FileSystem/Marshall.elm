@@ -2,7 +2,7 @@ module FileSystem.Marshall (..) where
 
 import Foreign.Types exposing (JSRaw)
 import FileSystem.Types exposing (..)
-import Chunks as C
+import Chunk.Marshall as Chunk
 import Native.FileSystem
 
 
@@ -15,7 +15,7 @@ type alias WriteFileOptionsRaw =
 
 marshallWriteFileOptions : WriteFileOptions -> WriteFileOptionsRaw
 marshallWriteFileOptions { encoding, mode, flag } =
-    { encoding = C.showEncoding encoding
+    { encoding = Chunk.showEncoding encoding
     , mode = mode
     , flag = flagsToString flag
     }
@@ -32,7 +32,7 @@ marshallAppendOptions : AppendOptions -> AppendOptionsRaw
 marshallAppendOptions o =
     { o
         | flag = flagsToString (.flag o)
-        , encoding = C.unsafeShowEncoding (.encoding o)
+        , encoding = Chunk.unsafeShowEncoding (.encoding o)
     }
 
 
@@ -48,7 +48,7 @@ marshallReadOptions : ReadOptions -> ReadOptionsRaw
 marshallReadOptions o =
     { o
         | flags = flagsToString (.flags o)
-        , encoding = C.unsafeShowEncoding (.encoding o)
+        , encoding = Chunk.unsafeShowEncoding (.encoding o)
     }
 
 
@@ -62,7 +62,7 @@ marshallReadFileOptions : ReadFileOptions -> ReadFileOptionsRaw
 marshallReadFileOptions o =
     { o
         | flag = flagsToString (.flag o)
-        , encoding = C.unsafeShowEncoding (.encoding o)
+        , encoding = Chunk.unsafeShowEncoding (.encoding o)
     }
 
 
@@ -77,7 +77,7 @@ marshallWriteOptions : WriteOptions -> WriteOptionsRaw
 marshallWriteOptions o =
     { o
         | flags = flagsToString (.flags o)
-        , defaultEncoding = C.unsafeShowEncoding (.defaultEncoding o)
+        , defaultEncoding = Chunk.unsafeShowEncoding (.defaultEncoding o)
     }
 
 

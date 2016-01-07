@@ -6,7 +6,8 @@ Stream helpers oriented around `String`s. Rarely in practices is code about stre
 @docs write, writeWithEncoding, on, setDefaultEncoding, setEncoding, unshift
 -}
 
-import Chunks exposing (..)
+import Chunk.Types exposing (..)
+import Chunk.Marshall exposing (showEncoding)
 import Streams.Types exposing (..)
 import Streams as S
 import Either exposing (Either(..))

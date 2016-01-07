@@ -1,13 +1,13 @@
-module FileSystem.Watch (watchFileWithOptions, watchFile, watchWithOptions, watch, defaultWatchFileOptions, defaultWatchOptions) where
+module FileSystem.Watch (watchFileWithOptions, watchFile, watchWithOptions, watch, defaultWatchFileOptions, defaultWatchOptionsv) where
 
 {-|
 # Watch File
 A watch flavor that is more efficient but only works for files
-@docs watchFile, watchFileWithOptions, defaultWatchFileOptions
+@docs watchFile, WatchFileOptions, watchFileWithOptions, defaultWatchFileOptions
 
 # Watch
 A watch flavor that works for both files and directories but is less efficient
-@docs watch, watchWithOptions, defaultWatchOptions
+@docs watch, WatchOptions, watchWithOptions, defaultWatchOptions
 -}
 
 import Task exposing (Task)
@@ -24,19 +24,22 @@ fs =
 
 
 {-|
-Re-export of default options for watch file
+Watch file options
 -}
-defaultWatchFileOptions : WatchFileOptions
-defaultWatchFileOptions =
-    defaultWatchFileOptions
+type alias WatchFileOptions =
+    { persistent : Bool
+    , interval : Time
+    }
 
 
 {-|
-Re-export of default options for watch
+Default watch file options as specified by Node
 -}
-defaultWatchOptions : WatchOptions
-defaultWatchOptions =
-    defaultWatchOptions
+defaultWatchFileOptions : WatchFileOptions
+defaultWatchFileOptions =
+    { persistent = True
+    , interval = 5007
+    }
 
 
 {-|

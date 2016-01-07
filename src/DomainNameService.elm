@@ -4,7 +4,7 @@ module DomainNameService (lookup) where
 @docs lookup
 -}
 
-import Foreign.Patterns.Method as Method
+import Foreign.Pattern.Method as Method
 import Foreign.Marshall exposing (unsafeRequire)
 import Foreign.Types exposing (JSRaw)
 import Task exposing (Task)

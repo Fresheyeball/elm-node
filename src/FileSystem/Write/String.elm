@@ -1,4 +1,16 @@
-module FileSystem.Write.String (..) where
+module FileSystem.Write.String (writeFile, writeFileWith) where
+
+{-|
+# Write to disk using a `String`
+@docs writeFile, writeFileWith
+-}
+
+import Foreign.Types exposing (JSRaw)
+import Foreign.Pattern.Method as Method
+import Foreign.Marshall exposing (unsafeRequire)
+import FileSystem.Types exposing (..)
+import FileSystem.Marshall exposing (marshallWriteFileOptions)
+import Task exposing (Task)
 
 
 fs : JSRaw
@@ -6,25 +18,13 @@ fs =
     unsafeRequire "fs"
 
 
-{-| fs.write(fd, data[, position[, encoding]], callback)
+{-|
+fs.writeFile(file, data[, options], callback)
+Asynchronously writes data to a file, replacing the file if it already exists.
 -}
-writeFileFromString' : FileSystem.Types.Encoding -> FileDescriptor -> String -> Position -> Task FileSystemError ( Int, String )
-writeFileFromString' encoding fd data position =
-    getAsync4_2E FileSystemError "write" fs fd data position (showEncoding encoding)
-
-
-{-| fs.write(fd, data[, position[, encoding]], callback)
--}
-writeFileFromString : FileSystem.Types.Encoding -> FileDescriptor -> String -> Task FileSystemError ( Int, String )
-writeFileFromString encoding fd data =
-    getAsync3_2E FileSystemError "write" fs fd data (showEncoding encoding)
-
-
-{-| fs.writeFile(file, data[, options], callback)
--}
-writeFileString' : WriteFileOptions -> FilePath -> String -> Task FileSystemError ()
-writeFileString' options path data =
-    methodAsync3E
+writeFileWith : WriteFileOptions -> FilePath -> String -> Task FileSystemError ()
+writeFileWith options path data =
+    Method.methodAsync3E
         FileSystemError
         "writeFile"
         fs
@@ -34,7 +34,8 @@ writeFileString' options path data =
 
 
 {-| fs.writeFile(file, data[, options], callback)
+Same as `writeFileWith` but using default options
 -}
-writeFileString : FilePath -> String -> Task FileSystemError ()
-writeFileString =
-    writeFileString' defaultWriteFileOptions
+writeFile : FilePath -> String -> Task FileSystemError ()
+writeFile =
+    writeFileWith defaultWriteFileOptions

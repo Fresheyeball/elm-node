@@ -1,4 +1,16 @@
-module FileSystem.Write.Buffer (..) where
+module FileSystem.Write.Buffer (writeFile, writeFileWith) where
+
+{-|
+# Write to disk using a `Buffer`
+@docs writeFile, writeFileWith
+-}
+
+import Foreign.Types exposing (JSRaw)
+import Foreign.Pattern.Method as Method
+import Foreign.Marshall exposing (unsafeRequire)
+import FileSystem.Types exposing (..)
+import FileSystem.Marshall exposing (marshallWriteFileOptions)
+import Task exposing (Task)
 
 
 fs : JSRaw
@@ -6,25 +18,13 @@ fs =
     unsafeRequire "fs"
 
 
-{-| fs.write(fd, buffer, offset, length[, position], callback)
+{-|
+fs.writeFile(file, data[, options], callback)
+Asynchronously writes data to a file, replacing the file if it already exists.
 -}
-writeFileFromBuffer' : FileDescriptor -> Buffer -> Offset -> Length -> Position -> Task FileSystemError ( Int, Buffer )
-writeFileFromBuffer' =
-    getAsync5_2E FileSystemError "write" fs
-
-
-{-| fs.write(fd, buffer, offset, length[, position], callback)
--}
-writeFileFromBuffer : FileDescriptor -> Buffer -> Offset -> Length -> Task FileSystemError ( Int, Buffer )
-writeFileFromBuffer =
-    getAsync4_2E FileSystemError "write" fs
-
-
-{-| fs.writeFile(file, data[, options], callback)
--}
-writeFileBuffer' : WriteFileOptions -> FilePath -> Buffer -> Task FileSystemError ()
-writeFileBuffer' options path data =
-    methodAsync3E
+writeFileWith : WriteFileOptions -> FilePath -> Buffer -> Task FileSystemError ()
+writeFileWith options path data =
+    Method.methodAsync3E
         FileSystemError
         "writeFile"
         fs
@@ -34,7 +34,8 @@ writeFileBuffer' options path data =
 
 
 {-| fs.writeFile(file, data[, options], callback)
+Same as `writeFileWith` but using default options
 -}
-writeFileBuffer : FilePath -> Buffer -> Task FileSystemError ()
-writeFileBuffer =
-    writeFileBuffer' defaultWriteFileOptions
+writeFile : FilePath -> Buffer -> Task FileSystemError ()
+writeFile =
+    writeFileWith defaultWriteFileOptions

@@ -3,10 +3,11 @@ module Streams.Chunk (..) where
 {-|
 Stream helpers oriented around `Chunk`s. For the less common instance where your code cares about both `String`s and `Buffer`s.
 
-@docs write, writeWithEncoding, on
+@docs write, writeWithEncoding, on, unshift
 -}
 
-import Chunks exposing (..)
+import Chunk.Types exposing (..)
+import Chunk exposing (defaultEncoding)
 import Streams.Types exposing (..)
 import Streams as S
 import Streams.String as String
@@ -27,7 +28,7 @@ This return value is strictly advisory. You MAY continue to write, even if it
 returnsfalse. However, writes will be buffered in memory, so it is best not to do
 this excessively. Instead, wait for the 'drain' event before writing more data.
 -}
-writeWithEncoding : Encoding -> Writable -> Chunk -> Task x ()
+writeWithEncoding : Encoding -> Writable a -> Chunk -> Task x ()
 writeWithEncoding encoding writable c =
     case c of
         Left s ->
@@ -41,7 +42,7 @@ writeWithEncoding encoding writable c =
 writable.write(chunk[, encoding][, callback])
 Same as `writeWithEncoding`, defaulting to Utf8
 -}
-write : Writable -> Chunk -> Task x ()
+write : Writable a -> Chunk -> Task x ()
 write =
     writeWithEncoding defaultEncoding
 
@@ -49,7 +50,7 @@ write =
 {-|
 Listen to an event on a Readable Stream
 -}
-on : ReadableEvent -> (Chunk -> Task x ()) -> Readable -> Task x (Task x ())
+on : ReadableEvent -> (Chunk -> Task x ()) -> Readable a -> Task x (Task x ())
 on =
     S.on
 
@@ -66,7 +67,7 @@ error will be raised.
 If you find that you must often call stream.unshift(chunk) in your programs, consider implementing a
 Transform stream instead. (See API for Stream Implementors, below.)
 -}
-unshift : Readable a -> Chunk -> Task x ()
+unshift : Readable a -> Chunk -> Task StreamError ()
 unshift readable chunk =
     case chunk of
         Left string ->

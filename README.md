@@ -16,38 +16,38 @@ This project is split into 2 halves, Low Level for Native bindings, and High Lev
 - Http
 - DNS
 
-See more about current status of Native bindings [here]()
+See more about current status of Native bindings [here](/Fresheyeball/elm-node/blob/master/NodeNamespace.md)
 
 ## Exposed Modules
 
 Currently exposed modules you can try out right now:
 
-"Network",
-"Network.Socket",
-"Streams.Types",
-"Streams.String",
-"Streams.Buffer",
-"Streams.Chunk",
-"Streams",
-"Process",
-"Process.Types",
-"Process.User",
-"Process.Streams",
-"FileSystem.Streams.Read",
-"FileSystem.Streams.Write",
-"FileSystem.Types",
-"FileSystem.Write.String",
-"FileSystem.Write.String.Descriptor",
-"FileSystem.Write.Buffer",
-"FileSystem.Write.Buffer.Descriptor",
-"FileSystem.Write.Chunk",
-"FileSystem.Descriptor",
-"FileSystem.Watch",
-"FileSystem.Read",
-"FileSystem",
-"DomainNameService",
-"Chunk",
-"Chunk.Types"
+- Network
+- Network.Socket
+- Streams.Types
+- Streams.String
+- Streams.Buffer
+- Streams.Chunk
+- Streams
+- Process
+- Process.Types
+- Process.User
+- Process.Streams
+- FileSystem.Streams.Read
+- FileSystem.Streams.Write
+- FileSystem.Types
+- FileSystem.Write.String
+- FileSystem.Write.String.Descriptor
+- FileSystem.Write.Buffer
+- FileSystem.Write.Buffer.Descriptor
+- FileSystem.Write.Chunk
+- FileSystem.Descriptor
+- FileSystem.Watch
+- FileSystem.Read
+- FileSystem
+- DomainNameService
+- Chunk
+- Chunk.Types
 
 ## Goals
 

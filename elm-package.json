@@ -33,7 +33,9 @@
       "FileSystem",
       "DomainNameService",
       "Chunk",
-      "Chunk.Types"
+      "Chunk.Types",
+      "Compression",
+      "Compression.Types"
     ],
     "native-modules": true,
     "dependencies": {

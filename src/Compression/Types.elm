@@ -1,6 +1,11 @@
 module Compression.Types (..) where
 
-{-| -}
+{-|
+@docs Flush, CompressionCode, Level, Stradegy, DataType, Deflation, Null
+
+# Options
+@docs CompressionOptions, defaultCompressionOptions, DecompressionOptions, defaultDecompressionOptions
+-}
 
 
 {-|

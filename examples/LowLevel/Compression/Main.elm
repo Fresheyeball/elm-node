@@ -1,17 +1,15 @@
 module Main (..) where
 
 import Streams exposing (..)
-import Streams.String exposing (write)
-import Streams.Types exposing (ReadableEvent(..))
-import FileSystem.Types exposing (FileSystemError)
+import FileSystem.Types exposing (FileSystemError(..))
 import FileSystem.Streams.Write as FSWrite
 import FileSystem.Streams.Read as FSRead
 import FileSystem.Write.String exposing (writeFile)
+import FileSystem.Read exposing (readFile)
 import FileSystem exposing (remove)
-import Compression exposing (createGzip)
+import Compression exposing (createGzip, createGunzip)
 import Task exposing (..)
-import Chunk exposing (encodeChunk)
-import Process.Streams exposing (standardOut)
+import Console exposing (print, log)
 
 
 infixr 2 >|
@@ -23,20 +21,40 @@ infixr 2 >|
 port run : Task FileSystemError ()
 port run =
     let
-        testFile = "test.foo"
+        originalFile =
+            "test.foo"
 
-        pipey read gzip write' =
-            write standardOut "piping gzip"
-            >| on Data (encodeChunk >> write standardOut) read
-            >| read `pipe` gzip
-            >| gzip `pipe` write'
-            >| on Close (always <| remove testFile) read
+        resultedFile =
+            originalFile ++ ".bar"
+
+        reader =
+            FSRead.create originalFile
+
+        writer =
+            FSWrite.create resultedFile
+
+        pipey =
+            let
+                f read gzip gunzip write' =
+                    (read `pipe` gzip)
+                        >| (gzip `pipe` gunzip)
+                        >| (gunzip `pipe` write')
+            in
+                map4
+                    f
+                    reader
+                    createGzip
+                    createGunzip
+                    writer
+                    `andThen` identity
     in
-        write standardOut "writing file"
-            >| writeFile testFile "sweet success"
-            >| write standardOut "file wrote"
+        log "writing file..."
+            >| writeFile originalFile "sweet success"
+            >| log "file wrote, piping..."
             >| pipey
-            `map` FSRead.create testFile
-            `andMap` createGzip
-            `andMap` FSWrite.create (testFile ++ ".zip")
-            >| succeed ()
+            >| log "piped, removing original"
+            >| remove originalFile
+            >| log "original removed reading new file"
+            >| (readFile resultedFile `andThen` log)
+            >| log "cleaning up resulting file"
+            >| remove resultedFile

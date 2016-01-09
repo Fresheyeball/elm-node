@@ -15,7 +15,13 @@ var make = function make(localRuntime) {
                             return Taskø1.succeed(Tuple0ø1);
                         })();
                     });
-                })
+                }),
+                'marshallDuplex': function (raw) {
+                    return {
+                        'readable': raw,
+                        'writable': raw
+                    };
+                }
             };
         })();
     }.call(this);

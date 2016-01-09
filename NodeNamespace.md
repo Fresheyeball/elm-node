@@ -105,4 +105,4 @@ Unstable
 Basically eval, disallowed
 
 ## :+1: ZLIB
-**TODO** this is useful for so many reasons
+**Complete** this is useful for so many reasons

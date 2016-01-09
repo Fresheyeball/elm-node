@@ -9,6 +9,7 @@ import FileSystem.Read exposing (readFile)
 import FileSystem exposing (remove)
 import Compression exposing (createGzip, createGunzip)
 import Task exposing (..)
+import Chunk exposing (encodeBuffer)
 import Console exposing (print, log)
 
 
@@ -55,6 +56,6 @@ port run =
             >| log "piped, removing original"
             >| remove originalFile
             >| log "original removed reading new file"
-            >| (readFile resultedFile `andThen` log)
+            >| (readFile resultedFile `andThen` (encodeBuffer >> log))
             >| log "cleaning up resulting file"
             >| remove resultedFile

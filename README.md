@@ -9,6 +9,7 @@ This project is split into 2 halves, Low Level for Native bindings, and High Lev
 - Streams
 - File System
 - Process
+- Zlib
 
 ### In Progress
 
@@ -48,6 +49,8 @@ Currently exposed modules you can try out right now:
 - DomainNameService
 - Chunk
 - Chunk.Types
+- Compression
+- Compression.Types
 
 ## Goals
 

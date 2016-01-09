@@ -41,11 +41,11 @@ This is a base class, helpers bindings are **complete**
 ## :-1: Globals
 Specific to Node, will not bind
 
-## :+1: HTTP
-**TODO** Needs to be tied into `Network`
+## :metal: HTTP
+May be doable in pure Elm. **TODO** Needs to be tied into `Network`
 
-## :+1: HTTPS
-**TODO** Needs to be tied into `Network`
+## :metal: HTTPS
+May be doable in pure Elm. **TODO** Needs to be tied into `Network`
 
 ## :-1: Modules
 Specific to Node, will not bind

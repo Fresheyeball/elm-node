@@ -832,9 +832,7 @@ var make = function make(localRuntime) {
                 'unsafeUndefined': undefined,
                 'portPrimeToPort': function (x) {
                     return (function () {
-                        x.port = x.port$();
-                        x.port$ = undefined;
-                        return x;
+                        return x.port$ = x.port();
                     })();
                 },
                 'unsafeToDict': function (obj) {

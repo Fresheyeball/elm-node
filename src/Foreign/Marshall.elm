@@ -46,6 +46,11 @@ portPrimeToPort =
     Native.Foreign.portPrimeToPort
 
 
+portToPortPrime : JSRaw -> { a | port' : b }
+portToPortPrime =
+    Native.Foreign.portToPortPrime
+
+
 unsafeNothingIsUndefined : Maybe a -> a
 unsafeNothingIsUndefined optional =
     case optional of

@@ -639,6 +639,12 @@
         (set! x.port$ undefined)
         x))
 
+  :portPrimeToPort (fn [x]
+    (do
+      (set! x.port$ (.port x)
+      (set! x.port undefined)
+      x)))
+
   :unsafeToDict (fn [obj]
     (let [ keys (.keys Object obj)
          , keyPair (.map keys (fn [key]

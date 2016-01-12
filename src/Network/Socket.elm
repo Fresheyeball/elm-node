@@ -28,6 +28,7 @@ import Foreign.Pattern.Method as Method
 import Foreign.Marshall exposing (unsafeToString, truthy)
 import Emitter.Unsafe as Emitter
 import Network.Types exposing (..)
+import Network.Marshall exposing (..)
 import Chunk.Types as Chunk
 import Chunk.Marshall exposing (marshallChunk, showEncoding)
 import Either

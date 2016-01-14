@@ -662,6 +662,8 @@
         (.log console x)
         x))
 
+  :rawInfinity Infinity
+
   })))))
 
 (if (== (typeof window) :undefined) (set! window global))

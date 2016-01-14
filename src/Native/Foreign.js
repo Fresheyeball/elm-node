@@ -858,7 +858,8 @@ var make = function make(localRuntime) {
                         console.log(x);
                         return x;
                     })();
-                }
+                },
+                'rawInfinity': Infinity
             };
         })();
     }.call(this);

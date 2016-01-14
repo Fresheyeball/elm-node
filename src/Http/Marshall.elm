@@ -1,5 +1,6 @@
 module Http.Marshall (..) where
 
+import Http.Types exposing (..)
 import Foreign.Marshall as Marshall
 import Time
 

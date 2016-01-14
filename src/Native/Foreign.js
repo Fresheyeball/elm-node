@@ -825,6 +825,41 @@ var make = function make(localRuntime) {
                 'unsafeRead': F2(function (name, x) {
                     return x[name];
                 }),
+                'newOn0': F2(function (name, x) {
+                    return Taskø1.asyncFunction(function (callback) {
+                        return callback(Taskø1.succeed(new x[name]()));
+                    });
+                }),
+                'newOn1': F3(function (name, x, a) {
+                    return Taskø1.asyncFunction(function (callback) {
+                        return callback(Taskø1.succeed(new x[name](a)));
+                    });
+                }),
+                'newOn2': F4(function (name, x, a, b) {
+                    return Taskø1.asyncFunction(function (callback) {
+                        return callback(Taskø1.succeed(new x[name](a, b)));
+                    });
+                }),
+                'newOn3': F5(function (name, x, a, b, c) {
+                    return Taskø1.asyncFunction(function (callback) {
+                        return callback(Taskø1.succeed(new x[name](a, b, c)));
+                    });
+                }),
+                'newOn4': F6(function (name, x, a, b, c, d) {
+                    return Taskø1.asyncFunction(function (callback) {
+                        return callback(Taskø1.succeed(new x[name](a, b, c, d)));
+                    });
+                }),
+                'newOn5': F7(function (name, x, a, b, c, d, e) {
+                    return Taskø1.asyncFunction(function (callback) {
+                        return callback(Taskø1.succeed(new x[name](a, b, c, d, e)));
+                    });
+                }),
+                'newOn6': F8(function (name, x, a, b, c, d, e, f) {
+                    return Taskø1.asyncFunction(function (callback) {
+                        return callback(Taskø1.succeed(new x[name](a, b, c, d, e, f)));
+                    });
+                }),
                 'unsafeGetGlobalConstant': function (name) {
                     return global[name];
                 },

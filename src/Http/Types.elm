@@ -1,6 +1,7 @@
 module Http.Types (..) where
 
 import Time exposing (Time)
+import Foreign.Types exposing (JSRaw)
 
 
 type MaxSockets
@@ -33,3 +34,7 @@ defaultAgentOptions =
     , maxSockets = Infinite
     , maxFreeSockets = 256
     }
+
+
+type Agent
+    = Agent JSRaw

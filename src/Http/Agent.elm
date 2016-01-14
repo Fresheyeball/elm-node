@@ -1,5 +1,13 @@
 module Http.Agent (..) where
 
+import Foreign.Types exposing (JSRaw)
+import Foreign.Pattern.Instantiate as Inst
+import Foreign.Marshall exposing (unsafeRequire)
+import Task exposing (Task)
+import Http.Marshall exposing (..)
+import Http.Types exposing (..)
+
+
 {-|
 Class: http.Agent#
 The HTTP Agent is used for pooling sockets used in HTTP client requests.
@@ -20,6 +28,9 @@ Sockets are removed from the agent's pool when the socket emits either a 'close'
 don't want it to stay in the pool you can do something along the lines of:
 
 -}
+http : JSRaw
+http =
+    unsafeRequire "http"
 
 
 {-|
@@ -41,6 +52,12 @@ var keepAliveAgent = new http.Agent({ keepAlive: true });
 options.agent = keepAliveAgent;
 http.request(options, onResponseCallback);
 -}
+newAgent : AgentOptions -> Task x Agent
+newAgent =
+    marshallAgentOptions
+        >> Inst.newOn1 "Agent" http
+
+
 {-|
 agent.destroy()#
 

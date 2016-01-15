@@ -34,6 +34,8 @@
       "DomainNameService",
       "Chunk",
       "Chunk.Types",
+      "Console",
+      "Console.Color",
       "Compression",
       "Compression.Types",
       "Http.Types",

@@ -29,3 +29,28 @@ type alias SocketAddress =
     , family : Family
     , address : String
     }
+
+
+{-|
+Connection options
+-}
+type alias Connection =
+    { port' : Port
+    , host : String
+    , localAddress : Maybe String
+    , localPort : Maybe Port
+    , family : Family
+    , path : Maybe String
+    }
+
+
+{-| -}
+defaultConnection : Connection
+defaultConnection =
+    { port' = 0
+    , host = "localhost"
+    , localAddress = Nothing
+    , localPort = Nothing
+    , family = IPv4
+    , path = Nothing
+    }

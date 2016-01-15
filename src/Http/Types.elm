@@ -7,9 +7,6 @@ module Http.Types (..) where
 # Method
 @docs METHOD, showMethod
 
-# Connection
-@docs Connection, defaultConnection
-
 # Server
 @docs Server
 
@@ -17,7 +14,6 @@ module Http.Types (..) where
 
 import Time exposing (Time)
 import Foreign.Types exposing (JSRaw)
-import Network.Types exposing (..)
 
 
 {-|
@@ -214,28 +210,3 @@ showMethod method =
 
         UNSUBSCRIBE ->
             "UNSUBSCRIBE"
-
-
-{-|
-Connection options
--}
-type alias Connection =
-    { port' : Port
-    , host : String
-    , localAddress : Maybe String
-    , localPort : Maybe Port
-    , family : Family
-    , path : Maybe String
-    }
-
-
-{-| -}
-defaultConnection : Connection
-defaultConnection =
-    { port' = 0
-    , host = "localhost"
-    , localAddress = Nothing
-    , localPort = Nothing
-    , family = IPv4
-    , path = Nothing
-    }

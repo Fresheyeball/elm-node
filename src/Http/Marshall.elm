@@ -1,9 +1,7 @@
 module Http.Marshall (..) where
 
 import Http.Types exposing (..)
-import Network.Marshall exposing (..)
 import Foreign.Marshall as Marshall
-import Foreign.Types exposing (JSRaw)
 import Time
 
 
@@ -38,15 +36,3 @@ marshallAgentOptions options =
     { options
         | maxSockets = marshallMaxSocketsToInt options.maxSockets
     }
-
-
-marshallConnection : Connection -> JSRaw
-marshallConnection { port', host, localAddress, localPort, family, path } =
-    Marshall.portPrimeToPort
-        { port' = port'
-        , host = host
-        , localAddress = Marshall.unsafeNothingIsUndefined localAddress
-        , localPort = Marshall.unsafeNothingIsUndefined localPort
-        , family = marshallFamily family
-        , path = Marshall.unsafeNothingIsUndefined path
-        }

@@ -879,6 +879,7 @@ var make = function make(localRuntime) {
                         return Dictø1.fromList(Listø1.fromArray(keyPairø1));
                     }.call(this);
                 },
+                'fromArray': Listø1.fromArray,
                 'unsafeRequire': function (module) {
                     return require(module);
                 },

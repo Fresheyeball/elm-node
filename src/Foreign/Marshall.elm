@@ -79,3 +79,8 @@ unsafeObjectToDict =
 rawInfinity : number
 rawInfinity =
     Native.Foreign.rawInfinity
+
+
+unsafeFromArray : JSRaw -> List a
+unsafeFromArray =
+    Native.Foreign.fromArray

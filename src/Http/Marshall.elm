@@ -13,14 +13,26 @@ type alias AgentOptionsRaw =
     }
 
 
+marshallMaxSocketsToInt : MaxSockets -> Int
+marshallMaxSocketsToInt maxsockets =
+    case maxsockets of
+        Finite x ->
+            x
+
+        _ ->
+            Marshall.rawInfinity
+
+
+marshallMaxSocketsFromInt : Int -> MaxSockets
+marshallMaxSocketsFromInt rawInt =
+    if rawInt == Marshall.rawInfinity then
+        Infinite
+    else
+        Finite rawInt
+
+
 marshallAgentOptions : AgentOptions -> AgentOptionsRaw
 marshallAgentOptions options =
     { options
-        | maxSockets =
-            case .maxSockets options of
-                Finite x ->
-                    x
-
-                _ ->
-                    Marshall.rawInfinity
+        | maxSockets = marshallMaxSocketsToInt options.maxSockets
     }

@@ -679,6 +679,8 @@
              (Tuple2 key, (aget obj key)))) ]
       (.fromList Dict (.fromArray List keyPair))))
 
+  :fromArray List.fromArray
+
   :unsafeRequire (fn [module] (require module))
 
   :truthy (fn [x] (if x true false))

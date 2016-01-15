@@ -21,7 +21,8 @@ import Console.Color exposing (..)
 {-| -}
 log : String -> Task x ()
 log message =
-    message
+    "\n"
+        ++ message
         |> write standardOut
 
 

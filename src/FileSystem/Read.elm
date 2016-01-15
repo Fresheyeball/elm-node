@@ -1,8 +1,8 @@
-module FileSystem.Read (read, readFileWith, readFile, readDirectory, readLink, defaultReadFileOptions) where
+module FileSystem.Read (read, readFileWith, readFile, readDirectory, readLink) where
 
 {-|
 # Read from disk
-@docs read, readFileWith, readFile, readDirectory, readLink, defaultReadFileOptions
+@docs read, readFileWith, readFile, readDirectory, readLink
 -}
 
 import Foreign.Types exposing (JSRaw)
@@ -16,14 +16,6 @@ import Task exposing (Task)
 fs : JSRaw
 fs =
     unsafeRequire "fs"
-
-
-{-|
-Re-export of default options
--}
-defaultReadFileOptions : ReadFileOptions
-defaultReadFileOptions =
-    defaultReadFileOptions
 
 
 {-|
@@ -48,7 +40,7 @@ read =
 fs.readFile(file[, options], callback)
 Note: Specified file descriptors will not be closed automatically.
 -}
-readFileWith : ReadFileOptions -> FilePath -> Task FileSystemError String
+readFileWith : ReadFileOptions -> FilePath -> Task FileSystemError Buffer
 readFileWith opts path =
     Get.getAsync2E FileSystemError "readFile" fs path (marshallReadFileOptions opts)
 
@@ -56,7 +48,7 @@ readFileWith opts path =
 {-| fs.readFile(file[, options], callback)
 Same as `readFileWith` but with default options filled in
 -}
-readFile : FilePath -> Task FileSystemError String
+readFile : FilePath -> Task FileSystemError Buffer
 readFile =
     readFileWith defaultReadFileOptions
 

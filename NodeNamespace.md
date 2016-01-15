@@ -3,7 +3,7 @@
 Judgement calls on what to bind, what not to bind, why and how.
 
 ## :raised_hand: Buffer
-Since Elm does not have support for binary, using the methods on Buffer is not currently useful or advisable. So limited support for interacting with Buffers has been included as a part of `Chunk`.
+Since Elm does not have support for binary, using the methods on Buffer is not currently useful or advisable. So limited support for interacting with Buffers has been included as a part of `Chunk`. **Complete**
 
 ## :-1: C/C++ Addons
 No plans to support this at the moment.
@@ -41,11 +41,11 @@ This is a base class, helpers bindings are **complete**
 ## :-1: Globals
 Specific to Node, will not bind
 
-## :+1: HTTP
-**TODO** Needs to be tied into `Network`
+## :metal: HTTP
+May be doable in pure Elm. **TODO** Needs to be tied into `Network`
 
-## :+1: HTTPS
-**TODO** Needs to be tied into `Network`
+## :metal: HTTPS
+May be doable in pure Elm. **TODO** Needs to be tied into `Network`
 
 ## :-1: Modules
 Specific to Node, will not bind
@@ -105,4 +105,4 @@ Unstable
 Basically eval, disallowed
 
 ## :+1: ZLIB
-**TODO** this is useful for so many reasons
+**Complete** this is useful for so many reasons

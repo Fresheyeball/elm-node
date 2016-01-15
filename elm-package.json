@@ -35,7 +35,12 @@
       "Chunk",
       "Chunk.Types",
       "Console",
-      "Console.Color"
+      "Console.Color",
+      "Compression",
+      "Compression.Types",
+      "Http.Types",
+      "Http.StatusCode",
+      "Http.Agent"
     ],
     "native-modules": true,
     "dependencies": {

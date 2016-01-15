@@ -46,6 +46,11 @@ portPrimeToPort =
     Native.Foreign.portPrimeToPort
 
 
+portToPortPrime : JSRaw -> { a | port' : b }
+portToPortPrime =
+    Native.Foreign.portToPortPrime
+
+
 unsafeNothingIsUndefined : Maybe a -> a
 unsafeNothingIsUndefined optional =
     case optional of
@@ -69,3 +74,13 @@ unsafeNothingIsNull optional =
 unsafeObjectToDict : JSRaw -> Dict.Dict String a
 unsafeObjectToDict =
     Native.Foreign.unsafeToDict
+
+
+rawInfinity : number
+rawInfinity =
+    Native.Foreign.rawInfinity
+
+
+unsafeFromArray : JSRaw -> List a
+unsafeFromArray =
+    Native.Foreign.fromArray

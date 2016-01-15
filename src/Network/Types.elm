@@ -1,12 +1,14 @@
 module Network.Types (..) where
 
 import Foreign.Types exposing (JSRaw)
-import Foreign.Marshall as Marshall
-import Native.Network
 
 
 type Socket
     = Socket JSRaw
+
+
+type Server
+    = Server JSRaw
 
 
 type alias Port =
@@ -16,6 +18,10 @@ type alias Port =
 type Family
     = IPv4
     | IPv6
+
+
+type Error
+    = Error String
 
 
 marshallFamily : Family -> Int
@@ -54,20 +60,3 @@ defaultConnection =
     , family = IPv4
     , path = Nothing
     }
-
-
-marshallConnection : Connection -> JSRaw
-marshallConnection { port', host, localAddress, localPort, family, path } =
-    Marshall.portPrimeToPort
-        { port' = port'
-        , host = host
-        , localAddress = Marshall.unsafeNothingIsUndefined localAddress
-        , localPort = Marshall.unsafeNothingIsUndefined localPort
-        , family = marshallFamily family
-        , path = Marshall.unsafeNothingIsUndefined path
-        }
-
-
-marshallSocketAddress : JSRaw -> SocketAddress
-marshallSocketAddress =
-    Native.Network.marshallSocketAddress IPv4 IPv6 SocketAddress

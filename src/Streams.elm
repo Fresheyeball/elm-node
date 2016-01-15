@@ -54,7 +54,7 @@ on event f { readable } =
 This is emitted whenever the pipe() method is called on a readable stream, adding this
 writable to its set of destinations.
 -}
-pipe : Readable a -> Writable a -> Task x ()
+pipe : Readable a -> Writable b -> Task x ()
 pipe { readable } { writable } =
     Method.method1 "pipe" readable writable
 
@@ -64,7 +64,7 @@ readable.unpipe([destination])
 This method will remove the hooks set up for a previous pipe() call.
 If no pipe is set up for it, then this is a no-op.
 -}
-unpipe : Readable a -> Writable a -> Task x ()
+unpipe : Readable a -> Writable b -> Task x ()
 unpipe { readable } { writable } =
     Method.method1 "unpipe" readable writable
 

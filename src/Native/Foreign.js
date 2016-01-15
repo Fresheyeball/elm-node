@@ -825,6 +825,41 @@ var make = function make(localRuntime) {
                 'unsafeRead': F2(function (name, x) {
                     return x[name];
                 }),
+                'newOn0': F2(function (name, x) {
+                    return Taskø1.asyncFunction(function (callback) {
+                        return callback(Taskø1.succeed(new x[name]()));
+                    });
+                }),
+                'newOn1': F3(function (name, x, a) {
+                    return Taskø1.asyncFunction(function (callback) {
+                        return callback(Taskø1.succeed(new x[name](a)));
+                    });
+                }),
+                'newOn2': F4(function (name, x, a, b) {
+                    return Taskø1.asyncFunction(function (callback) {
+                        return callback(Taskø1.succeed(new x[name](a, b)));
+                    });
+                }),
+                'newOn3': F5(function (name, x, a, b, c) {
+                    return Taskø1.asyncFunction(function (callback) {
+                        return callback(Taskø1.succeed(new x[name](a, b, c)));
+                    });
+                }),
+                'newOn4': F6(function (name, x, a, b, c, d) {
+                    return Taskø1.asyncFunction(function (callback) {
+                        return callback(Taskø1.succeed(new x[name](a, b, c, d)));
+                    });
+                }),
+                'newOn5': F7(function (name, x, a, b, c, d, e) {
+                    return Taskø1.asyncFunction(function (callback) {
+                        return callback(Taskø1.succeed(new x[name](a, b, c, d, e)));
+                    });
+                }),
+                'newOn6': F8(function (name, x, a, b, c, d, e, f) {
+                    return Taskø1.asyncFunction(function (callback) {
+                        return callback(Taskø1.succeed(new x[name](a, b, c, d, e, f)));
+                    });
+                }),
                 'unsafeGetGlobalConstant': function (name) {
                     return global[name];
                 },
@@ -832,9 +867,7 @@ var make = function make(localRuntime) {
                 'unsafeUndefined': undefined,
                 'portPrimeToPort': function (x) {
                     return (function () {
-                        x.port = x.port$();
-                        x.port$ = undefined;
-                        return x;
+                        return x.port$ = x.port();
                     })();
                 },
                 'unsafeToDict': function (obj) {
@@ -846,6 +879,7 @@ var make = function make(localRuntime) {
                         return Dictø1.fromList(Listø1.fromArray(keyPairø1));
                     }.call(this);
                 },
+                'fromArray': Listø1.fromArray,
                 'unsafeRequire': function (module) {
                     return require(module);
                 },
@@ -860,7 +894,8 @@ var make = function make(localRuntime) {
                         console.log(x);
                         return x;
                     })();
-                }
+                },
+                'rawInfinity': Infinity
             };
         })();
     }.call(this);

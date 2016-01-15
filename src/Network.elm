@@ -13,6 +13,7 @@ import Foreign.Pattern.Read exposing (unsafeRead)
 import Foreign.Marshall exposing (unsafeRequire)
 import Task exposing (Task)
 import Network.Types exposing (..)
+import Network.Marshall exposing (..)
 
 
 net : JSRaw

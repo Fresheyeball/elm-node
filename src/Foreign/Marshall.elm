@@ -74,3 +74,13 @@ unsafeNothingIsNull optional =
 unsafeObjectToDict : JSRaw -> Dict.Dict String a
 unsafeObjectToDict =
     Native.Foreign.unsafeToDict
+
+
+rawInfinity : number
+rawInfinity =
+    Native.Foreign.rawInfinity
+
+
+unsafeFromArray : JSRaw -> List a
+unsafeFromArray =
+    Native.Foreign.fromArray

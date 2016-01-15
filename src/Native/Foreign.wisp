@@ -627,6 +627,34 @@
 
   :unsafeRead (F2 (fn [name x] (aget x name)))
 
+  :newOn0 (F2 (fn [name x]
+    (.asyncFunction Task (fn [callback]
+      (callback (.succeed Task (new (aget x name))))))))
+
+  :newOn1 (F3 (fn [name x a]
+    (.asyncFunction Task (fn [callback]
+      (callback (.succeed Task (new (aget x name) a)))))))
+
+  :newOn2 (F4 (fn [name x a b]
+    (.asyncFunction Task (fn [callback]
+      (callback (.succeed Task (new (aget x name) a b)))))))
+
+  :newOn3 (F5 (fn [name x a b c]
+    (.asyncFunction Task (fn [callback]
+      (callback (.succeed Task (new (aget x name) a b c)))))))
+
+  :newOn4 (F6 (fn [name x a b c d]
+    (.asyncFunction Task (fn [callback]
+      (callback (.succeed Task (new (aget x name) a b c d)))))))
+
+  :newOn5 (F7 (fn [name x a b c d e]
+    (.asyncFunction Task (fn [callback]
+      (callback (.succeed Task (new (aget x name) a b c d e)))))))
+
+  :newOn6 (F8 (fn [name x a b c d e f]
+    (.asyncFunction Task (fn [callback]
+      (callback (.succeed Task (new (aget x name) a b c d e f)))))))
+
   :unsafeGetGlobalConstant (fn [name] (aget global name))
 
   :unsafeNull null
@@ -651,6 +679,8 @@
              (Tuple2 key, (aget obj key)))) ]
       (.fromList Dict (.fromArray List keyPair))))
 
+  :fromArray List.fromArray
+
   :unsafeRequire (fn [module] (require module))
 
   :truthy (fn [x] (if x true false))
@@ -661,6 +691,8 @@
     (do
         (.log console x)
         x))
+
+  :rawInfinity Infinity
 
   })))))
 

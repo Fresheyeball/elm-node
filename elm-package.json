@@ -35,7 +35,10 @@
       "Chunk",
       "Chunk.Types",
       "Compression",
-      "Compression.Types"
+      "Compression.Types",
+      "Http.Types",
+      "Http.StatusCode",
+      "Http.Agent"
     ],
     "native-modules": true,
     "dependencies": {

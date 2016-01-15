@@ -16,7 +16,8 @@
    List   (Elm.Native.List.make   localRuntime)
    Dict   (Elm.Dict.make          localRuntime)
    Tuple0 (:Tuple0 Utils)
-   Tuple2 (:Tuple2 Utils)]
+   Tuple2 (:Tuple2 Utils)
+   Tuple3 (:Tuple3 Utils)]
    (do
      (foreign.sanitize localRuntime :Native :Foreign)
      (if localRuntime.Native.Foreign.values
@@ -414,6 +415,18 @@
       (.asyncFunction Task (fn [callback]
         (do
           ((aget object onname) a b c d e handler_)
+          (callback (.succeed Task (.asyncFunction Task (fn [callback_]
+            (do
+              ((aget object offname) a handler_)
+              (callback_ (.succeed Task Tuple0)))))))))))))
+
+  :listen1_3 (F5 (fn [onname offname object a handler]
+    (let
+      [handler_ (fn [x y z]
+          (.perform Task (handler (Tuple3 x y z))))]
+      (.asyncFunction Task (fn [callback]
+        (do
+          ((aget object onname) a handler_)
           (callback (.succeed Task (.asyncFunction Task (fn [callback_]
             (do
               ((aget object offname) a handler_)

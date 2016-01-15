@@ -78,3 +78,8 @@ listen3_2 =
 listen4_2 : ListenName -> UnlistenName -> object -> a -> b -> c -> d -> (( e, f ) -> Task x ()) -> Task x (Task x' ())
 listen4_2 =
     Native.Foreign.listen4_2
+
+
+listen1_3 : ListenName -> UnlistenName -> object -> a -> (( b, c, d ) -> Task x ()) -> Task x (Task x ())
+listen1_3 =
+    Native.Foreign.listen1_3

@@ -8,8 +8,10 @@ module Http.Types (..) where
 @docs METHOD, showMethod
 
 # Server
-@docs Server
+@docs Server, Request, Response
 
+# Error
+@docs Error
 -}
 
 import Time exposing (Time)
@@ -23,6 +25,12 @@ to clean up that mess for `maxsockets` in Node's API.
 type MaxSockets
     = Finite Int
     | Infinite
+
+
+{-| Http Error
+-}
+type Error
+    = Error String
 
 
 {-|
@@ -54,17 +62,31 @@ defaultAgentOptions =
 
 
 {-|
-Represents a raw instance of Node.js's Http.Agent class
+Represents a raw instance of Node.js's http.Agent class
 -}
 type Agent
     = Agent JSRaw
 
 
 {-|
-Represents a raw instance of Node.js's Http.Server class
+Represents a raw instance of Node.js's http.Server class
 -}
 type Server
     = Server JSRaw
+
+
+{-|
+Represents a raw instance of Node.js's http.IncomingMessage class
+-}
+type Request
+    = Request JSRaw
+
+
+{-|
+Represents a raw instance of Node.js's http.ServerResponse class
+-}
+type Response
+    = Response JSRaw
 
 
 {-|

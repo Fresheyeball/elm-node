@@ -17,6 +17,7 @@ var make = function make(localRuntime) {
         var Dictø1 = Elm.Dict.make(localRuntime);
         var Tuple0ø1 = (Utilsø1 || 0)['Tuple0'];
         var Tuple2ø1 = (Utilsø1 || 0)['Tuple2'];
+        var Tuple3ø1 = (Utilsø1 || 0)['Tuple3'];
         return (function () {
             foreign.sanitize(localRuntime, 'Native', 'Foreign');
             return localRuntime.Native.Foreign.values ? localRuntime.Native.Foreign.values : localRuntime.Native.Foreign.values = {
@@ -568,6 +569,24 @@ var make = function make(localRuntime) {
                         return Taskø1.asyncFunction(function (callback) {
                             return (function () {
                                 object[onname](a, b, c, d, e, handler_ø1);
+                                return callback(Taskø1.succeed(Taskø1.asyncFunction(function (callback_) {
+                                    return (function () {
+                                        object[offname](a, handler_ø1);
+                                        return callback_(Taskø1.succeed(Tuple0ø1));
+                                    })();
+                                })));
+                            })();
+                        });
+                    }.call(this);
+                }),
+                'listen1_3': F5(function (onname, offname, object, a, handler) {
+                    return function () {
+                        var handler_ø1 = function (x, y, z) {
+                            return Taskø1.perform(handler(Tuple3ø1(x, y, z)));
+                        };
+                        return Taskø1.asyncFunction(function (callback) {
+                            return (function () {
+                                object[onname](a, handler_ø1);
                                 return callback(Taskø1.succeed(Taskø1.asyncFunction(function (callback_) {
                                     return (function () {
                                         object[offname](a, handler_ø1);

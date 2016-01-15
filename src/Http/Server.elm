@@ -1,107 +1,117 @@
 module Http.Server (..) where
 
 {-|
-Class: http.Server#
+Class: http.Server
 This class inherits from net.Server and has the following additional events:
 
 -}
 
+import Foreign.Marshall as Marshall
+import Foreign.Pattern.Method as Method
 import Http.Types exposing (..)
+import Network.Types as Net
 import Emitter.Unsafe as Emitter
+import Chunk.Types as Chunk
+import Task exposing (Task)
 
 
 {-|
-Event: 'checkContinue'#
-
-function (request, response) { }
-
-Emitted each time a request with an http Expect: 100-continue is received. If this event isn't listened for, the server will automatically respond with a 100 Continue as appropriate.
-
-Handling this event involves calling response.writeContinue() if the client should continue to send the request body, or generating an appropriate HTTP response (e.g., 400 Bad Request) if the client should not continue to send the request body.
-
+Event: 'checkContinue'
+Emitted each time a request with an http Expect: 100-continue is received. If this event isn't
+listened for, the server will automatically respond with a 100 Continue as appropriate.
+Handling this event involves calling response.writeContinue() if the client should continue to
+send the request body, or generating an appropriate HTTP response (e.g., 400 Bad Request) if
+the client should not continue to send the request body.
 Note that when this event is emitted and handled, the 'request' event will not be emitted.
 -}
+onCheckContinue : Server -> (( Request, Response ) -> Task x ()) -> Task x (Task x ())
+onCheckContinue =
+    Emitter.on2 "checkContinue"
+
+
 {-|
-Event: 'clientError'#
-
-function (exception, socket) { }
-
+Event: 'clientError'
 If a client connection emits an 'error' event, it will be forwarded here.
-
 socket is the net.Socket object that the error originated from.
 -}
+onClientError : Server -> (Error -> Net.Socket -> Task x ()) -> Task x (Task x ())
+onClientError server f =
+    Emitter.on2
+        "clientError"
+        server
+        (\( rawErr, socket ) ->
+            f (Error <| Marshall.unsafeToString rawErr) socket
+        )
+
+
 {-|
-Event: 'close'#
-
-function () { }
-
+Event: 'close'
 Emitted when the server closes.
 -}
+onClose : Server -> Task x () -> Task x (Task x ())
+onClose =
+    Emitter.on0 "close"
+
+
 {-|
-Event: 'connect'#
-
-function (request, socket, head) { }
-
-Emitted each time a client requests a http CONNECT method. If this event isn't listened for, then clients requesting a CONNECT method will have their connections closed.
-
+Event: 'connect'
+Emitted each time a client requests a http CONNECT method. If this event isn't listened for,
+then clients requesting a CONNECT method will have their connections closed.
 request is the arguments for the http request, as it is in the request event.
 socket is the network socket between the server and client.
 head is an instance of Buffer, the first packet of the tunneling stream, this may be empty.
-After this event is emitted, the request's socket will not have a 'data' event listener, meaning you will need to bind to it in order to handle data sent to the server on that socket.
+After this event is emitted, the request's socket will not have a 'data' event listener,
+meaning you will need to bind to it in order to handle data sent to the server on that socket.
 -}
+onConnect : Server -> (Request -> Net.Socket -> Chunk.Buffer -> Task x ()) -> Task x (Task x ())
+onConnect server f =
+    Emitter.on3 "connect" server (\( x, y, z ) -> f x y z)
+
+
 {-|
-Event: 'connection'#
-
-function (socket) { }
-
+Event: 'connection'
 When a new TCP stream is established. socket is an object of type net.Socket. Usually users will not want to access this event. In particular, the socket will not emit 'readable' events because of how the protocol parser attaches to the socket. The socket can also be accessed at request.connection.
 -}
+onConnection : Server -> (Net.Socket -> Task x ()) -> Task x (Task x ())
+onConnection =
+    Emitter.on1 "connection"
+
+
 {-|
-Event: 'request'#
-
-function (request, response) { }
-
-Emitted each time there is a request. Note that there may be multiple requests per connection (in the case of keep-alive connections). request is an instance of http.IncomingMessage and response is an instance of http.ServerResponse.
+Event: 'request'
+Emitted each time there is a request. Note that there may be multiple requests per connection (in the case of
+keep-alive connections). request is an instance of http.IncomingMessage and response is an instance of
+http.ServerResponse.
 -}
+onRequest : Server -> (( Request, Response ) -> Task x ()) -> Task x (Task x ())
+onRequest =
+    Emitter.on2 "request"
+
+
 {-|
-Event: 'upgrade'#
-
-function (request, socket, head) { }
-
-Emitted each time a client requests a http upgrade. If this event isn't listened for, then clients requesting an upgrade will have their connections closed.
-
+Event: 'upgrade'
+Emitted each time a client requests a http upgrade. If this event isn't listened for, then clients requesting an
+upgrade will have their connections closed.
 request is the arguments for the http request, as it is in the request event.
 socket is the network socket between the server and client.
 head is an instance of Buffer, the first packet of the upgraded stream, this may be empty.
-After this event is emitted, the request's socket will not have a 'data' event listener, meaning you will need to bind to it in order to handle data sent to the server on that socket.
+After this event is emitted, the request's socket will not have a 'data' event listener, meaning you will need to bind
+to it in order to handle data sent to the server on that socket.
 -}
-{-|
-server.close([callback])#
+onUpgrade : Server -> (Request -> Net.Socket -> Chunk.Buffer -> Task x ()) -> Task x (Task x ())
+onUpgrade server f =
+    Emitter.on3 "upgrade" server (\( x, y, z ) -> f x y z)
 
+
+{-|
+server.close([callback])
 Stops the server from accepting new connections. See net.Server.close().
 -}
-{-|
-server.listen(handle[, callback])#
+close : Server -> Task x ()
+close =
+    Method.method0 "close"
 
-handle Object
-callback Function
-The handle object can be set to either a server or socket (anything with an underlying _handle member), or a {fd: <n>} object.
 
-This will cause the server to accept connections on the specified handle, but it is presumed that the file descriptor or handle has already been bound to a port or domain socket.
-
-Listening on a file descriptor is not supported on Windows.
-
-This function is asynchronous. The last parameter callback will be added as a listener for the 'listening' event. See also net.Server.listen().
-
-Returns server.
--}
-{-|
-server.listen(path[, callback])#
-
-Start a UNIX socket server listening for connections on the given path.
-
-This function is asynchronous. The last parameter callback will be added as a listener for the 'listening' event. See also net.Server.listen(path).
--}
 {-|
 server.listen(port[, hostname][, backlog][, callback])#
 
@@ -113,6 +123,12 @@ Backlog is the maximum length of the queue of pending connections. The actual le
 
 This function is asynchronous. The last parameter callback will be added as a listener for the 'listening' event. See also net.Server.listen(port).
 -}
+
+
+
+-- listen : Server -> Port ->
+
+
 {-|
 server.maxHeadersCount#
 

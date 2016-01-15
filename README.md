@@ -51,6 +51,9 @@ Currently exposed modules you can try out right now:
 - Chunk.Types
 - Compression
 - Compression.Types
+- Http.Types
+- Http.StatusCode
+- Http.Agent
 
 ## Goals
 

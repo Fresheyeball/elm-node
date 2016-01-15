@@ -1,9 +1,18 @@
 module Http.Types (..) where
 
+{-|
+
+@docs MaxSockets, Agent, AgentOptions, defaultAgentOptions
+-}
+
 import Time exposing (Time)
 import Foreign.Types exposing (JSRaw)
 
 
+{-|
+JavaScript allows for `Infinity` as a `Number`. MaxSockets is a type
+to clean up that mess for `maxsockets` in Node's API.
+-}
 type MaxSockets
     = Finite Int
     | Infinite
@@ -27,6 +36,7 @@ type alias AgentOptions =
     }
 
 
+{-| -}
 defaultAgentOptions : AgentOptions
 defaultAgentOptions =
     { keepAlive = False
@@ -36,5 +46,8 @@ defaultAgentOptions =
     }
 
 
+{-|
+Represents a raw instance of Node.js's Http.Agent class
+-}
 type Agent
     = Agent JSRaw

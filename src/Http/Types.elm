@@ -1,8 +1,14 @@
 module Http.Types (..) where
 
 {-|
-
+# Agent
 @docs MaxSockets, Agent, AgentOptions, defaultAgentOptions
+
+# Server
+@docs Server
+
+# Method
+@docs METHOD, showMethod
 -}
 
 import Time exposing (Time)
@@ -51,3 +57,155 @@ Represents a raw instance of Node.js's Http.Agent class
 -}
 type Agent
     = Agent JSRaw
+
+
+{-|
+Represents a raw instance of Node.js's Http.Server class
+-}
+type Server
+    = Server JSRaw
+
+
+{-|
+HTTP methods that are supported by the parser.
+-}
+type METHOD
+    = ACL
+    | BIND
+    | CHECKOUT
+    | CONNECT
+    | COPY
+    | DELETE
+    | GET
+    | HEAD
+    | LINK
+    | LOCK
+    | MSEARCH
+    | MERGE
+    | MKACTIVITY
+    | MKCALENDAR
+    | MKCOL
+    | MOVE
+    | NOTIFY
+    | OPTIONS
+    | PATCH
+    | POST
+    | PROPFIND
+    | PROPPATCH
+    | PURGE
+    | PUT
+    | REBIND
+    | REPORT
+    | SEARCH
+    | SUBSCRIBE
+    | TRACE
+    | UNBIND
+    | UNLINK
+    | UNLOCK
+    | UNSUBSCRIBE
+
+
+{-|
+To standard human readable string
+-}
+showMethod : METHOD -> String
+showMethod method =
+    case method of
+        ACL ->
+            "ACL"
+
+        BIND ->
+            "BIND"
+
+        CHECKOUT ->
+            "CHECKOUT"
+
+        CONNECT ->
+            "CONNECT"
+
+        COPY ->
+            "COPY"
+
+        DELETE ->
+            "DELETE"
+
+        GET ->
+            "GET"
+
+        HEAD ->
+            "HEAD"
+
+        LINK ->
+            "LINK"
+
+        LOCK ->
+            "LOCK"
+
+        MSEARCH ->
+            "M-SEARCH"
+
+        MERGE ->
+            "MERGE"
+
+        MKACTIVITY ->
+            "MKACTIVITY"
+
+        MKCALENDAR ->
+            "MKCALENDAR"
+
+        MKCOL ->
+            "MKCOL"
+
+        MOVE ->
+            "MOVE"
+
+        NOTIFY ->
+            "NOTIFY"
+
+        OPTIONS ->
+            "OPTIONS"
+
+        PATCH ->
+            "PATCH"
+
+        POST ->
+            "POST"
+
+        PROPFIND ->
+            "PROPFIND"
+
+        PROPPATCH ->
+            "PROPPATCH"
+
+        PURGE ->
+            "PURGE"
+
+        PUT ->
+            "PUT"
+
+        REBIND ->
+            "REBIND"
+
+        REPORT ->
+            "REPORT"
+
+        SEARCH ->
+            "SEARCH"
+
+        SUBSCRIBE ->
+            "SUBSCRIBE"
+
+        TRACE ->
+            "TRACE"
+
+        UNBIND ->
+            "UNBIND"
+
+        UNLINK ->
+            "UNLINK"
+
+        UNLOCK ->
+            "UNLOCK"
+
+        UNSUBSCRIBE ->
+            "UNSUBSCRIBE"

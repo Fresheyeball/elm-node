@@ -1,8 +1,12 @@
-module Console.Color (..) where
+module Console.Color (Color(..), regular, bold, underline, highIntensity, boldHighIntensity, background, highIntensityBackgrounds) where
+
+{-|
+# Style your console messages
+
+@docs Color, regular, bold, underline, highIntensity, boldHighIntensity, background, highIntensityBackgrounds
+-}
 
 import Native.Console
-import Console exposing (..)
-import Task exposing (Task)
 
 
 end : String
@@ -15,6 +19,9 @@ encode =
     Native.Console.encode
 
 
+{-|
+Colors supported for bash
+-}
 type Color
     = Black
     | Red
@@ -26,41 +33,9 @@ type Color
     | White
 
 
-red : String -> Task x ()
-red =
-    regular Red >> log
-
-
-green : String -> Task x ()
-green =
-    regular Green >> log
-
-
-yellow : String -> Task x ()
-yellow =
-    regular Yellow >> log
-
-
-blue : String -> Task x ()
-blue =
-    regular Blue >> log
-
-
-purple : String -> Task x ()
-purple =
-    regular Purple >> log
-
-
-cyan : String -> Task x ()
-cyan =
-    regular Cyan >> log
-
-
-white : String -> Task x ()
-white =
-    regular White >> log
-
-
+{-|
+Apply a background color to some string
+-}
 background : Color -> String -> String
 background =
     apply
@@ -92,6 +67,9 @@ background =
                         "47"
 
 
+{-|
+Color the text of a Sting
+-}
 regular : Color -> String -> String
 regular =
     apply
@@ -123,6 +101,9 @@ regular =
                         "0;37"
 
 
+{-|
+Color the text of some String and display it bold
+-}
 bold : Color -> String -> String
 bold =
     apply
@@ -154,6 +135,9 @@ bold =
                         "1;37"
 
 
+{-|
+Color some String and display underlined
+-}
 underline : Color -> String -> String
 underline =
     apply
@@ -185,6 +169,9 @@ underline =
                         "4;37"
 
 
+{-|
+Same as regular but more intense
+-}
 highIntensity : Color -> String -> String
 highIntensity =
     apply
@@ -216,6 +203,9 @@ highIntensity =
                         "0;97"
 
 
+{-|
+Same as bold, but more intense
+-}
 boldHighIntensity : Color -> String -> String
 boldHighIntensity =
     apply
@@ -247,6 +237,9 @@ boldHighIntensity =
                         "1;97"
 
 
+{-|
+Same as background but more intense
+-}
 highIntensityBackgrounds : Color -> String -> String
 highIntensityBackgrounds =
     apply

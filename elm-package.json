@@ -33,7 +33,9 @@
       "FileSystem",
       "DomainNameService",
       "Chunk",
-      "Chunk.Types"
+      "Chunk.Types",
+      "Console",
+      "Console.Color"
     ],
     "native-modules": true,
     "dependencies": {

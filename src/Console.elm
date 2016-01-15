@@ -1,12 +1,15 @@
 module Console (..) where
 
 {-|
-Helpers for writting to Standard Out
+# Helpers for writting to Standard Out
 
 @docs log, print
 
-# Colors
-@docs blue, cyan, green, purple, red, white, yellow
+## Colors
+@docs blue, cyan, green, purple, red, white, yellow, scare, caution
+
+# Error
+@docs error
 -}
 
 import Process.Streams exposing (..)
@@ -68,3 +71,22 @@ cyan =
 white : String -> Task x ()
 white =
     regular White >> log
+
+
+{-| -}
+scare : String -> Task x ()
+scare =
+    background Red >> log
+
+
+{-| -}
+caution : String -> Task x ()
+caution =
+    background Yellow >> log
+
+
+{-| Prints to strerr
+-}
+error : String -> Task x ()
+error =
+    write standardError

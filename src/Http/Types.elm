@@ -2,7 +2,7 @@ module Http.Types (..) where
 
 {-|
 # Agent
-@docs MaxSockets, Agent, AgentOptions, defaultAgentOptions
+@docs Agent, AgentOptions, defaultAgentOptions
 
 # Method
 @docs METHOD, showMethod
@@ -14,17 +14,9 @@ module Http.Types (..) where
 @docs Error
 -}
 
+import Cardinal exposing (Cardinal(PosInfinity, Finite))
 import Time exposing (Time)
 import Foreign.Types exposing (JSRaw)
-
-
-{-|
-JavaScript allows for `Infinity` as a `Number`. MaxSockets is a type
-to clean up that mess for `maxsockets` in Node's API.
--}
-type MaxSockets
-    = Finite Int
-    | Infinite
 
 
 {-| Http Error
@@ -46,7 +38,7 @@ The default http.globalAgent that is used by http.request() has all of these val
 type alias AgentOptions =
     { keepAlive : Bool
     , keepAliveMsecs : Time
-    , maxSockets : MaxSockets
+    , maxSockets : Cardinal Int
     , maxFreeSockets : Int
     }
 
@@ -56,7 +48,7 @@ defaultAgentOptions : AgentOptions
 defaultAgentOptions =
     { keepAlive = False
     , keepAliveMsecs = 1000
-    , maxSockets = Infinite
+    , maxSockets = PosInfinity
     , maxFreeSockets = 256
     }
 

@@ -705,7 +705,8 @@
         (.log console x)
         x))
 
-  :rawInfinity Infinity
+  :rawPosInfinity Infinity
+  :rawNegInfinity (- 0 Infinity)
 
   })))))
 

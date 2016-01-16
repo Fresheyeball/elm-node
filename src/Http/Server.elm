@@ -8,6 +8,7 @@ This class inherits from net.Server and has the following additional events:
 
 import Foreign.Marshall as Marshall
 import Foreign.Pattern.Method as Method
+import Foreign.Pattern.Get as Get
 import Foreign.Pattern.Member as Member
 import Foreign.Pattern.Member as Member
 import Http.Types exposing (..)
@@ -15,6 +16,7 @@ import Network.Types as Net
 import Emitter.Unsafe as Emitter
 import Chunk.Types as Chunk
 import Task exposing (Task)
+import Time exposing (Time)
 
 
 {-|
@@ -116,9 +118,7 @@ close =
 
 {-|
 server.listen(port[, hostname][, backlog][, callback])
-Begin accepting connections on the specified port and hostname. If the hostname is omitted, the server will accept
-connections on any IPv6 address (::) when IPv6 is available, or any IPv4 address (0.0.0.0) otherwise. A port value of
-zero will assign a random port.
+Begin accepting connections on the specified port and hostname.  A port value of zero will assign a random port.
 To listen to a unix socket, supply a filename instead of port and hostname.
 Backlog is the maximum length of the queue of pending connections. The actual length will be determined by your OS
 through sysctl settings such as tcp_max_syn_backlog and somaxconn on linux.
@@ -133,13 +133,8 @@ listenOnWithBacklog server { port', hostname, backlog } =
 
 {-|
 server.listen(port[, hostname][, backlog][, callback])
-Begin accepting connections on the specified port and hostname. If the hostname is omitted, the server will accept
-connections on any IPv6 address (::) when IPv6 is available, or any IPv4 address (0.0.0.0) otherwise. A port value of
-zero will assign a random port.
+Begin accepting connections on the specified port and hostname. A port value of zero will assign a random port.
 To listen to a unix socket, supply a filename instead of port and hostname.
-Backlog is the maximum length of the queue of pending connections. The actual length will be determined by your OS
-through sysctl settings such as tcp_max_syn_backlog and somaxconn on linux.
-The default value of this parameter is 511 (not 512).
 This function is asynchronous. The last parameter callback will be added as a listener for the 'listening' event. See
 also net.Server.listen(port).
 -}
@@ -150,15 +145,9 @@ listenOn server { port', hostname } =
 
 {-|
 server.listen(port[, hostname][, backlog][, callback])
-Begin accepting connections on the specified port and hostname. If the hostname is omitted, the server will accept
-connections on any IPv6 address (::) when IPv6 is available, or any IPv4 address (0.0.0.0) otherwise. A port value of
-zero will assign a random port.
-To listen to a unix socket, supply a filename instead of port and hostname.
-Backlog is the maximum length of the queue of pending connections. The actual length will be determined by your OS
-through sysctl settings such as tcp_max_syn_backlog and somaxconn on linux.
-The default value of this parameter is 511 (not 512).
-This function is asynchronous. The last parameter callback will be added as a listener for the 'listening' event. See
-also net.Server.listen(port).
+Begin accepting connections on the specified port. The server will accept
+connections on any IPv6 address (::) when IPv6 is available, or any IPv4 address (0.0.0.0) otherwise.
+A port value of zero will assign a random port.
 -}
 listen : Server -> Net.Port -> Task x ()
 listen =
@@ -174,36 +163,68 @@ getMaxHeaders =
     Member.read "maxHeadersCount"
 
 
+{-|
+server.maxHeadersCount
+Limits maximum incoming headers count, equal to 1000 by default. If set to 0 - no limit will be applied.
+-}
 modifyMaxHeaders : Server -> (Int -> Int) -> Task x ()
 modifyMaxHeaders =
     Member.modify "maxHeadersCount"
 
 
+{-|
+server.maxHeadersCount
+Limits maximum incoming headers count, equal to 1000 by default. If set to 0 - no limit will be applied.
+-}
 setMaxHeaders : Server -> Int -> Task x ()
 setMaxHeaders =
     Member.set "maxHeadersCount"
 
 
 {-|
-server.setTimeout(msecs, callback)#
-
-msecs Number
-callback Function
-Sets the timeout value for sockets, and emits a 'timeout' event on the Server object, passing the socket as an argument, if a timeout occurs.
-
-If there is a 'timeout' event listener on the Server object, then it will be called with the timed-out socket as an argument.
-
-By default, the Server's timeout value is 2 minutes, and sockets are destroyed automatically if they time out. However, if you assign a callback to the Server's 'timeout' event, then you are responsible for handling socket timeouts.
-
-Returns server.
--}
-{-|
-server.timeout#
-
+server.timeout
 Number Default = 120000 (2 minutes)
 The number of milliseconds of inactivity before a socket is presumed to have timed out.
-
-Note that the socket timeout logic is set up on connection, so changing this value only affects new connections to the server, not any existing connections.
-
+Note that the socket timeout logic is set up on connection, so changing this value
+only affects new connections to the server, not any existing connections.
 Set to 0 to disable any kind of automatic timeout behavior on incoming connections.
 -}
+getSocketTimeout : Server -> Task x Time
+getSocketTimeout =
+    Member.read "timeout"
+
+
+{-|
+server.timeout
+Number Default = 120000 (2 minutes)
+The number of milliseconds of inactivity before a socket is presumed to have timed out.
+Note that the socket timeout logic is set up on connection, so changing this value
+only affects new connections to the server, not any existing connections.
+Set to 0 to disable any kind of automatic timeout behavior on incoming connections.
+-}
+modifySocketTimeout : Server -> (Time -> Time) -> Task x ()
+modifySocketTimeout =
+    Member.modify "timeout"
+
+
+{-|
+server.timeout
+Number Default = 120000 (2 minutes)
+The number of milliseconds of inactivity before a socket is presumed to have timed out.
+Note that the socket timeout logic is set up on connection, so changing this value
+only affects new connections to the server, not any existing connections.
+Set to 0 to disable any kind of automatic timeout behavior on incoming connections.
+-}
+setSocketTimeout : Server -> Time -> Task x ()
+setSocketTimeout =
+    Member.set "setTimeout"
+
+
+{-|
+http.createServer([requestListener])
+Returns a new instance of http.Server.
+The requestListener is a function which is automatically added to the 'request' event.
+-}
+createServer : Task x Server
+createServer =
+    Get.get0 "createServer" (Marshall.unsafeRequire "http")

@@ -1,6 +1,7 @@
 module Http.Marshall (..) where
 
 import Http.Types exposing (..)
+import Cardinal exposing (Cardinal(..))
 import Foreign.Marshall as Marshall
 import Time
 
@@ -13,20 +14,25 @@ type alias AgentOptionsRaw =
     }
 
 
-marshallMaxSocketsToInt : MaxSockets -> Int
-marshallMaxSocketsToInt maxsockets =
-    case maxsockets of
+marshallCardinalToInt : Cardinal Int -> Int
+marshallCardinalToInt card =
+    case card of
         Finite x ->
             x
 
-        _ ->
-            Marshall.rawInfinity
+        PosInfinity ->
+            Marshall.rawPosInfinity
+
+        NegInfinity ->
+            Marshall.rawNegInfinity
 
 
-marshallMaxSocketsFromInt : Int -> MaxSockets
-marshallMaxSocketsFromInt rawInt =
-    if rawInt == Marshall.rawInfinity then
-        Infinite
+marshallCardinalFromInt : Int -> Cardinal Int
+marshallCardinalFromInt rawInt =
+    if rawInt == Marshall.rawPosInfinity then
+        PosInfinity
+    else if rawInt == Marshall.rawNegInfinity then
+        NegInfinity
     else
         Finite rawInt
 
@@ -34,5 +40,5 @@ marshallMaxSocketsFromInt rawInt =
 marshallAgentOptions : AgentOptions -> AgentOptionsRaw
 marshallAgentOptions options =
     { options
-        | maxSockets = marshallMaxSocketsToInt options.maxSockets
+        | maxSockets = marshallCardinalToInt options.maxSockets
     }

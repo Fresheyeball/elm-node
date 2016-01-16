@@ -40,6 +40,7 @@ import Task exposing (Task)
 import Network.Types exposing (..)
 import Http.Marshall exposing (..)
 import Http.Types exposing (..)
+import Cardinal exposing (Cardinal(..))
 
 
 http : JSRaw
@@ -125,10 +126,10 @@ agent.maxSockets
 By default set to Infinity. Determines how many concurrent sockets the agent can have open per
 origin. Origin is either a 'host:port' or 'host:port:localAddress' combination.
 -}
-getMaxSockets : Agent -> Task x MaxSockets
+getMaxSockets : Agent -> Task x (Cardinal Int)
 getMaxSockets =
     Member.read "maxSockets"
-        >> Task.map marshallMaxSocketsFromInt
+        >> Task.map marshallCardinalFromInt
 
 
 {-|
@@ -136,14 +137,14 @@ agent.maxSockets
 Determines how many concurrent sockets the agent can have open per
 origin. Origin is either a 'host:port' or 'host:port:localAddress' combination.
 -}
-modifyMaxSockets : Agent -> (MaxSockets -> MaxSockets) -> Task x ()
+modifyMaxSockets : Agent -> (Cardinal Int -> Cardinal Int) -> Task x ()
 modifyMaxSockets agent endo =
     Member.modify
         "maxSockets"
         agent
-        (marshallMaxSocketsFromInt
+        (marshallCardinalFromInt
             >> endo
-            >> marshallMaxSocketsToInt
+            >> marshallCardinalToInt
         )
 
 
@@ -152,12 +153,12 @@ agent.maxSockets
 Determines how many concurrent sockets the agent can have open per
 origin. Origin is either a 'host:port' or 'host:port:localAddress' combination.
 -}
-setMaxSockets : Agent -> MaxSockets -> Task x ()
+setMaxSockets : Agent -> Cardinal Int -> Task x ()
 setMaxSockets agent maxsockets =
     Member.set
         "maxSockets"
         agent
-        (marshallMaxSocketsToInt maxsockets)
+        (marshallCardinalToInt maxsockets)
 
 
 {-|

@@ -21,7 +21,7 @@ import Task exposing (Task)
 import Time exposing (Time)
 import Foreign.Pattern.Method as Method
 import Foreign.Pattern.Get as Get
-import Foreign.Pattern.Read as Read
+import Foreign.Pattern.Member as Member
 import Foreign.Types exposing (..)
 import Foreign.Marshall exposing (..)
 import FileSystem.Types exposing (..)
@@ -47,7 +47,7 @@ Bitwise Int for testing existence a la f_ok
 -}
 existsOK : Mode
 existsOK =
-    Read.unsafeRead "F_OK" fs
+    Member.unsafeRead "F_OK" fs
 
 
 {-|
@@ -55,7 +55,7 @@ Bitwise Int for testing readability a la r_ok
 -}
 readOK : Mode
 readOK =
-    Read.unsafeRead "R_OK" fs
+    Member.unsafeRead "R_OK" fs
 
 
 {-|
@@ -63,7 +63,7 @@ Bitwise Int for testing writability a la w_ok
 -}
 writeOK : Mode
 writeOK =
-    Read.unsafeRead "W_OK" fs
+    Member.unsafeRead "W_OK" fs
 
 
 {-|
@@ -71,7 +71,7 @@ Bitwise Int for testing excutability a la x_ok
 -}
 executeOK : Mode
 executeOK =
-    Read.unsafeRead "X_OK" fs
+    Member.unsafeRead "X_OK" fs
 
 
 {-|

@@ -3,7 +3,7 @@ module Compression.Marshall (..) where
 import Compression.Types exposing (..)
 import Foreign.Types exposing (JSRaw)
 import Foreign.Marshall exposing (unsafeRequire)
-import Foreign.Pattern.Read as Read
+import Foreign.Pattern.Member as Member
 
 
 zlib : JSRaw
@@ -13,7 +13,7 @@ zlib =
 
 constant : String -> JSRaw
 constant s =
-    Read.unsafeRead s zlib
+    Member.unsafeRead s zlib
 
 
 marshallFlush : Flush -> JSRaw

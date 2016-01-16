@@ -1,4 +1,4 @@
-module FileSystem.Streams.Read (create, createWithOptions, defaultOptions) where
+module FileSystem.Streams.Member (create, createWithOptions, defaultOptions) where
 
 {-|
 # Create Readable Streams

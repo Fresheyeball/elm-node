@@ -23,7 +23,7 @@ module Network.Socket (..) where
 
 import Task exposing (Task)
 import Foreign.Pattern.Get exposing (get0)
-import Foreign.Pattern.Read exposing (read)
+import Foreign.Pattern.Member exposing (read)
 import Foreign.Pattern.Method as Method
 import Foreign.Marshall exposing (unsafeToString, truthy)
 import Emitter.Unsafe as Emitter

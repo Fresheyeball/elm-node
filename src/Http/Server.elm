@@ -8,6 +8,8 @@ This class inherits from net.Server and has the following additional events:
 
 import Foreign.Marshall as Marshall
 import Foreign.Pattern.Method as Method
+import Foreign.Pattern.Member as Member
+import Foreign.Pattern.Member as Member
 import Http.Types exposing (..)
 import Network.Types as Net
 import Emitter.Unsafe as Emitter
@@ -124,8 +126,8 @@ The default value of this parameter is 511 (not 512).
 This function is asynchronous. The last parameter callback will be added as a listener for the 'listening' event. See
 also net.Server.listen(port).
 -}
-listenOn' : Server -> { port' : Net.Port, hostname : String, backlog : Int } -> Task x ()
-listenOn' server { port', hostname, backlog } =
+listenOnWithBacklog : Server -> { port' : Net.Port, hostname : String, backlog : Int } -> Task x ()
+listenOnWithBacklog server { port', hostname, backlog } =
     Method.method3 "listen" server port' hostname backlog
 
 
@@ -167,6 +169,21 @@ listen =
 server.maxHeadersCount
 Limits maximum incoming headers count, equal to 1000 by default. If set to 0 - no limit will be applied.
 -}
+getMaxHeaders : Server -> Task x Int
+getMaxHeaders =
+    Member.read "maxHeadersCount"
+
+
+modifyMaxHeaders : Server -> (Int -> Int) -> Task x ()
+modifyMaxHeaders =
+    Member.modify "maxHeadersCount"
+
+
+setMaxHeaders : Server -> Int -> Task x ()
+setMaxHeaders =
+    Member.set "maxHeadersCount"
+
+
 {-|
 server.setTimeout(msecs, callback)#
 

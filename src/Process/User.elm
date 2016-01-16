@@ -9,7 +9,7 @@ import Task exposing (Task)
 import Foreign.Types exposing (JSRaw)
 import Foreign.Marshall as Marshall
 import Foreign.Pattern.Get as Get
-import Foreign.Pattern.Read as Read
+import Foreign.Pattern.Member as Member
 import Foreign.Pattern.Method as Method
 
 
@@ -20,7 +20,7 @@ process =
 
 getIfFunction : String -> Task x (Maybe a)
 getIfFunction methodName =
-    if Marshall.truthy (Read.unsafeRead methodName process) then
+    if Marshall.truthy (Member.unsafeRead methodName process) then
         Get.get0 methodName process
             |> Task.map Just
     else
@@ -140,7 +140,7 @@ setUserId =
 
 method1IfFunction : String -> Maybe (a -> Task x ())
 method1IfFunction name =
-    if Marshall.truthy <| Read.unsafeRead name process then
+    if Marshall.truthy <| Member.unsafeRead name process then
         Just <| Method.method1 name process
     else
         Nothing

@@ -36,7 +36,7 @@ marshallAppendOptions o =
     }
 
 
-type alias ReadOptionsRaw =
+type alias MemberOptionsRaw =
     { flags : String
     , encoding : String
     , mode : Mode
@@ -52,7 +52,7 @@ marshallReadOptions o =
     }
 
 
-type alias ReadFileOptionsRaw =
+type alias MemberFileOptionsRaw =
     { flag : String
     , encoding : String
     }

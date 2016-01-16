@@ -113,25 +113,58 @@ close =
 
 
 {-|
-server.listen(port[, hostname][, backlog][, callback])#
-
-Begin accepting connections on the specified port and hostname. If the hostname is omitted, the server will accept connections on any IPv6 address (::) when IPv6 is available, or any IPv4 address (0.0.0.0) otherwise. A port value of zero will assign a random port.
-
+server.listen(port[, hostname][, backlog][, callback])
+Begin accepting connections on the specified port and hostname. If the hostname is omitted, the server will accept
+connections on any IPv6 address (::) when IPv6 is available, or any IPv4 address (0.0.0.0) otherwise. A port value of
+zero will assign a random port.
 To listen to a unix socket, supply a filename instead of port and hostname.
-
-Backlog is the maximum length of the queue of pending connections. The actual length will be determined by your OS through sysctl settings such as tcp_max_syn_backlog and somaxconn on linux. The default value of this parameter is 511 (not 512).
-
-This function is asynchronous. The last parameter callback will be added as a listener for the 'listening' event. See also net.Server.listen(port).
+Backlog is the maximum length of the queue of pending connections. The actual length will be determined by your OS
+through sysctl settings such as tcp_max_syn_backlog and somaxconn on linux.
+The default value of this parameter is 511 (not 512).
+This function is asynchronous. The last parameter callback will be added as a listener for the 'listening' event. See
+also net.Server.listen(port).
 -}
-
-
-
--- listen : Server -> Port ->
+listenOn' : Server -> { port' : Net.Port, hostname : String, backlog : Int } -> Task x ()
+listenOn' server { port', hostname, backlog } =
+    Method.method3 "listen" server port' hostname backlog
 
 
 {-|
-server.maxHeadersCount#
+server.listen(port[, hostname][, backlog][, callback])
+Begin accepting connections on the specified port and hostname. If the hostname is omitted, the server will accept
+connections on any IPv6 address (::) when IPv6 is available, or any IPv4 address (0.0.0.0) otherwise. A port value of
+zero will assign a random port.
+To listen to a unix socket, supply a filename instead of port and hostname.
+Backlog is the maximum length of the queue of pending connections. The actual length will be determined by your OS
+through sysctl settings such as tcp_max_syn_backlog and somaxconn on linux.
+The default value of this parameter is 511 (not 512).
+This function is asynchronous. The last parameter callback will be added as a listener for the 'listening' event. See
+also net.Server.listen(port).
+-}
+listenOn : Server -> { port' : Net.Port, hostname : String } -> Task x ()
+listenOn server { port', hostname } =
+    Method.method2 "listen" server port' hostname
 
+
+{-|
+server.listen(port[, hostname][, backlog][, callback])
+Begin accepting connections on the specified port and hostname. If the hostname is omitted, the server will accept
+connections on any IPv6 address (::) when IPv6 is available, or any IPv4 address (0.0.0.0) otherwise. A port value of
+zero will assign a random port.
+To listen to a unix socket, supply a filename instead of port and hostname.
+Backlog is the maximum length of the queue of pending connections. The actual length will be determined by your OS
+through sysctl settings such as tcp_max_syn_backlog and somaxconn on linux.
+The default value of this parameter is 511 (not 512).
+This function is asynchronous. The last parameter callback will be added as a listener for the 'listening' event. See
+also net.Server.listen(port).
+-}
+listen : Server -> Net.Port -> Task x ()
+listen =
+    Method.method1 "listen"
+
+
+{-|
+server.maxHeadersCount
 Limits maximum incoming headers count, equal to 1000 by default. If set to 0 - no limit will be applied.
 -}
 {-|

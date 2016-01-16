@@ -36,7 +36,7 @@ standardError =
 process.stdin
 A Readable Stream for stdin (on fd 0).
 -}
-standardIn : Streams.Memberable {}
+standardIn : Streams.Readable {}
 standardIn =
     Member.unsafeRead "stdin" process
         |> Streams.Marshall.marshallReadable

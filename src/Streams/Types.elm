@@ -81,7 +81,7 @@ automatically pause the stream. Also, if there are piped destinations, then call
 will not guarantee that the stream will remain paused once those destinations drain and ask
 for more data.
 -}
-type alias Memberable a =
+type alias Readable a =
     { a | readable : ReadableRaw }
 
 

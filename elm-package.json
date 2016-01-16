@@ -40,7 +40,10 @@
       "Compression.Types",
       "Http.Types",
       "Http.StatusCode",
-      "Http.Agent"
+      "Http.Agent",
+      "Http.Agent.TLS",
+      "Http.Server",
+      "Http.Server.TLS"
     ],
     "native-modules": true,
     "dependencies": {

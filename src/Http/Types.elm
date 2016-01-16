@@ -10,6 +10,9 @@ module Http.Types (..) where
 # Server
 @docs Server, Request, Response
 
+# TLS
+@docs TLSOptions
+
 # Error
 @docs Error
 -}
@@ -224,3 +227,34 @@ showMethod method =
 
         UNSUBSCRIBE ->
             "UNSUBSCRIBE"
+
+
+{-|
+pfx: A string or Buffer containing the private key, certificate and CA certs of the server in PFX or PKCS12
+format. (Mutually exclusive with the key, cert and ca options.)
+
+key: A string or Buffer containing the private key of the server in PEM format. To support multiple keys
+using different algorithms, an array can be provided. It can either be a plain array of keys, or an array of
+objects in the format {pem: key, passphrase: passphrase}. (Required)
+
+passphrase: A string of passphrase for the private key or pfx.
+
+cert: A string or Buffer containing the certificate key of the server in PEM format. (Could be an array of
+certs). (Required)
+
+ca: A string, Buffer or array of strings or Buffers of trusted certificates in PEM format. If this is
+omitted several well known "root" CAs will be used, like VeriSign. These are used to authorize connections.
+
+requestCert: If true the server will request a certificate from clients that connect and attempt to verify that certificate. Default: false.
+
+rejectUnauthorized: If true the server will reject any connection which is not authorized with the list of supplied CAs. This option only has an effect if requestCert is true. Default: false.
+-}
+type alias TLSOptions =
+    { pfx : Maybe String
+    , key : Maybe String
+    , passphrase : Maybe String
+    , cert : Maybe String
+    , ca : Maybe String
+    , requestCert : Maybe Bool
+    , rejectUnauthorized : Maybe Bool
+    }

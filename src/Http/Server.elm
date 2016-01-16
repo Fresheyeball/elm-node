@@ -2,7 +2,21 @@ module Http.Server (..) where
 
 {-|
 Class: http.Server
-This class inherits from net.Server and has the following additional events:
+
+# Events
+@docs onCheckContinue, onConnection, onConnect, onClientError, onClose, onRequest, onUpgrade
+
+# Operations
+@docs close, listen, createServer
+
+# Max Headers
+@docs getMaxHeaders, setMaxHeaders, modifyMaxHeaders
+
+# Socket Timeout
+@docs getSocketTimeout, setSocketTimeout, modifySocketTimeout
+
+# Listen
+@docs listen, listenOn, listenOnWithBacklog
 
 -}
 

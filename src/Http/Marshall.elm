@@ -42,3 +42,26 @@ marshallAgentOptions options =
     { options
         | maxSockets = marshallCardinalToInt options.maxSockets
     }
+
+
+type alias TLSOptionsRaw =
+    { pfx : String
+    , key : String
+    , passphrase : String
+    , cert : String
+    , ca : String
+    , requestCert : Bool
+    , rejectUnauthorized : Bool
+    }
+
+
+marshallTLSOptions : TLSOptions -> TLSOptionsRaw
+marshallTLSOptions o =
+    { pfx = Marshall.unsafeNothingIsUndefined o.pfx
+    , key = Marshall.unsafeNothingIsUndefined o.key
+    , passphrase = Marshall.unsafeNothingIsUndefined o.passphrase
+    , cert = Marshall.unsafeNothingIsUndefined o.cert
+    , ca = Marshall.unsafeNothingIsUndefined o.ca
+    , requestCert = Marshall.unsafeNothingIsUndefined o.requestCert
+    , rejectUnauthorized = Marshall.unsafeNothingIsUndefined o.rejectUnauthorized
+    }

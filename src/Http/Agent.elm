@@ -31,7 +31,6 @@ don't want it to stay in the pool you can do something along the lines of:
 
 -}
 
-import Foreign.Types exposing (JSRaw)
 import Foreign.Pattern.Instantiate as Inst
 import Foreign.Pattern.Method as Method
 import Foreign.Pattern.Member as Member
@@ -41,11 +40,6 @@ import Network.Types exposing (..)
 import Http.Marshall exposing (..)
 import Http.Types exposing (..)
 import Cardinal exposing (Cardinal(..))
-
-
-http : JSRaw
-http =
-    unsafeRequire "http"
 
 
 {-|
@@ -66,7 +60,9 @@ To configure any of them, you must create your own http.Agent object.
 newAgent : AgentOptions -> Task x Agent
 newAgent =
     marshallAgentOptions
-        >> Inst.newOn1 "Agent" http
+        >> Inst.newOn1
+            "Agent"
+            (unsafeRequire "http")
 
 
 {-|

@@ -126,7 +126,7 @@ type Flags
 {-|
 Read options
 -}
-type alias MemberOptions =
+type alias ReadOptions =
     { flags : Flags
     , encoding : Encoding
     , mode : Mode
@@ -137,7 +137,7 @@ type alias MemberOptions =
 {-|
 Read file options
 -}
-type alias MemberFileOptions =
+type alias ReadFileOptions =
     { flag : Flags
     , encoding : Encoding
     }

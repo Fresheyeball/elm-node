@@ -7,6 +7,9 @@ module Http.Types (..) where
 # Method
 @docs METHOD, showMethod
 
+# Header
+@docs Header
+
 # Server
 @docs Server, RequestRaw, Response, ResponseRaw
 
@@ -27,6 +30,13 @@ import Streams.Types exposing (..)
 -}
 type Error
     = Error String
+
+
+{-|
+Http header as a tuple of Strings
+-}
+type alias Header =
+    ( String, String )
 
 
 {-|

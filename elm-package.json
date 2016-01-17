@@ -43,7 +43,8 @@
       "Http.Agent",
       "Http.Agent.TLS",
       "Http.Server",
-      "Http.Server.TLS"
+      "Http.Server.TLS",
+      "Http.Server.Response"
     ],
     "native-modules": true,
     "dependencies": {

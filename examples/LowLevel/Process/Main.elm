@@ -7,8 +7,8 @@ import Streams.String exposing (write)
 import Task exposing (..)
 
 
-(>|) : Task a b -> Task a c -> Task a c
-(>|) f f' =
+(=>) : Task a b -> Task a c -> Task a c
+(=>) f f' =
     f `andThen` always f'
 
 
@@ -30,29 +30,29 @@ logTask =
 port info : Task x ()
 port info =
     title "environment"
-        >| logTask getEnvironment
-        >| title "architecture"
-        >| logDirect architecture
-        >| title "version"
-        >| logDirect version
-        >| title "versions"
-        >| logDirect versions
-        >| title "platform"
-        >| logDirect platform
-        >| title "argumentVector"
-        >| logDirect argumentVector
-        >| title "getTitle"
-        >| logTask getTitle
-        >| title "setTitle to testapp"
-        >| setTitle "testapp"
-        >| title "getTitle"
-        >| logTask getTitle
-        >| title "processId"
-        >| logDirect processId
-        >| title "uptime"
-        >| logTask uptime
-        >| title "getMemoryUsage"
-        >| logTask getMemoryUsage
-        >| title "getHighResolutionTime"
-        >| logTask getHighResolutionTime
-        >| exitWithCode Success
+        => logTask getEnvironment
+        => title "architecture"
+        => logDirect architecture
+        => title "version"
+        => logDirect version
+        => title "versions"
+        => logDirect versions
+        => title "platform"
+        => logDirect platform
+        => title "argumentVector"
+        => logDirect arguments
+        => title "getTitle"
+        => logTask getTitle
+        => title "setTitle to testapp"
+        => setTitle "testapp"
+        => title "getTitle"
+        => logTask getTitle
+        => title "processId"
+        => logDirect processId
+        => title "uptime"
+        => logTask uptime
+        => title "getMemoryUsage"
+        => logTask getMemoryUsage
+        => title "getHighResolutionTime"
+        => logTask getHighResolutionTime
+        => exitWithCode Success

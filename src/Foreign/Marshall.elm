@@ -76,11 +76,21 @@ unsafeObjectToDict =
     Native.Foreign.unsafeToDict
 
 
-rawInfinity : number
-rawInfinity =
-    Native.Foreign.rawInfinity
+rawPosInfinity : number
+rawPosInfinity =
+    Native.Foreign.rawPosInfinity
+
+
+rawNegInfinity : number
+rawNegInfinity =
+    Native.Foreign.rawNegInfinity
 
 
 unsafeFromArray : JSRaw -> List a
 unsafeFromArray =
     Native.Foreign.fromArray
+
+
+unsafeIdentity : JSRaw -> a
+unsafeIdentity =
+    Native.Foreign.unsafeIdentity

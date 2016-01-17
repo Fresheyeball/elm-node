@@ -5,7 +5,7 @@ module Process.Streams (standardIn, standardOut, standardError) where
 @docs standardIn, standardOut, standardError
 -}
 
-import Foreign.Pattern.Read as Read
+import Foreign.Pattern.Member as Member
 import Foreign.Marshall as Marshall
 import Foreign.Types exposing (JSRaw)
 import Streams.Types as Streams
@@ -28,7 +28,7 @@ systems normally employ write-back caching so it should be a very rare occurrenc
 -}
 standardError : Streams.Writable {}
 standardError =
-    Read.unsafeRead "stderr" process
+    Member.unsafeRead "stderr" process
         |> Streams.Marshall.marshallWritable
 
 
@@ -38,7 +38,7 @@ A Readable Stream for stdin (on fd 0).
 -}
 standardIn : Streams.Readable {}
 standardIn =
-    Read.unsafeRead "stdin" process
+    Member.unsafeRead "stdin" process
         |> Streams.Marshall.marshallReadable
 
 
@@ -53,5 +53,5 @@ write-back caching so it should be a very rare occurrence indeed.)
 -}
 standardOut : Streams.Writable {}
 standardOut =
-    Read.unsafeRead "stdout" process
+    Member.unsafeRead "stdout" process
         |> Streams.Marshall.marshallWritable

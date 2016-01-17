@@ -9,7 +9,7 @@ module Network (isIP, connect, connectOnPort, connectOnPath) where
 
 import Foreign.Types exposing (JSRaw)
 import Foreign.Pattern.Get as Get
-import Foreign.Pattern.Read exposing (unsafeRead)
+import Foreign.Pattern.Member exposing (unsafeRead)
 import Foreign.Marshall exposing (unsafeRequire)
 import Task exposing (Task)
 import Network.Types exposing (..)

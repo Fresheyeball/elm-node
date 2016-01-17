@@ -24,16 +24,6 @@ type Error
     = Error String
 
 
-marshallFamily : Family -> Int
-marshallFamily family =
-    case family of
-        IPv4 ->
-            4
-
-        IPv6 ->
-            6
-
-
 type alias SocketAddress =
     { port' : Port
     , family : Family
@@ -41,6 +31,9 @@ type alias SocketAddress =
     }
 
 
+{-|
+Connection options
+-}
 type alias Connection =
     { port' : Port
     , host : String
@@ -51,6 +44,7 @@ type alias Connection =
     }
 
 
+{-| -}
 defaultConnection : Connection
 defaultConnection =
     { port' = 0

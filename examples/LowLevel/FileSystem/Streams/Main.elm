@@ -2,7 +2,7 @@ module Main (..) where
 
 import FileSystem.Types exposing (FilePath, FileSystemError)
 import FileSystem exposing (..)
-import FileSystem.Streams.Read as Read
+import FileSystem.Streams.Member as Member
 import FileSystem.Streams.Write as Write
 import FileSystem.Write.String as S
 import Streams exposing (withSignal)
@@ -39,7 +39,7 @@ port read =
             Maybe.withDefault emptyBuffer >> Signal.send flow.address
     in
         S.writeFile testFile "success"
-            `andThen` always (Read.create testFile)
+            `andThen` always (Member.create testFile)
             `andThen` Buffer.on Data sendBuffer
             `andThen` always (succeed ())
 

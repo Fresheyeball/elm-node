@@ -56,6 +56,9 @@ Currently exposed modules you can try out right now:
 - Http.Types
 - Http.StatusCode
 - Http.Agent
+- Http.Agent.TLS
+- Http.Server
+- Http.Server.TLS
 
 ## Goals
 

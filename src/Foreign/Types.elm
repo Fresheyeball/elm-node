@@ -17,10 +17,6 @@ type alias MemberName =
     String
 
 
-type alias KeyName =
-    String
-
-
 type alias ErrorType x =
     String -> x
 

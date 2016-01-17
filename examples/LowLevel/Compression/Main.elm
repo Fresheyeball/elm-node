@@ -3,9 +3,9 @@ module Main (..) where
 import Streams exposing (..)
 import FileSystem.Types exposing (FileSystemError(..))
 import FileSystem.Streams.Write as FSWrite
-import FileSystem.Streams.Read as FSRead
+import FileSystem.Streams.Member as FSRead
 import FileSystem.Write.String exposing (writeFile)
-import FileSystem.Read exposing (readFile)
+import FileSystem.Member exposing (readFile)
 import FileSystem exposing (remove)
 import Compression exposing (createGzip, createGunzip)
 import Task exposing (..)
@@ -29,7 +29,7 @@ port run =
             originalFile ++ ".bar"
 
         reader =
-            FSRead.create originalFile
+            FSMember.create originalFile
 
         writer =
             FSWrite.create resultedFile

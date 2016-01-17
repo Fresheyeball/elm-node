@@ -31,21 +31,15 @@ don't want it to stay in the pool you can do something along the lines of:
 
 -}
 
-import Foreign.Types exposing (JSRaw)
 import Foreign.Pattern.Instantiate as Inst
 import Foreign.Pattern.Method as Method
-import Foreign.Pattern.Read as Read
-import Foreign.Pattern.Set as Set
+import Foreign.Pattern.Member as Member
 import Foreign.Marshall exposing (unsafeRequire, unsafeFromArray)
 import Task exposing (Task)
 import Network.Types exposing (..)
 import Http.Marshall exposing (..)
 import Http.Types exposing (..)
-
-
-http : JSRaw
-http =
-    unsafeRequire "http"
+import Cardinal exposing (Cardinal(..))
 
 
 {-|
@@ -66,7 +60,9 @@ To configure any of them, you must create your own http.Agent object.
 newAgent : AgentOptions -> Task x Agent
 newAgent =
     marshallAgentOptions
-        >> Inst.newOn1 "Agent" http
+        >> Inst.newOn1
+            "Agent"
+            (unsafeRequire "http")
 
 
 {-|
@@ -88,7 +84,7 @@ KeepAlive is used.
 -}
 getFreeSockets : Agent -> Task x (List Socket)
 getFreeSockets =
-    Read.read "freeSockets"
+    Member.read "freeSockets"
         >> Task.map unsafeFromArray
 
 
@@ -98,7 +94,7 @@ By default set to 256.
 -}
 getMaxFreeSockets : Agent -> Task x Int
 getMaxFreeSockets =
-    Read.read "maxFreeSockets"
+    Member.read "maxFreeSockets"
 
 
 {-|
@@ -108,7 +104,7 @@ sockets that will be left open in the free state.
 -}
 modifyMaxFreeSockets : Agent -> (Int -> Int) -> Task x ()
 modifyMaxFreeSockets =
-    Set.modify "maxFreeSockets"
+    Member.modify "maxFreeSockets"
 
 
 {-|
@@ -118,7 +114,7 @@ sockets that will be left open in the free state.
 -}
 setMaxFreeSockets : Agent -> Int -> Task x ()
 setMaxFreeSockets =
-    Set.set "maxFreeSockets"
+    Member.set "maxFreeSockets"
 
 
 {-|
@@ -126,10 +122,10 @@ agent.maxSockets
 By default set to Infinity. Determines how many concurrent sockets the agent can have open per
 origin. Origin is either a 'host:port' or 'host:port:localAddress' combination.
 -}
-getMaxSockets : Agent -> Task x MaxSockets
+getMaxSockets : Agent -> Task x (Cardinal Int)
 getMaxSockets =
-    Read.read "maxSockets"
-        >> Task.map marshallMaxSocketsFromInt
+    Member.read "maxSockets"
+        >> Task.map marshallCardinalFromInt
 
 
 {-|
@@ -137,14 +133,14 @@ agent.maxSockets
 Determines how many concurrent sockets the agent can have open per
 origin. Origin is either a 'host:port' or 'host:port:localAddress' combination.
 -}
-modifyMaxSockets : Agent -> (MaxSockets -> MaxSockets) -> Task x ()
+modifyMaxSockets : Agent -> (Cardinal Int -> Cardinal Int) -> Task x ()
 modifyMaxSockets agent endo =
-    Set.modify
+    Member.modify
         "maxSockets"
         agent
-        (marshallMaxSocketsFromInt
+        (marshallCardinalFromInt
             >> endo
-            >> marshallMaxSocketsToInt
+            >> marshallCardinalToInt
         )
 
 
@@ -153,12 +149,12 @@ agent.maxSockets
 Determines how many concurrent sockets the agent can have open per
 origin. Origin is either a 'host:port' or 'host:port:localAddress' combination.
 -}
-setMaxSockets : Agent -> MaxSockets -> Task x ()
+setMaxSockets : Agent -> Cardinal Int -> Task x ()
 setMaxSockets agent maxsockets =
-    Set.set
+    Member.set
         "maxSockets"
         agent
-        (marshallMaxSocketsToInt maxsockets)
+        (marshallCardinalToInt maxsockets)
 
 
 {-|
@@ -167,5 +163,5 @@ An object which contains arrays of sockets currently in use by the Agent. Do not
 -}
 getActiveSockets : Agent -> Task x (List Socket)
 getActiveSockets =
-    Read.read "sockets"
+    Member.read "sockets"
         >> Task.map unsafeFromArray

@@ -1,11 +1,11 @@
-module Process (onBeforeExit, onExit, onMessage, onSIGNAL, argumentVector, architecture, isConnected, abort, exit, exitWithCode, currentWorkingDirectory, changeCurrentWorkingDirectory, ChdirError(..), disconnect, getHighResolutionTime, version, versions, uptime, ProcessNotFound(..), kill, killWithSIGNAL, getTitle, setTitle, modifyTitle, platform, processId, getMemoryUsage, MemoryUsage, send, unmask, getEnvironment) where
+module Process (onBeforeExit, onExit, onMessage, onSIGNAL, arguments, architecture, isConnected, abort, exit, exitWithCode, currentWorkingDirectory, changeCurrentWorkingDirectory, ChdirError(..), disconnect, getHighResolutionTime, version, versions, uptime, ProcessNotFound(..), kill, killWithSIGNAL, getTitle, setTitle, modifyTitle, platform, processId, getMemoryUsage, MemoryUsage, send, unmask, getEnvironment) where
 
 {-|
 # Events
 @docs onBeforeExit, onExit, onMessage, onSIGNAL
 
 # Process Info
-@docs argumentVector, architecture, isConnected, version, versions, uptime, getTitle, setTitle, modifyTitle, platform, processId, getEnvironment
+@docs arguments, architecture, isConnected, version, versions, uptime, getTitle, setTitle, modifyTitle, platform, processId, getEnvironment
 
 # Exit Methods
 @docs abort, exit, exitWithCode, disconnect, kill, killWithSIGNAL, ProcessNotFound
@@ -22,9 +22,8 @@ module Process (onBeforeExit, onExit, onMessage, onSIGNAL, argumentVector, archi
 
 import Foreign.Types exposing (JSRaw)
 import Foreign.Pattern.Method as Method
-import Foreign.Pattern.Read as Read
+import Foreign.Pattern.Member as Member
 import Foreign.Pattern.Get as Get
-import Foreign.Pattern.Set as Set
 import Foreign.Marshall as Marshall
 import Emitter.Unsafe as Emitter
 import Task exposing (Task)
@@ -98,7 +97,7 @@ What processor architecture you're running on: 'arm', 'ia32', or 'x64'.
 -}
 architecture : Maybe Architecture
 architecture =
-    case Read.unsafeRead "arch" process of
+    case Member.unsafeRead "arch" process of
         "arm" ->
             Just Arm
 
@@ -125,12 +124,13 @@ $ node process-2.js one two=three four
 will result in
 
 ```
-argumentVector = [ "node", "process-2.js", "one", "two=three", "four" ]
+arguments = [ "node", "process-2.js", "one", "two=three", "four" ]
 ```
 -}
-argumentVector : List String
-argumentVector =
-    Read.unsafeRead "argv" process
+arguments : List String
+arguments =
+    Member.unsafeRead "argv" process
+        |> Marshall.unsafeFromArray
 
 
 {-| An error that changeCurrentWorkingDirectory may throw
@@ -156,7 +156,7 @@ If process.connected is false, it is no longer possible to send messages.
 -}
 isConnected : Task x Bool
 isConnected =
-    Read.read "connected" process
+    Member.read "connected" process
 
 
 {-|
@@ -201,7 +201,7 @@ An example of this object looks like:
 -}
 getEnvironment : Task x (Dict.Dict String String)
 getEnvironment =
-    Marshall.unsafeObjectToDict `Task.map` Read.read "env" process
+    Marshall.unsafeObjectToDict `Task.map` Member.read "env" process
 
 
 {-|
@@ -291,7 +291,7 @@ The PID of the process.
 -}
 processId : Int
 processId =
-    Read.unsafeRead "pid" process
+    Member.unsafeRead "pid" process
 
 
 {-|
@@ -300,7 +300,7 @@ What platform you're running on: 'darwin', 'freebsd', 'linux', 'sunos' or 'win32
 -}
 platform : Platform
 platform =
-    case Read.unsafeRead "platform" process of
+    case Member.unsafeRead "platform" process of
         "darwin" ->
             Darwin
 
@@ -334,7 +334,7 @@ send =
 
 method1IfFunction : String -> Maybe (a -> Task x ())
 method1IfFunction name =
-    if Marshall.truthy <| Read.unsafeRead name process then
+    if Marshall.truthy <| Member.unsafeRead name process then
         Just <| Method.method1 name process
     else
         Nothing
@@ -346,7 +346,7 @@ To set what is displayed in `ps`.
 -}
 getTitle : Task x String
 getTitle =
-    Read.read "title" process
+    Member.read "title" process
 
 
 {-| Sets the process title
@@ -355,14 +355,14 @@ On Linux and OS X, it's limited to the size of the binary name plus the length o
 -}
 setTitle : String -> Task x ()
 setTitle =
-    Set.set "title" process
+    Member.set "title" process
 
 
 {-| Same as `setTitle` but lets you read the current title at the same time.
 -}
 modifyTitle : (String -> String) -> Task x ()
 modifyTitle =
-    Set.modify "title" process
+    Member.modify "title" process
 
 
 {-|
@@ -404,7 +404,7 @@ console.log('Version: ' + process.version);
 -}
 version : String
 version =
-    Read.unsafeRead "version" process
+    Member.unsafeRead "version" process
 
 
 {-|
@@ -426,5 +426,5 @@ Will print something like:
 -}
 versions : Dict.Dict String String
 versions =
-    Read.unsafeRead "versions" process
+    Member.unsafeRead "versions" process
         |> Marshall.unsafeObjectToDict

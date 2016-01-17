@@ -915,7 +915,10 @@ var make = function make(localRuntime) {
                     })();
                 },
                 'rawPosInfinity': Infinity,
-                'rawNegInfinity': 0 - Infinity
+                'rawNegInfinity': 0 - Infinity,
+                'unsafeIdentity': function (x) {
+                    return x;
+                }
             };
         })();
     }.call(this);

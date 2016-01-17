@@ -706,7 +706,10 @@
         x))
 
   :rawPosInfinity Infinity
+
   :rawNegInfinity (- 0 Infinity)
+
+  :unsafeIdentity (fn [x] x)
 
   })))))
 

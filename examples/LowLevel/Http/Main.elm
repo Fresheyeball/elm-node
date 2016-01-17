@@ -2,6 +2,9 @@ module Main (..) where
 
 import Streams.String exposing (write)
 import Http.Server exposing (..)
+import String
+import Result
+import Process
 import Console
 import Task exposing (..)
 
@@ -13,11 +16,32 @@ import Task exposing (..)
 
 port serve : Task x ()
 port serve =
-    createServer
-        `andThen` \server ->
-                    listen server 8080
-                        >| Console.blue "Listening on port 8080"
-                        >| onRequest
-                            server
-                            (\( _, res ) -> write res "Request heard")
-                        >| succeed ()
+    let
+        getPort argv =
+            case argv of
+                "--port" :: (port' :: _) ->
+                    port'
+
+                _ :: rest ->
+                    getPort rest
+
+                [] ->
+                    ""
+
+        port' =
+            getPort Process.arguments
+                |> String.toInt
+                |> Result.withDefault 80
+    in
+        createServer
+            `andThen` \server ->
+                        listen server port'
+                            >| Console.blue ("Listening on port " ++ toString port')
+                            >| onRequest
+                                server
+                                (\( _, res ) ->
+                                    write res "Howdy!"
+                                        >| end res
+                                        >| Console.green "Request heard"
+                                )
+                            >| succeed ()

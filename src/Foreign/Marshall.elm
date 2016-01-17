@@ -89,3 +89,8 @@ rawNegInfinity =
 unsafeFromArray : JSRaw -> List a
 unsafeFromArray =
     Native.Foreign.fromArray
+
+
+unsafeIdentity : JSRaw -> a
+unsafeIdentity =
+    Native.Foreign.unsafeIdentity

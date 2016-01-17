@@ -18,6 +18,9 @@ Class: http.Server
 # Listen
 @docs listen, listenOn, listenOnWithBacklog
 
+# Response
+@docs end
+
 -}
 
 import Foreign.Marshall as Marshall
@@ -26,6 +29,7 @@ import Foreign.Pattern.Get as Get
 import Foreign.Pattern.Member as Member
 import Foreign.Pattern.Member as Member
 import Http.Types exposing (..)
+import Http.Marshall exposing (..)
 import Network.Types as Net
 import Emitter.Unsafe as Emitter
 import Chunk.Types as Chunk
@@ -42,9 +46,9 @@ send the request body, or generating an appropriate HTTP response (e.g., 400 Bad
 the client should not continue to send the request body.
 Note that when this event is emitted and handled, the 'request' event will not be emitted.
 -}
-onCheckContinue : Server -> (( Request, Response ) -> Task x ()) -> Task x (Task x ())
-onCheckContinue =
-    Emitter.on2 "checkContinue"
+onCheckContinue : Server -> (( RequestRaw, Response ) -> Task x ()) -> Task x (Task x ())
+onCheckContinue server f =
+    Emitter.on2 "checkContinue" server (\( req, res ) -> f ( req, marshallResponse res ))
 
 
 {-|
@@ -81,7 +85,7 @@ head is an instance of Buffer, the first packet of the tunneling stream, this ma
 After this event is emitted, the request's socket will not have a 'data' event listener,
 meaning you will need to bind to it in order to handle data sent to the server on that socket.
 -}
-onConnect : Server -> (Request -> Net.Socket -> Chunk.Buffer -> Task x ()) -> Task x (Task x ())
+onConnect : Server -> (RequestRaw -> Net.Socket -> Chunk.Buffer -> Task x ()) -> Task x (Task x ())
 onConnect server f =
     Emitter.on3 "connect" server (\( x, y, z ) -> f x y z)
 
@@ -101,9 +105,9 @@ Emitted each time there is a request. Note that there may be multiple requests p
 keep-alive connections). request is an instance of http.IncomingMessage and response is an instance of
 http.ServerResponse.
 -}
-onRequest : Server -> (( Request, Response ) -> Task x ()) -> Task x (Task x ())
-onRequest =
-    Emitter.on2 "request"
+onRequest : Server -> (( RequestRaw, Response ) -> Task x ()) -> Task x (Task x ())
+onRequest server f =
+    Emitter.on2 "request" server (\( req, res ) -> f ( req, marshallResponse res ))
 
 
 {-|
@@ -116,7 +120,7 @@ head is an instance of Buffer, the first packet of the upgraded stream, this may
 After this event is emitted, the request's socket will not have a 'data' event listener, meaning you will need to bind
 to it in order to handle data sent to the server on that socket.
 -}
-onUpgrade : Server -> (Request -> Net.Socket -> Chunk.Buffer -> Task x ()) -> Task x (Task x ())
+onUpgrade : Server -> (RequestRaw -> Net.Socket -> Chunk.Buffer -> Task x ()) -> Task x (Task x ())
 onUpgrade server f =
     Emitter.on3 "upgrade" server (\( x, y, z ) -> f x y z)
 
@@ -242,3 +246,11 @@ The requestListener is a function which is automatically added to the 'request' 
 createServer : Task x Server
 createServer =
     Get.get0 "createServer" (Marshall.unsafeRequire "http")
+
+
+{-|
+Close the response
+-}
+end : Response -> Task x ()
+end { response } =
+    Method.method0 "end" response

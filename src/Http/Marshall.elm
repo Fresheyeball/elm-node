@@ -3,6 +3,7 @@ module Http.Marshall (..) where
 import Http.Types exposing (..)
 import Cardinal exposing (Cardinal(..))
 import Foreign.Marshall as Marshall
+import Foreign.Types exposing (JSRaw)
 import Time
 
 
@@ -11,6 +12,13 @@ type alias AgentOptionsRaw =
     , keepAliveMsecs : Time.Time
     , maxSockets : Int
     , maxFreeSockets : Int
+    }
+
+
+marshallResponse : JSRaw -> Response
+marshallResponse rawResponse =
+    { writable = Marshall.unsafeIdentity rawResponse
+    , response = Marshall.unsafeIdentity rawResponse
     }
 
 

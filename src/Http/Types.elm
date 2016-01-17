@@ -8,7 +8,7 @@ module Http.Types (..) where
 @docs METHOD, showMethod
 
 # Server
-@docs Server, Request, Response
+@docs Server, RequestRaw, Response, ResponseRaw
 
 # TLS
 @docs TLSOptions
@@ -20,6 +20,7 @@ module Http.Types (..) where
 import Cardinal exposing (Cardinal(PosInfinity, Finite))
 import Time exposing (Time)
 import Foreign.Types exposing (JSRaw)
+import Streams.Types exposing (..)
 
 
 {-| Http Error
@@ -73,15 +74,24 @@ type Server
 {-|
 Represents a raw instance of Node.js's http.IncomingMessage class
 -}
-type Request
-    = Request JSRaw
+type RequestRaw
+    = RequestRaw JSRaw
+
+
+{-|
+Responses are also Streams, both values are the same underlying object
+-}
+type alias Response =
+    { writable : WritableRaw
+    , response : ResponseRaw
+    }
 
 
 {-|
 Represents a raw instance of Node.js's http.ServerResponse class
 -}
-type Response
-    = Response JSRaw
+type ResponseRaw
+    = ResponseRaw JSRaw
 
 
 {-|

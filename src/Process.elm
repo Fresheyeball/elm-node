@@ -1,11 +1,11 @@
-module Process (onBeforeExit, onExit, onMessage, onSIGNAL, argumentVector, architecture, isConnected, abort, exit, exitWithCode, currentWorkingDirectory, changeCurrentWorkingDirectory, ChdirError(..), disconnect, getHighResolutionTime, version, versions, uptime, ProcessNotFound(..), kill, killWithSIGNAL, getTitle, setTitle, modifyTitle, platform, processId, getMemoryUsage, MemoryUsage, send, unmask, getEnvironment) where
+module Process (onBeforeExit, onExit, onMessage, onSIGNAL, arguments, architecture, isConnected, abort, exit, exitWithCode, currentWorkingDirectory, changeCurrentWorkingDirectory, ChdirError(..), disconnect, getHighResolutionTime, version, versions, uptime, ProcessNotFound(..), kill, killWithSIGNAL, getTitle, setTitle, modifyTitle, platform, processId, getMemoryUsage, MemoryUsage, send, unmask, getEnvironment) where
 
 {-|
 # Events
 @docs onBeforeExit, onExit, onMessage, onSIGNAL
 
 # Process Info
-@docs argumentVector, architecture, isConnected, version, versions, uptime, getTitle, setTitle, modifyTitle, platform, processId, getEnvironment
+@docs arguments, architecture, isConnected, version, versions, uptime, getTitle, setTitle, modifyTitle, platform, processId, getEnvironment
 
 # Exit Methods
 @docs abort, exit, exitWithCode, disconnect, kill, killWithSIGNAL, ProcessNotFound
@@ -124,12 +124,13 @@ $ node process-2.js one two=three four
 will result in
 
 ```
-argumentVector = [ "node", "process-2.js", "one", "two=three", "four" ]
+arguments = [ "node", "process-2.js", "one", "two=three", "four" ]
 ```
 -}
-argumentVector : List String
-argumentVector =
+arguments : List String
+arguments =
     Member.unsafeRead "argv" process
+        |> Marshall.unsafeFromArray
 
 
 {-| An error that changeCurrentWorkingDirectory may throw

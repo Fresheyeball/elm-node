@@ -18,9 +18,6 @@ Class: http.Server
 # Listen
 @docs listen, listenOn, listenOnWithBacklog
 
-# Response
-@docs end
-
 -}
 
 import Foreign.Marshall as Marshall
@@ -246,11 +243,3 @@ The requestListener is a function which is automatically added to the 'request' 
 createServer : Task x Server
 createServer =
     Get.get0 "createServer" (Marshall.unsafeRequire "http")
-
-
-{-|
-Close the response
--}
-end : Response -> Task x ()
-end { response } =
-    Method.method0 "end" response

@@ -31,16 +31,16 @@ port run =
         logAs s =
             Task.map <| always () << Debug.log s
 
-        (>|) f f' =
+        (=>) f f' =
             f `andThen` always f'
     in
         writeFile testFile "I feel like I'm being watched"
-            >| watchFileWith opts testFile (curry (Just >> S.send (.address flow)))
-            >| appendFile testFile ". Wait who are you?"
-            >| logAs "stat" (stat testFile)
-            >| logAs "access" (canAccess testFile)
-            >| unlink testFile
-            >| Task.succeed ()
+            => watchFileWith opts testFile (curry (Just >> S.send (.address flow)))
+            => appendFile testFile ". Wait who are you?"
+            => logAs "stat" (stat testFile)
+            => logAs "access" (canAccess testFile)
+            => unlink testFile
+            => Task.succeed ()
 
 
 port showWatch : Signal (Task x ())

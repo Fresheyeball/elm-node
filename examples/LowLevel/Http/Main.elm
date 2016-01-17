@@ -2,6 +2,7 @@ module Main (..) where
 
 import Streams.String exposing (write)
 import Http.Server exposing (..)
+import Http.Server.Response exposing (end)
 import String
 import Result
 import Process
@@ -9,8 +10,8 @@ import Console
 import Task exposing (..)
 
 
-(>|) : Task x a -> Task x b -> Task x b
-(>|) t t' =
+(=>) : Task x a -> Task x b -> Task x b
+(=>) t t' =
     t `andThen` always t'
 
 
@@ -25,7 +26,7 @@ port serve =
                 _ :: rest ->
                     getPort rest
 
-                [] ->
+                _ ->
                     ""
 
         port' =
@@ -36,12 +37,12 @@ port serve =
         createServer
             `andThen` \server ->
                         listen server port'
-                            >| Console.blue ("Listening on port " ++ toString port')
-                            >| onRequest
+                            => Console.blue ("Listening on port " ++ toString port')
+                            => onRequest
                                 server
                                 (\( _, res ) ->
                                     write res "Howdy!"
-                                        >| end res
-                                        >| Console.green "Request heard"
+                                        => end res
+                                        => Console.green "Request heard"
                                 )
-                            >| succeed ()
+                            => succeed ()

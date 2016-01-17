@@ -11,7 +11,7 @@ import Task exposing (..)
 port echo : Task x ()
 port echo =
     let
-        (>|) t t' =
+        (=>) t t' =
             t `andThen` always t'
 
         log =
@@ -22,13 +22,13 @@ port echo =
 
         data socket chunk =
             log ("data: " ++ Chunk.encodeChunk chunk)
-                >| Socket.end socket
+                => Socket.end socket
 
         end = log "disconnected from server"
     in
         Network.connectOnPort 8080
             `andThen` \socket ->
                         Socket.onConnect socket connected
-                            >| Socket.onEnd socket end
-                            >| Socket.onData socket (data socket)
-                            >| succeed ()
+                            => Socket.onEnd socket end
+                            => Socket.onData socket (data socket)
+                            => succeed ()

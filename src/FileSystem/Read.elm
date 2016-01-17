@@ -1,4 +1,4 @@
-module FileSystem.Member (read, readFileWith, readFile, readDirectory, readLink) where
+module FileSystem.Read (read, readFileWith, readFile, readDirectory, readLink) where
 
 {-|
 # Read from disk

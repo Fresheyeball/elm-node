@@ -25,13 +25,3 @@ map f card =
 
         infinity ->
             infinity
-
-
-map2 : (number -> number -> number) -> Cardinal number -> Cardinal number -> Cardinal number
-map2 f card card' =
-    case ( card, card' ) of
-        ( Finite x, Finite x' ) ->
-            Finite (f x x')
-
-        ( infinity, _ ) ->
-            infinity

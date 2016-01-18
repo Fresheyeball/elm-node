@@ -1,6 +1,7 @@
 module Foreign.Pattern.Member (..) where
 
-import Task exposing (Task)
+import Task exposing (..)
+import Foreign.Marshall exposing (unsafeUndefined)
 import Foreign.Types exposing (MemberName)
 import Native.Foreign
 
@@ -23,3 +24,13 @@ modify =
 set : MemberName -> object -> a -> Task x ()
 set name object value =
     modify name object (always value)
+
+
+safeRead : MemberName -> object -> Task x (Maybe a)
+safeRead name object =
+    if
+        unsafeUndefined == unsafeRead name object
+    then
+        Just `map` read name object
+    else
+        Task.succeed Nothing

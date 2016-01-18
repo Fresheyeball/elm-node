@@ -22,6 +22,13 @@ marshallResponse rawResponse =
     }
 
 
+marshallRequest : JSRaw -> Request
+marshallRequest rawRequest =
+    { readable = Marshall.unsafeIdentity rawRequest
+    , request = Marshall.unsafeIdentity rawRequest
+    }
+
+
 marshallCardinalToInt : Cardinal Int -> Int
 marshallCardinalToInt card =
     case card of

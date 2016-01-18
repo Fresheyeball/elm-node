@@ -2,7 +2,7 @@ module Main (..) where
 
 import Streams.String exposing (write)
 import Http.Server exposing (..)
-import Http.Server.Response exposing (end)
+import Http.Server.Response exposing (end, getStatusCode)
 import String
 import Result
 import Process
@@ -33,16 +33,19 @@ port serve =
             getPort Process.arguments
                 |> String.toInt
                 |> Result.withDefault 80
+
+        respond ( _, res ) =
+            write res "Howdy!"
+                => end res
+                => getStatusCode res
+                `andThen` \status ->
+                            "Request heard with: "
+                                ++ toString status
+                                |> Console.green
     in
         createServer
             `andThen` \server ->
                         listen server port'
                             => Console.blue ("Listening on port " ++ toString port')
-                            => onRequest
-                                server
-                                (\( _, res ) ->
-                                    write res "Howdy!"
-                                        => end res
-                                        => Console.green "Request heard"
-                                )
+                            => onRequest server respond
                             => succeed ()

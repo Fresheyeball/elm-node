@@ -1,8 +1,8 @@
 module Streams.Marshall (..) where
 
 import Foreign.Types exposing (JSRaw)
+import Foreign.Marshall exposing (unsafeIdentity)
 import Streams.Types exposing (..)
-import Native.Streams
 
 
 toNameR : ReadableEvent -> String
@@ -54,5 +54,7 @@ marshallReadable raw =
 
 
 marshallDuplex : JSRaw -> Duplex {}
-marshallDuplex =
-    Native.Streams.marshallDuplex
+marshallDuplex raw =
+    { writable = unsafeIdentity raw
+    , readable = unsafeIdentity raw
+    }

@@ -16,10 +16,6 @@
           (.perform Task (f value))) signal)
         (.succeed Task Tuple0))))))
 
-  :marshallDuplex (fn [raw]
-    { :readable raw
-    , :writable raw })
-
 })))))
 
 (foreign.sanitize Elm :Native :Streams)

@@ -3,9 +3,8 @@ module Main (..) where
 import Network.Socket as Socket
 import Network
 import Chunk
-import Process.Streams exposing (standardOut)
-import Streams.String exposing (write)
 import Task exposing (..)
+import Console exposing (log)
 
 
 port echo : Task x ()
@@ -13,9 +12,6 @@ port echo =
     let
         (=>) t t' =
             t `andThen` always t'
-
-        log =
-            write standardOut
 
         connected =
             log "connected"

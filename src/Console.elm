@@ -3,7 +3,7 @@ module Console (..) where
 {-|
 # Helpers for writting to Standard Out
 
-@docs log, print
+@docs log, printAs, print
 
 ## Colors
 @docs blue, cyan, green, purple, red, white, yellow, scare, caution
@@ -24,6 +24,15 @@ log message =
     "\n"
         ++ message
         |> write standardOut
+
+
+{-| -}
+printAs : String -> a -> Task x ()
+printAs name thing =
+    name
+        ++ ": "
+        ++ toString thing
+        |> log
 
 
 {-| -}

@@ -1,9 +1,7 @@
 module Main (..) where
 
-import Process.Types exposing (ExitCode(Success))
 import Process exposing (..)
-import Process.Streams exposing (standardOut)
-import Streams.String exposing (write)
+import Console exposing (green, print)
 import Task exposing (..)
 
 
@@ -12,47 +10,37 @@ import Task exposing (..)
     f `andThen` always f'
 
 
-logDirect : a -> Task x ()
-logDirect =
-    toString >> write standardOut
-
-
-title : String -> Task x ()
-title s =
-    write standardOut ("\n\n" ++ s ++ ":\n")
-
-
-logTask : Task a b -> Task a ()
-logTask =
-    flip andThen logDirect
+printTask : Task a b -> Task a ()
+printTask =
+    flip andThen print
 
 
 port info : Task x ()
 port info =
-    title "environment"
-        => logTask getEnvironment
-        => title "architecture"
-        => logDirect architecture
-        => title "version"
-        => logDirect version
-        => title "versions"
-        => logDirect versions
-        => title "platform"
-        => logDirect platform
-        => title "argumentVector"
-        => logDirect arguments
-        => title "getTitle"
-        => logTask getTitle
-        => title "setTitle to testapp"
+    green "environment"
+        => printTask getEnvironment
+        => green "architecture"
+        => print architecture
+        => green "version"
+        => print version
+        => green "versions"
+        => print versions
+        => green "platform"
+        => print platform
+        => green "argumentVector"
+        => print arguments
+        => green "getTitle"
+        => printTask getTitle
+        => green "setTitle to testapp"
         => setTitle "testapp"
-        => title "getTitle"
-        => logTask getTitle
-        => title "processId"
-        => logDirect processId
-        => title "uptime"
-        => logTask uptime
-        => title "getMemoryUsage"
-        => logTask getMemoryUsage
-        => title "getHighResolutionTime"
-        => logTask getHighResolutionTime
-        => exitWithCode Success
+        => green "getTitle"
+        => printTask getTitle
+        => green "processId"
+        => print processId
+        => green "uptime"
+        => printTask uptime
+        => green "getMemoryUsage"
+        => printTask getMemoryUsage
+        => green "getHighResolutionTime"
+        => printTask getHighResolutionTime
+        => exit

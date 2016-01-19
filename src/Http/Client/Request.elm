@@ -20,7 +20,7 @@ The 3-digit HTTP response status code. E.G. 404.
 getStatusCode : Request -> Task x (Maybe StatusCode)
 getStatusCode { request } =
     Http.StatusCode.fromInt
-        `map` Member.read "statusCode" request
+        <$> Member.read "statusCode" request
 
 
 {-|

@@ -5,10 +5,11 @@ import FileSystem exposing (..)
 import FileSystem.Streams.Read as Read
 import FileSystem.Streams.Write as Write
 import FileSystem.Write.String as S
-import Streams exposing (withSignal)
+import Streams exposing (withSignal, on)
 import Streams.Buffer as Buffer
 import Streams.Types exposing (..)
 import Process.Streams exposing (standardOut)
+import Process
 import Chunk.Types exposing (..)
 import Chunk exposing (emptyBuffer)
 import Signal exposing (Signal, mailbox, Mailbox)
@@ -32,16 +33,24 @@ port log =
         flow.signal
 
 
+(=>) : Task x a -> Task x b -> Task x b
+(=>) t t' =
+    t `andThen` always t'
+
+
 port read : Task FileSystemError ()
 port read =
     let
         sendBuffer =
-            Maybe.withDefault emptyBuffer >> Signal.send flow.address
+            Maybe.withDefault emptyBuffer
+                >> Signal.send flow.address
     in
         S.writeFile testFile "success"
-            `andThen` always (Read.create testFile)
-            `andThen` Buffer.on Data sendBuffer
-            `andThen` always (succeed ())
+            => (Read.create testFile)
+            `andThen` \reader ->
+                        Buffer.on Data sendBuffer reader
+                            => on Close (always Process.exit) reader
+                            => succeed ()
 
 
 port write : Task x ()

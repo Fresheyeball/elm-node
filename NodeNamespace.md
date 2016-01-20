@@ -1,6 +1,6 @@
 # Node.js Namespaces
 
-Judgement calls on what to bind, what not to bind, why and how.
+Judgment calls on what to bind, what not to bind, why and how.
 
 ## :raised_hand: Buffer
 Since Elm does not have support for binary, using the methods on Buffer is not currently useful or advisable. So limited support for interacting with Buffers has been included as a part of `Chunk`. **Complete**
@@ -24,7 +24,7 @@ Logging is all wrappers on standards, so this should be written in pure Elm, bas
 Theoretically no runtime errors will exist. This might be handy once Elm has source maps
 
 ## :+1: DNS
-In **progress**
+**TODO** In **progress**
 
 ## :-1: Domain
 Deprecated, will not bind
@@ -41,17 +41,17 @@ This is a base class, helpers bindings are **complete**
 ## :-1: Globals
 Specific to Node, will not bind
 
-## :metal: HTTP
-May be doable in pure Elm. **TODO** Needs to be tied into `Network`
+## :+1: HTTP
+**TODO**  May be doable in pure Elm, but impractical. In **progress**
 
-## :metal: HTTPS
-May be doable in pure Elm. **TODO** Needs to be tied into `Network`
+## :+1: HTTPS
+**TODO**  Baking into Http under Http.TLS In **progress**
 
 ## :-1: Modules
 Specific to Node, will not bind
 
 ## :+1: Net
-May or may not end up including `Http`. Development in **progress**.
+May or may not end up including `Http`. **Complete**
 
 ## :-1: OS
 Does not look particularly useful beyond overlap with `Process`
@@ -83,8 +83,9 @@ Overlaps with `Chunk`, **complete**
 ## :-1: Timers
 Elm has this one covered
 
-## :+1: TLS/SSL
-**TODO** May or may not end up bound up in `Network`
+## :-1: TLS/SSL
+May or may not end up bound up in `Network`,
+low level is too cumbersome to be of value right now
 
 ## :-1: TTY
 Not useful enough

@@ -5,13 +5,13 @@ module Http.Types (..) where
 @docs Agent, AgentOptions, defaultAgentOptions
 
 # Method
-@docs METHOD, showMethod
+@docs METHOD, showMethod, readMethod
 
 # Header
 @docs Header
 
 # Server
-@docs Server, RequestRaw, Response, ResponseRaw
+@docs Server, Request, RequestRaw, Response, ResponseRaw
 
 # TLS
 @docs TLSOptions
@@ -79,6 +79,15 @@ Represents a raw instance of Node.js's http.Server class
 -}
 type Server
     = Server JSRaw
+
+
+{-|
+Requests are also Streams, both values are the same underlying object
+-}
+type alias Request =
+    { readable : WritableRaw
+    , request : RequestRaw
+    }
 
 
 {-|
@@ -247,6 +256,114 @@ showMethod method =
 
         UNSUBSCRIBE ->
             "UNSUBSCRIBE"
+
+
+{-| parse from string
+-}
+readMethod : String -> Maybe METHOD
+readMethod method =
+    case method of
+        "ACL" ->
+            Just ACL
+
+        "BIND" ->
+            Just BIND
+
+        "CHECKOUT" ->
+            Just CHECKOUT
+
+        "CONNECT" ->
+            Just CONNECT
+
+        "COPY" ->
+            Just COPY
+
+        "DELETE" ->
+            Just DELETE
+
+        "GET" ->
+            Just GET
+
+        "HEAD" ->
+            Just HEAD
+
+        "LINK" ->
+            Just LINK
+
+        "LOCK" ->
+            Just LOCK
+
+        "M-SEARCH" ->
+            Just MSEARCH
+
+        "MERGE" ->
+            Just MERGE
+
+        "MKACTIVITY" ->
+            Just MKACTIVITY
+
+        "MKCALENDAR" ->
+            Just MKCALENDAR
+
+        "MKCOL" ->
+            Just MKCOL
+
+        "MOVE" ->
+            Just MOVE
+
+        "NOTIFY" ->
+            Just NOTIFY
+
+        "OPTIONS" ->
+            Just OPTIONS
+
+        "PATCH" ->
+            Just PATCH
+
+        "POST" ->
+            Just POST
+
+        "PROPFIND" ->
+            Just PROPFIND
+
+        "PROPPATCH" ->
+            Just PROPPATCH
+
+        "PURGE" ->
+            Just PURGE
+
+        "PUT" ->
+            Just PUT
+
+        "REBIND" ->
+            Just REBIND
+
+        "REPORT" ->
+            Just REPORT
+
+        "SEARCH" ->
+            Just SEARCH
+
+        "SUBSCRIBE" ->
+            Just SUBSCRIBE
+
+        "TRACE" ->
+            Just TRACE
+
+        "UNBIND" ->
+            Just UNBIND
+
+        "UNLINK" ->
+            Just UNLINK
+
+        "UNLOCK" ->
+            Just UNLOCK
+
+        "UNSUBSCRIBE" ->
+            Just UNSUBSCRIBE
+
+        _ ->
+            Nothing
 
 
 {-|

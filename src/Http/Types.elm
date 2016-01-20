@@ -1,4 +1,4 @@
-module Http.Types (..) where
+module Http.Types (Agent, AgentOptions, defaultAgentOptions, METHOD, showMethod, readMethod, Header, Server, Request, IncomingRaw, Response, ResponseRaw, TLSOptions, Error, Protocol, showProtocol, ClientRequest, ClientOptions, ClientOptionsWithPort, ClientOptionsWithSocketPath, ClientOptionsPartial, ClientResponse) where
 
 {-|
 # Agent
@@ -11,19 +11,26 @@ module Http.Types (..) where
 @docs Header
 
 # Server
-@docs Server, Request, RequestRaw, Response, ResponseRaw
+@docs Server, Request, IncomingRaw, Response, ResponseRaw
 
 # TLS
 @docs TLSOptions
 
 # Error
 @docs Error
+
+# Protocol
+@docs Protocol, showProtocol
+
+# Client
+@docs ClientRequest, ClientOptions, ClientOptionsWithPort, ClientOptionsWithSocketPath, ClientOptionsPartial, ClientResponse
 -}
 
 import Cardinal exposing (Cardinal(PosInfinity, Finite))
 import Time exposing (Time)
 import Foreign.Types exposing (JSRaw)
 import Streams.Types exposing (..)
+import Network.Types exposing (..)
 
 
 {-| Http Error
@@ -86,15 +93,21 @@ Requests are also Streams, both values are the same underlying object
 -}
 type alias Request =
     { readable : WritableRaw
-    , request : RequestRaw
+    , request : IncomingRaw
     }
+
+
+{-| Incoming message to a http client
+-}
+type alias ClientResponse =
+    Request
 
 
 {-|
 Represents a raw instance of Node.js's http.IncomingMessage class
 -}
-type RequestRaw
-    = RequestRaw JSRaw
+type IncomingRaw
+    = IncomingRaw JSRaw
 
 
 {-|
@@ -394,4 +407,84 @@ type alias TLSOptions =
     , ca : Maybe String
     , requestCert : Maybe Bool
     , rejectUnauthorized : Maybe Bool
+    }
+
+
+{-| -}
+type Protocol
+    = Http
+    | Https
+
+
+{-| -}
+showProtocol : Protocol -> String
+showProtocol protocol =
+    case protocol of
+        Http ->
+            "http"
+
+        Https ->
+            "https"
+
+
+{-| This should not be exported, dont use it
+-}
+type alias ClientOptionsPartial a =
+    { a
+        | protocol : Protocol
+        , hostname : String
+        , family : Maybe Family
+        , localAddress : String
+        , method : METHOD
+        , path : String
+        , headers : List Header
+        , auth : String
+    }
+
+
+{-|
+protocol: Protocol to use. Defaults to 'http'.
+host: A domain name or IP address of the server to issue the request to. Defaults to 'localhost'.
+hostname: Alias for host. To support url.parse() hostname is preferred over host.
+family: IP address family to use when resolving host and hostname. Valid values are 4 or 6. When unspecified, both IP v4 and v6 will be used.
+port: Port of remote server. Defaults to 80.
+localAddress: Local interface to bind for network connections.
+socketPath: Unix Domain Socket (use one of host:port or socketPath).
+method: A string specifying the HTTP request method. Defaults to 'GET'.
+path: Request path. Defaults to '/'. Should include query string if any. E.G. '/index.html?page=12'. An exception is thrown when the request path contains illegal characters. Currently, only spaces are rejected but that may change in the future.
+headers: An object containing request headers.
+auth: Basic authentication i.e. 'user:password' to compute an Authorization header.
+agent: Controls Agent behavior. When an Agent is used request will default to Connection: keep-alive. Possible values:
+undefined (default): use http.globalAgent for this host and port.
+Agent object: explicitly use the passed in Agent.
+false: opts out of connection pooling with an Agent, defaults request to Connection: close.
+The optional callback parameter will be added as a one time listener for the 'response' event.
+-}
+type alias ClientOptions =
+    ClientOptionsPartial { hostname : String }
+
+
+{-| -}
+type alias ClientOptionsWithPort =
+    ClientOptionsPartial { port' : Int }
+
+
+{-| -}
+type alias ClientOptionsWithSocketPath =
+    ClientOptionsPartial { socketPath : String }
+
+
+{-|
+Represents a raw instance of the Node.js ClientRequest class
+-}
+type ClientRequestRaw
+    = ClientRequestRaw JSRaw
+
+
+{-|
+Client requests are writable streams, here both are the same underlying object
+-}
+type alias ClientRequest =
+    { request : ClientRequestRaw
+    , writable : WritableRaw
     }

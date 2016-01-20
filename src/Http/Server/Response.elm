@@ -29,6 +29,7 @@ import Emitter.Unsafe as Emitter
 import Chunk.Types as Chunk
 import Task exposing (Task)
 import Time exposing (Time)
+import Tuple
 import Json.Encode as Encode
 import Http.StatusCode exposing (StatusCode)
 
@@ -66,7 +67,7 @@ TypeError being thrown.
 addTrailers : Response -> List Header -> Task x ()
 addTrailers { response } trailers =
     trailers
-        |> List.map (\( k, v ) -> ( k, Encode.string v ))
+        |> List.map (Tuple.mapSnd Encode.string)
         |> Method.method1 "addTrailers" response
 
 
@@ -250,6 +251,6 @@ writeHead { response } statuscode headers =
         response
         (Http.StatusCode.toInt statuscode)
         (Http.StatusCode.show statuscode)
-        (List.map (\( k, v ) -> ( k, Encode.string v )) headers
+        (List.map (Tuple.mapSnd Encode.string) headers
             |> Encode.object
         )

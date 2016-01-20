@@ -21,7 +21,6 @@ module Http.Server.Response (..) where
 
 import Foreign.Pattern.Method as Method
 import Foreign.Pattern.Member as Member
-import Foreign.Pattern.Member as Member
 import Streams.Chunk
 import Streams.String
 import Streams.Buffer

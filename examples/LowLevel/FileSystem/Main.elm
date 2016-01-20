@@ -1,16 +1,18 @@
 module Main (..) where
 
-import Task exposing (Task, andThen)
-import Signal as S
+import Task exposing (Task, andThen, succeed)
+import Signal exposing (Signal, Mailbox, mailbox, send, map)
 import FileSystem.Types exposing (..)
 import FileSystem.Write.String exposing (..)
 import FileSystem.Watch exposing (..)
 import FileSystem exposing (..)
+import Process exposing (exit)
+import Console exposing (printAs)
 
 
-flow : S.Mailbox (Maybe ( Stat, Stat ))
+flow : Mailbox (Maybe ( Stat, Stat ))
 flow =
-    S.mailbox Nothing
+    mailbox Nothing
 
 
 opts : WatchFileOptions
@@ -28,33 +30,29 @@ testFile =
 port run : Task FileSystemError ()
 port run =
     let
-        logAs s =
-            Task.map <| always () << Debug.log s
-
         (=>) f f' =
             f `andThen` always f'
     in
         writeFile testFile "I feel like I'm being watched"
-            => watchFileWith opts testFile (curry (Just >> S.send (.address flow)))
+            => watchFileWith opts testFile (curry <| Just >> send flow.address)
             => appendFile testFile ". Wait who are you?"
-            => logAs "stat" (stat testFile)
-            => logAs "access" (canAccess testFile)
+            => printAs "stat" (stat testFile)
+            => printAs "access" (canAccess testFile)
             => unlink testFile
-            => Task.succeed ()
+            => exit
 
 
 port showWatch : Signal (Task x ())
 port showWatch =
     let
-        weGoodhere =
-            Task.succeed ()
-
         parse ms =
             case ms of
                 Just stat ->
-                    always weGoodhere (Debug.log "stat" stat)
+                    "stat"
+                        ++ toString stat
+                        |> Console.log
 
                 Nothing ->
-                    weGoodhere
+                    succeed ()
     in
-        Signal.map parse flow.signal
+        parse `map` flow.signal

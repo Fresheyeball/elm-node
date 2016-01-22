@@ -16,9 +16,9 @@
 
   :emptyReq     {}
   :emptyRes     {
-    :end          noop
-    :write        noop
-    :writeHead    noop}
+    :end          (fn [] nil)
+    :write        (fn [] nil)
+    :writeHead    (fn [] nil)}
 
   } ))))
 

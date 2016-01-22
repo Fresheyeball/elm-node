@@ -7,9 +7,15 @@ var make = function make(localRuntime) {
             }),
             'emptyReq': {},
             'emptyRes': {
-                'end': noop,
-                'write': noop,
-                'writeHead': noop
+                'end': function () {
+                    return void 0;
+                },
+                'write': function () {
+                    return void 0;
+                },
+                'writeHead': function () {
+                    return void 0;
+                }
             }
         };
     })();

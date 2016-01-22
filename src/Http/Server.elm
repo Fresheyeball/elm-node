@@ -42,7 +42,7 @@ send the request body, or generating an appropriate HTTP response (e.g., 400 Bad
 the client should not continue to send the request body.
 Note that when this event is emitted and handled, the 'request' event will not be emitted.
 -}
-onCheckContinue : Server -> (( RequestRaw, Response ) -> Task x ()) -> Task x (Task x ())
+onCheckContinue : Server -> (( IncomingRaw, Response ) -> Task x ()) -> Task x (Task x ())
 onCheckContinue server f =
     Emitter.on2 "checkContinue" server (\( req, res ) -> f ( req, marshallResponse res ))
 
@@ -52,13 +52,13 @@ Event: 'clientError'
 If a client connection emits an 'error' event, it will be forwarded here.
 socket is the net.Socket object that the error originated from.
 -}
-onClientError : Server -> (Error -> Net.Socket -> Task x ()) -> Task x (Task x ())
+onClientError : Server -> (Net.Error -> Net.Socket -> Task x ()) -> Task x (Task x ())
 onClientError server f =
     Emitter.on2
         "clientError"
         server
         (\( rawErr, socket ) ->
-            f (Error <| Marshall.unsafeToString rawErr) socket
+            f (Net.Error <| Marshall.unsafeToString rawErr) socket
         )
 
 
@@ -81,7 +81,7 @@ head is an instance of Buffer, the first packet of the tunneling stream, this ma
 After this event is emitted, the request's socket will not have a 'data' event listener,
 meaning you will need to bind to it in order to handle data sent to the server on that socket.
 -}
-onConnect : Server -> (RequestRaw -> Net.Socket -> Chunk.Buffer -> Task x ()) -> Task x (Task x ())
+onConnect : Server -> (IncomingRaw -> Net.Socket -> Chunk.Buffer -> Task x ()) -> Task x (Task x ())
 onConnect server f =
     Emitter.on3 "connect" server (\( x, y, z ) -> f x y z)
 
@@ -116,7 +116,7 @@ head is an instance of Buffer, the first packet of the upgraded stream, this may
 After this event is emitted, the request's socket will not have a 'data' event listener, meaning you will need to bind
 to it in order to handle data sent to the server on that socket.
 -}
-onUpgrade : Server -> (RequestRaw -> Net.Socket -> Chunk.Buffer -> Task x ()) -> Task x (Task x ())
+onUpgrade : Server -> (IncomingRaw -> Net.Socket -> Chunk.Buffer -> Task x ()) -> Task x (Task x ())
 onUpgrade server f =
     Emitter.on3 "upgrade" server (\( x, y, z ) -> f x y z)
 

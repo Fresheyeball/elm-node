@@ -1,6 +1,8 @@
 module Http.Server.Request (..) where
 
 {-|
+TODO EXPORT ME
+
 Class: http.IncomingMessage
 An IncomingMessage object is created by http.Server or http.ClientRequest and passed as the first argument to the 'request' and 'response' event respectively. It may be used to access response status, headers and data.
 

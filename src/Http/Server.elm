@@ -24,7 +24,6 @@ import Foreign.Marshall as Marshall
 import Foreign.Pattern.Method as Method
 import Foreign.Pattern.Get as Get
 import Foreign.Pattern.Member as Member
-import Foreign.Pattern.Member as Member
 import Http.Types exposing (..)
 import Http.Marshall exposing (..)
 import Network.Types as Net
@@ -102,9 +101,9 @@ Emitted each time there is a request. Note that there may be multiple requests p
 keep-alive connections). request is an instance of http.IncomingMessage and response is an instance of
 http.ServerResponse.
 -}
-onRequest : Server -> (( RequestRaw, Response ) -> Task x ()) -> Task x (Task x ())
+onRequest : Server -> (( Request, Response ) -> Task x ()) -> Task x (Task x ())
 onRequest server f =
-    Emitter.on2 "request" server (\( req, res ) -> f ( req, marshallResponse res ))
+    Emitter.on2 "request" server (\( req, res ) -> f ( marshallRequest req, marshallResponse res ))
 
 
 {-|

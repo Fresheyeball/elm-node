@@ -6,7 +6,7 @@ module Http.Server.Response (..) where
 @docs onClose, onFinish
 
 # Response
-@docs end
+@docs end, emptyResponse
 
 # Write
 @docs write, writeBuffer, writeChunk, writeHead, writeContinue
@@ -32,6 +32,15 @@ import Task exposing (Task)
 import Time exposing (Time)
 import Json.Encode as Encode
 import Http.StatusCode exposing (StatusCode)
+import Native.Network
+
+
+{-|
+NoOp response
+-}
+emptyResponse : Response
+emptyResponse =
+    Native.Network.emptyRes
 
 
 {-|

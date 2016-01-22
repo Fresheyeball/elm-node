@@ -1,7 +1,7 @@
 module Http.Server.Request (..) where
 
 {-|
-Class: http.IncomingMessage#
+Class: http.IncomingMessage
 An IncomingMessage object is created by http.Server or http.ClientRequest and passed as the first argument to the 'request' and 'response' event respectively. It may be used to access response status, headers and data.
 
 It implements the Readable Stream interface, as well as the following additional events, methods, and properties.
@@ -15,12 +15,21 @@ import Emitter.Unsafe as Emitter
 import Network.Types exposing (..)
 import Task exposing (Task)
 import Time exposing (Time)
+import Native.Network
 
 
 infixr 4 `map`
 map : (a -> b) -> Task x a -> Task x b
 map =
     Task.map
+
+
+{-|
+none, request
+-}
+emptyRequest : Request
+emptyRequest =
+    Native.Network.emptyReq
 
 
 {-|

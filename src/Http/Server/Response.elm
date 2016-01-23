@@ -21,6 +21,7 @@ module Http.Server.Response (..) where
 
 import Foreign.Pattern.Method as Method
 import Foreign.Pattern.Member as Member
+import Foreign.Marshall as Marshall
 import Streams.Chunk
 import Streams.String
 import Streams.Buffer
@@ -40,7 +41,12 @@ NoOp response
 -}
 emptyResponse : Response
 emptyResponse =
-    Native.Network.emptyRes
+    let
+        raw = Native.Network.emptyRes
+    in
+        { writable = Marshall.unsafeIdentity raw
+        , response = Marshall.unsafeIdentity raw
+        }
 
 
 {-|

@@ -18,7 +18,7 @@
   :emptyRes     {
     :end          (fn [] nil)
     :write        (fn [] nil)
-    :writeHead    (fn [] nil)}
+    :writeHead    (fn [] nil) }
 
   } ))))
 

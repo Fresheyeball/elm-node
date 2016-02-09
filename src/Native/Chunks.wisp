@@ -10,7 +10,7 @@
 
   :marshall (F3 (fn [Left Right chunk]
     (if (== (typeof chunk) "string")
-        (Left chunks)
+        (Left chunk)
         (Right chunk))))
 
   :encodeBuffer (F2 (fn [buffer encoding]

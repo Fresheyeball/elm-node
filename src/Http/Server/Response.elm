@@ -6,7 +6,7 @@ module Http.Server.Response (..) where
 @docs onClose, onFinish
 
 # Response
-@docs end
+@docs end, emptyResponse
 
 # Write
 @docs write, writeBuffer, writeChunk, writeHead, writeContinue
@@ -21,6 +21,7 @@ module Http.Server.Response (..) where
 
 import Foreign.Pattern.Method as Method
 import Foreign.Pattern.Member as Member
+import Foreign.Marshall as Marshall
 import Streams.Chunk
 import Streams.String
 import Streams.Buffer
@@ -32,6 +33,20 @@ import Time exposing (Time)
 import Tuple
 import Json.Encode as Encode
 import Http.StatusCode exposing (StatusCode)
+import Native.Network
+
+
+{-|
+NoOp response
+-}
+emptyResponse : Response
+emptyResponse =
+    let
+        raw = Native.Network.emptyRes
+    in
+        { writable = Marshall.unsafeIdentity raw
+        , response = Marshall.unsafeIdentity raw
+        }
 
 
 {-|

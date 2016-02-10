@@ -44,7 +44,8 @@
         "Http.Agent.TLS",
         "Http.Server",
         "Http.Server.TLS",
-        "Http.Server.Response"
+        "Http.Server.Response",
+        "Http.Client.Request"
     ],
     "native-modules": true,
     "dependencies": {
@@ -52,6 +53,7 @@
         "Fresheyeball/elm-restrict-number": "1.0.0 <= v < 2.0.0",
         "Fresheyeball/elm-tuple-extra": "1.0.0 <= v < 2.0.0",
         "elm-lang/core": "3.0.0 <= v < 4.0.0",
+        "evancz/elm-effects": "2.0.1 <= v < 3.0.0",
         "evancz/elm-html": "4.0.2 <= v < 5.0.0",
         "evancz/elm-http": "3.0.0 <= v < 4.0.0",
         "evancz/virtual-dom": "2.1.0 <= v < 3.0.0",

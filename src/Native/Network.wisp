@@ -14,6 +14,12 @@
         IPv6)
       raw.address))))
 
+  :emptyReq     {}
+  :emptyRes     {
+    :end          (fn [] nil)
+    :write        (fn [] nil)
+    :writeHead    (fn [] nil) }
+
   } ))))
 
 (foreign.sanitize Elm :Native :Network)
